@@ -12,6 +12,7 @@ captures
 local.properties
 xcuserdata/
 Pods/
+docs/.obsidian/
 *.jks
 *.gpg
 *yarn.lock
