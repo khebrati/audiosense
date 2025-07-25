@@ -1,0 +1,26 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 
+        App Icon for AudioSense (V2)
+        Designed with Material 3 Expressive principles.
+        This version uses a more abstract and dynamic sound wave 
+        with a gradient to feel more fluid and energetic.
+    -->
+
+    <!-- Background Squircle Shape -->
+    <rect width="256" height="256" rx="56" fill="#EAF5FF"/>
+
+    <!-- Gradient Definition -->
+    <defs>
+        <linearGradient id="waveGradient" x1="64" y1="64" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#007BFF"/>
+            <stop offset="1" stop-color="#7B68EE"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Dynamic Sound Wave Shape -->
+    <path d="M64 128 C80 88 128 80 128 128 C128 176 176 168 192 128 C176 88 128 80 128 128 C128 176 80 168 64 128 Z" fill="url(#waveGradient)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+
+    <!-- Echo element for more depth -->
+    <path d="M80 128 C92 100 128 96 128 128 C128 160 164 156 176 128" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-opacity="0.5"/>
+
+</svg>
