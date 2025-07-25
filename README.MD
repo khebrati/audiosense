@@ -1,24 +1,29 @@
-# Compose Multiplatform Application
+## AudioSense
 
-## Before running!
- - check your system with [KDoctor](https://github.com/Kotlin/kdoctor)  
- - install JDK 17 or higher on your machine  
- - add `local.properties` file to the project root and set a path to Android SDK there  
+    Note: This project is currently under active development.
 
-### Android
-To run the application on android device/emulator:  
- - open project in Android Studio and run imported android run configuration  
+A modern, expressive audiometry application for Android & iOS, built with Kotlin Multiplatform and a focus on user-friendly design powered by Material 3 Expressive.
+### 📋 About The Project
 
-To build the application bundle:  
- - run `./gradlew :composeApp:assembleDebug`  
- - find `.apk` file in `composeApp/build/outputs/apk/debug/composeApp-debug.apk`  
+AudioSense is a native mobile application for Android & iOS designed to provide users with an accessible and intuitive way to measure their hearing levels. Built from the ground up with Kotlin Multiplatform and Jetpack Compose, the app offers a clean, calming, and user-friendly experience.
 
-Run android UI tests on the connected device: `./gradlew :composeApp:connectedDebugAndroidTest`
+The core mission is to translate complex hearing data into meaningful, real-world insights. From a guided test preparation process to understanding your results, every aspect is crafted to be clear and reassuring. The project leverages the Compose Multiplatform Wizard template for a robust and scalable foundation.
+### ✨ Key Features
+- Accurate Testing: A focused, minimalist interface for conducting pure-tone audiometry tests, with built-in safeguards for a better experience.
+- Headphone Calibration: Results are calibrated for different headphone models to ensure higher accuracy.
+- Noise Meter: An integrated noise meter helps ensure you're in a sufficiently quiet environment before you begin, preventing inaccurate results.
+- Visual & Descriptive Results: View your hearing data on a clear audiogram chart and get useful, easy-to-understand insights about what your results mean in everyday situations.
+- Expressive UI: A dynamic and responsive interface built entirely with Jetpack Compose, following Material 3 Expressive Design principles.
+- Customization: Settings for theme (Light/Dark/System) and language.
 
-### iOS
-To run the application on iPhone device/simulator:  
- - Open `iosApp/iosApp.xcproject` in Xcode and run standard configuration  
- - Or use [Kotlin Multiplatform Mobile plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile) for Android Studio  
+### 🚀 Tech Stack
+- Framework: Kotlin Multiplatform (targeting Android & iOS)
+- UI: Jetpack Compose / Compose Multiplatform
+- Navigation: androidx.navigation
+- Dependency Injection: Koin
+- Database: Room
+- Logging: Kermit
 
-Run iOS simulator UI tests: `./gradlew :composeApp:iosSimulatorArm64Test`  
+### License
 
+This project is licensed under the MIT License. See the LICENSE file for more details.
