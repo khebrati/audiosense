@@ -136,7 +136,7 @@ internal fun AppTheme(
         MaterialExpressiveTheme(
             colorScheme = if (isDark) reducedContrastDarkColorScheme else reducedContrastLightColorScheme,
             motionScheme = MotionScheme.expressive(),
-            typography = Typography(),
+            typography =AppTypography() ,
             content = { Surface(content = content) }
         )
     }
