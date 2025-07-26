@@ -1,12 +1,15 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
+
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
     alias(libs.plugins.buildConfig)
+    alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 kotlin {
@@ -40,6 +43,14 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.materialKolor)
+//            implementation(libs.room.compiler)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose.viewmodel.navigation)
         }
 
         commonTest.dependencies {
@@ -80,6 +91,7 @@ dependencies {
     debugImplementation(libs.androidx.uitest.testManifest)
 }
 
+
 compose.resources{
     generateResClass = always
 }
@@ -87,4 +99,18 @@ compose.resources{
 buildConfig {
     // BuildConfig configuration here.
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
+}
+
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    with(libs.room.compiler) {
+        add("kspAndroid", this)
+        add("kspIosX64", this)
+        add("kspIosArm64", this)
+        add("kspIosSimulatorArm64", this)
+    }
 }
