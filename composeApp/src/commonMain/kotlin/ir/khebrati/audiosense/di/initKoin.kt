@@ -4,17 +4,15 @@ import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 
-fun koinInit(
-    platformModule: Module,
-    nativePlatformModule: Module,
-    commonModule: Module,
+fun initKoin(
+    nativePlatformModule: Module? = null,
 ): Koin {
     return startKoin {
         modules(
-            listOf(
-                platformModule,
+            listOfNotNull(
+                platformModule(),
                 nativePlatformModule,
-                commonModule
+                commonModule()
             )
         )
     }.koin

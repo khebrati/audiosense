@@ -8,5 +8,5 @@ data class LocalHeadphone(
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
     val model: String,
-    val calibration: String,
+    val calibrationCoefficients: Map<Int,Int>,
 )

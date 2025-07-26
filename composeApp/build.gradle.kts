@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
@@ -16,6 +17,9 @@ kotlin {
     androidTarget {
         //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    }
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
     }
 
     listOf(
@@ -43,7 +47,6 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.materialKolor)
-//            implementation(libs.room.compiler)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(project.dependencies.platform(libs.koin.bom))

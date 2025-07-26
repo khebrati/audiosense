@@ -11,5 +11,4 @@ interface HeadphoneDao {
     suspend fun getAll() : List<LocalHeadphone>
     @Insert
     suspend fun add(headphone: LocalHeadphone)
-
 }

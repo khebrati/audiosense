@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import ir.khebrati.audiosense.di.commonModule
-import ir.khebrati.audiosense.di.koinInit
-import ir.khebrati.audiosense.di.platformModule
+import ir.khebrati.audiosense.di.initKoin
 import org.koin.dsl.module
 
 class AppActivity : ComponentActivity() {
@@ -19,11 +17,7 @@ class AppActivity : ComponentActivity() {
                 this@AppActivity.application.applicationContext
             }
         }
-        val koin = koinInit(
-            platformModule = platformModule(),
-            commonModule = commonModule,
-            nativePlatformModule = nativePlatformModule
-        )
+        val koin = initKoin(nativePlatformModule = nativePlatformModule)
         setContent { App(koin) }
     }
 }

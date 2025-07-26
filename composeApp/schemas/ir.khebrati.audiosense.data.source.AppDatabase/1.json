@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "eb61c714146185ad4b8501f4ee652e25",
+    "identityHash": "f269f0d5718913f6d32a2e6d01d22b8e",
     "entities": [
       {
         "tableName": "LocalHeadphone",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `model` TEXT NOT NULL, `calibration` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `model` TEXT NOT NULL, `calibrationCoefficients` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -21,8 +21,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "calibration",
-            "columnName": "calibration",
+            "fieldPath": "calibrationCoefficients",
+            "columnName": "calibrationCoefficients",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -33,11 +33,72 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "LocalTest",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dateTime` TEXT NOT NULL, `noiseDuringTest` INTEGER NOT NULL, `leftAC` TEXT NOT NULL, `rightAC` TEXT NOT NULL, `headphoneId` INTEGER NOT NULL, FOREIGN KEY(`headphoneId`) REFERENCES `LocalHeadphone`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateTime",
+            "columnName": "dateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noiseDuringTest",
+            "columnName": "noiseDuringTest",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "leftAC",
+            "columnName": "leftAC",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rightAC",
+            "columnName": "rightAC",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "headphoneId",
+            "columnName": "headphoneId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "LocalHeadphone",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "headphoneId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eb61c714146185ad4b8501f4ee652e25')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f269f0d5718913f6d32a2e6d01d22b8e')"
     ]
   }
 }
