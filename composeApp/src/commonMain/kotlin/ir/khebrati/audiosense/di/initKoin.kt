@@ -10,8 +10,8 @@ fun initKoin(
     return startKoin {
         modules(
             listOfNotNull(
-                platformModule(),
                 nativePlatformModule,
+                platformModule(),
                 commonModule()
             )
         )

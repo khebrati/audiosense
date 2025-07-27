@@ -1,17 +1,17 @@
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 
-package ir.khebrati.audiosense.data.source
+package ir.khebrati.audiosense.data.source.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import ir.khebrati.audiosense.data.source.dao.HeadphoneDao
-import ir.khebrati.audiosense.data.source.dao.TestDao
-import ir.khebrati.audiosense.data.source.dao.TestHeadphoneDao
-import ir.khebrati.audiosense.data.source.entity.LocalHeadphone
-import ir.khebrati.audiosense.data.source.entity.LocalTest
+import ir.khebrati.audiosense.data.source.local.dao.HeadphoneDao
+import ir.khebrati.audiosense.data.source.local.dao.TestDao
+import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
+import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
+import ir.khebrati.audiosense.data.source.local.entity.LocalTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 

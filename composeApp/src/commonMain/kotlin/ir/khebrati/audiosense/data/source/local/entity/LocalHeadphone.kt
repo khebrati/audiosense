@@ -1,12 +1,12 @@
-package ir.khebrati.audiosense.data.source.entity
+package ir.khebrati.audiosense.data.source.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
 data class LocalHeadphone(
-    @PrimaryKey(autoGenerate = true)
-    val id : Int = 0,
+    @PrimaryKey
+    val id : String,
     val model: String,
     val calibrationCoefficients: Map<Int,Int>,
 )

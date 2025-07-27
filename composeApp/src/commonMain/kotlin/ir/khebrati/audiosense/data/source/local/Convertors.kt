@@ -1,5 +1,4 @@
-
-package ir.khebrati.audiosense.data.source
+package ir.khebrati.audiosense.data.source.local
 
 import androidx.room.TypeConverter
 import kotlin.time.Instant

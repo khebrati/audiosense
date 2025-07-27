@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalTime::class)
 
-package ir.khebrati.audiosense.data.source.entity
+package ir.khebrati.audiosense.data.source.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -17,11 +17,11 @@ import kotlin.time.Instant
     )]
 )
 data class LocalTest(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String,
     val dateTime: Instant,
     val noiseDuringTest: Int,
     val leftAC: Map<Int, Int>,
     val rightAC: Map<Int, Int>,
-    val headphoneId: Int
+    val headphoneId: String
 )

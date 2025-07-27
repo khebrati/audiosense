@@ -1,6 +1,6 @@
 package ir.khebrati.audiosense.unit.data.source
 
-import ir.khebrati.audiosense.data.source.Convertors
+import ir.khebrati.audiosense.data.source.local.Convertors
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 
 class ConvertorsTest {
     @Test
-    fun `stringToMap _ given a sample encoded map of Int, Int _ extracts it`(){
+    fun stringToMap_givenSampleEncodedMap_extractsIt() {
         //Arrange
         val convertor = createConvertors()
         val encodedMap = "1:2,3:4,5:6"
@@ -20,7 +20,7 @@ class ConvertorsTest {
     }
 
     @Test
-    fun `stringToMap and mapToString_ when chained _ can interpret each other results`(){
+    fun stringToMapAndMapToString_whenChained_canInterpretEachOtherResults() {
         //Arrange
         val convertor = createConvertors()
         val sampleString = "1:2,3:4,5:6"
@@ -28,27 +28,30 @@ class ConvertorsTest {
         val encoded = convertor.stringToMap(sampleString)
         val decoded = convertor.mapToString(encoded)
         //Assert
-        assertEquals(sampleString,decoded)
+        assertEquals(sampleString, decoded)
     }
+
     @Test
-    fun `stringToMap _ given empty string _ returns empty map`(){
+    fun stringToMap_givenEmptyString_returnsEmptyMap() {
         //Arrange
         val convertor = createConvertors()
         val emptyString = ""
         //Action
         val result = convertor.stringToMap(emptyString)
         //Assert
-        assertTrue { result.isEmpty()}
+        assertTrue { result.isEmpty() }
     }
+
     @Test
-    fun `mapToString _ given empty map _ returns empty string`(){
+    fun mapToString_givenEmptyMap_returnsEmptyString() {
         //Arrange
         val convertor = createConvertors()
-        val emptyMap = emptyMap<Int,Int>()
+        val emptyMap = emptyMap<Int, Int>()
         //Action
         val result = convertor.mapToString(emptyMap)
         //Assert
-        assertTrue { result.isEmpty()}
+        assertTrue { result.isEmpty() }
     }
+
     private fun createConvertors() = Convertors()
 }
