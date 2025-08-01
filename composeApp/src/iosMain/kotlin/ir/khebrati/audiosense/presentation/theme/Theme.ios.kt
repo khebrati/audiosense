@@ -1,4 +1,4 @@
-package ir.khebrati.audiosense.theme
+package ir.khebrati.audiosense.presentation.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

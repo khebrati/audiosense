@@ -96,7 +96,4 @@ class HeadphoneRepositoryIntegrationTest : KoinComponent {
         assertTrue(headphonesAfterDelete.isEmpty())
     }
 
-    @AfterTest
-    fun tearDownDi() = runBlocking{
-    }
 }

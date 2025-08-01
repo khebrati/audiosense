@@ -1,8 +1,7 @@
-package ir.khebrati.audiosense.theme
+package ir.khebrati.audiosense.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import audiosense.composeapp.generated.resources.Lexend_Black

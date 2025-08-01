@@ -1,14 +1,13 @@
 // Generated using MaterialKolor Builder version 1.2.1 (103)
 // https://materialkolor.com/?color_seed=FF00B9F1&color_primary=FF00B9F1&color_secondary=FFC3C1FF&color_tertiary=FF0084F4&color_error=FFB3261E&color_neutral=FF1C1B1F&color_neutralvariant=FF757575&dark_mode=false&style=Expressive&contrast=-1.0&color_spec=SPEC_2025&package_name=com.example.app&misc=true&expressive=true
 
-package ir.khebrati.audiosense.theme
+package ir.khebrati.audiosense.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable

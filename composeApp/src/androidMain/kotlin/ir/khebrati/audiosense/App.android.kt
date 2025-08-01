@@ -18,6 +18,6 @@ class AppActivity : ComponentActivity() {
             }
         }
         val koin = initKoin(nativePlatformModule = nativePlatformModule)
-        setContent { App(koin) }
+        setContent { AudiosenseApp(koin) }
     }
 }
