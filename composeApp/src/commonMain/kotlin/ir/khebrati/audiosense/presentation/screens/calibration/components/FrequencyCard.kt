@@ -38,7 +38,7 @@ fun FrequencyCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("FREQUENCY", style = MaterialTheme.typography.labelLargeEmphasized)
+                Text("FREQUENCY", style = MaterialTheme.typography.titleMedium)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),

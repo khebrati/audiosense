@@ -40,7 +40,7 @@ fun VolumeCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("VOLUME (dB)", style = MaterialTheme.typography.labelLargeEmphasized)
+                Text("VOLUME (dB)", style = MaterialTheme.typography.titleMedium)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),

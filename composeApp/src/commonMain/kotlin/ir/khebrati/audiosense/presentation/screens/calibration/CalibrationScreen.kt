@@ -3,6 +3,7 @@ package ir.khebrati.audiosense.presentation.screens.calibration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -24,27 +25,12 @@ import kotlin.collections.listOf
 @Preview
 @Composable
 fun CalibrationScreenContentPreview() {
-    val frequency = remember { mutableStateOf(1000) }
-    val frequencies = listOf(125, 250, 500, 1000, 2000, 4000, 8000)
-    val volume = remember { mutableStateOf(50) }
-    val deviceName = remember { mutableStateOf("") }
-    CalibrationScreenContent(
-        onDeviceNameChange = {
-            deviceName.value = it
-        },
-        onFrequencyChange = {
-            frequency.value = frequencies[it.toInt()]
-        },
-        frequency = frequency.value,
-        volume = volume.value,
-        onVolumeChange = {
-            volume.value = it
-        },
-        deviceName = deviceName.value,
-        frequencies = frequencies,
-        onSaveClick = {},
-        onPlayClick = {}
-    )
+    AppTheme {
+        CalibrationScreen(
+            calibrationRoute = Calibration,
+            onNavigateBack = {}
+        )
+    }
 }
 
 @Composable
@@ -52,12 +38,32 @@ fun CalibrationScreen(
     calibrationRoute: Calibration,
     onNavigateBack: () -> Unit,
 ) {
+    val frequency = remember { mutableStateOf(1000) }
+    val frequencies = listOf(125, 250, 500, 1000, 2000, 4000, 8000)
+    val volume = remember { mutableStateOf(50) }
+    val deviceName = remember { mutableStateOf("") }
     AudiosenseScaffold(
         screenTitle = calibrationRoute.title,
         canNavigateBack = true,
         onNavigateBack = onNavigateBack,
-    ){
-        CalibrationScreenContentPreview()
+    ) {
+        CalibrationScreenContent(
+            onDeviceNameChange = {
+                deviceName.value = it
+            },
+            onFrequencyChange = {
+                frequency.value = frequencies[it.toInt()]
+            },
+            frequency = frequency.value,
+            volume = volume.value,
+            onVolumeChange = {
+                volume.value = it
+            },
+            deviceName = deviceName.value,
+            frequencies = frequencies,
+            onSaveClick = onNavigateBack,
+            onPlayClick = {}
+        )
     }
 }
 
@@ -74,32 +80,29 @@ fun CalibrationScreenContent(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AppTheme {
-        Column(
-            modifier = modifier.padding(top = 80.dp, start = 25.dp, end = 25.dp, bottom = 25.dp)
-                .fillMaxHeight()
-        ) {
-            DeviceNameCard(
-                onValueChange = onDeviceNameChange,
-                value = deviceName,
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            FrequencyCard(
-                frequency = frequency,
-                frequencies = frequencies,
-                onFreqChange = onFrequencyChange,
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            VolumeCard(
-                volume = volume, onVolumeChange = onVolumeChange,
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            PlayButton(onClick = onPlayClick)
-            Spacer(modifier = Modifier.weight(1f))
-            SaveFAB(
-                onClick = onSaveClick
-            )
-        }
+    Column(
+        modifier = modifier
+    ){
+        DeviceNameCard(
+            onValueChange = onDeviceNameChange,
+            value = deviceName,
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        FrequencyCard(
+            frequency = frequency,
+            frequencies = frequencies,
+            onFreqChange = onFrequencyChange,
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        VolumeCard(
+            volume = volume, onVolumeChange = onVolumeChange,
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        PlayButton(onClick = onPlayClick)
+        Spacer(modifier = Modifier.weight(1f))
+        SaveFAB(
+            onClick = onSaveClick
+        )
     }
 }
 

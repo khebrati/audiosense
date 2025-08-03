@@ -37,7 +37,7 @@ fun DeviceNameCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("FREQUENCY", style = MaterialTheme.typography.labelLargeEmphasized)
+                Text("NAME", style = MaterialTheme.typography.titleMedium)
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -46,7 +46,7 @@ fun DeviceNameCard(
                 TextField(
                     value = value,
                     placeholder = {
-                        Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.labelLarge)
+                        Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.titleMedium)
                     },
                     onValueChange = onValueChange,
                     colors = TextFieldDefaults.colors(
