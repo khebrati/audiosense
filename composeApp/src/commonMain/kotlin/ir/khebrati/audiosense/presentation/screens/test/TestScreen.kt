@@ -3,6 +3,7 @@ package ir.khebrati.audiosense.presentation.screens.test
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Results
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Test
 
@@ -13,14 +14,21 @@ fun TestScreen(
     onNavigateResult: (
         Results
     ) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
-    Button(
-        onClick = {
-            onNavigateResult(
-                Results()
-            )
+    AudiosenseScaffold(
+        screenTitle = testRoute.title,
+        canNavigateBack = true,
+        onNavigateBack = onNavigateBack
+    ){
+        Button(
+            onClick = {
+                onNavigateResult(
+                    Results
+                )
+            }
+        ) {
+            Text("Go to Results")
         }
-    ) {
-        Text("Go to Results")
     }
 }

@@ -1,12 +1,6 @@
 package ir.khebrati.audiosense.presentation.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,7 +27,7 @@ fun AudiosenseNavHost(
     navController: NavHostController
 ) {
     NavHost(
-        startDestination = Home(),
+        startDestination = Home,
         navController = navController
     ) {
         composable<Home> {
@@ -58,6 +52,9 @@ fun AudiosenseNavHost(
                 selectDeviceRoute = selectDeviceRoute,
                 onNavigateNoiseMeter = {
                     navController.navigate(it)
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -68,6 +65,9 @@ fun AudiosenseNavHost(
                 noiseMeterRoute = noiseMeterRoute,
                 onNavigateTest = {
                     navController.navigate(it)
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -78,18 +78,21 @@ fun AudiosenseNavHost(
                 onNavigateResult = {
                     navController.navigate(it)
                 },
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
             )
         }
         composable<Results> { backStackEntry ->
             val resultRoute: Results = backStackEntry.toRoute()
             ResultScreen(
                 resultRoute = resultRoute,
-                onNavigateHome = {
+                onNavigateBack = {
                     navController.popBackStack<Home>(inclusive = false)
                 },
                 onNavigateDescriptiveResult = {
                     navController.navigate(it)
-                }
+                },
             )
         }
         composable<DescriptiveResult> { backStackEntry ->
@@ -97,18 +100,27 @@ fun AudiosenseNavHost(
                 backStackEntry.toRoute()
             DescriptiveResultScreen(
                 descriptiveResultRoute = descriptiveResultRoute,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
         composable<Calibration> { backStackEntry ->
             val calibrationRoute: Calibration = backStackEntry.toRoute()
             CalibrationScreen(
-                calibrationRoute = calibrationRoute
+                calibrationRoute = calibrationRoute,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
         composable<Setting> {backStackEntry ->
             val settingRoute: Setting = backStackEntry.toRoute()
             SettingScreen(
-                settingRoute = settingRoute
+                settingRoute = settingRoute,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
 

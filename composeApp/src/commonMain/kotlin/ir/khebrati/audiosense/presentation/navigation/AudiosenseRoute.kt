@@ -1,31 +1,32 @@
 package ir.khebrati.audiosense.presentation.navigation
 
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 
 @Serializable
-sealed class AudiosenseRoute{
+sealed class AudiosenseRoute(val title: String){
     @Serializable
-     class Home : AudiosenseRoute()
+     object Home : AudiosenseRoute("Home")
 
     @Serializable
-     class SelectDevice : AudiosenseRoute()
+     object SelectDevice : AudiosenseRoute("New Test")
     @Serializable
-     class NoiseMeter : AudiosenseRoute()
+     object NoiseMeter : AudiosenseRoute("New Test")
 
     @Serializable
-     class Test : AudiosenseRoute()
+     object Test : AudiosenseRoute("Hearing Test")
 
     @Serializable
-     class Results : AudiosenseRoute()
+     object Results : AudiosenseRoute("Test Results")
 
     @Serializable
-     class DescriptiveResult : AudiosenseRoute()
+     object DescriptiveResult : AudiosenseRoute("Your Hearing World")
 
     @Serializable
-     class Setting : AudiosenseRoute()
+     object Setting : AudiosenseRoute("Settings")
 
     @Serializable
-     class Calibration : AudiosenseRoute()
+     object Calibration : AudiosenseRoute("Calibration")
 }
 

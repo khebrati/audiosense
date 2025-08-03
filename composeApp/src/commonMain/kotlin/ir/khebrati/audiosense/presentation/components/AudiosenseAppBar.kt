@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudiosenseAppBar(
+    title: String,
     canNavigateBack: Boolean,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -20,7 +21,7 @@ fun AudiosenseAppBar(
     TopAppBar(
         title = {
             Text(
-                "Screen"
+                title
             )
         },
         navigationIcon = {

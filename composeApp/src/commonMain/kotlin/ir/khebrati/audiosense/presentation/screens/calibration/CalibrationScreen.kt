@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
 import ir.khebrati.audiosense.presentation.screens.calibration.components.DeviceNameCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.FrequencyCard
@@ -49,8 +50,15 @@ fun CalibrationScreenContentPreview() {
 @Composable
 fun CalibrationScreen(
     calibrationRoute: Calibration,
+    onNavigateBack: () -> Unit,
 ) {
-    CalibrationScreenContentPreview()
+    AudiosenseScaffold(
+        screenTitle = calibrationRoute.title,
+        canNavigateBack = true,
+        onNavigateBack = onNavigateBack,
+    ){
+        CalibrationScreenContentPreview()
+    }
 }
 
 @Composable
