@@ -21,8 +21,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun DeviceNameCard(
+fun InputCard(
     onValueChange: (String) -> Unit,
+    title: String,
+    placeHolder: @Composable (() -> Unit) = {},
     value: String = "",
     modifier: Modifier = Modifier
 ) {
@@ -37,7 +39,7 @@ fun DeviceNameCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("NAME", style = MaterialTheme.typography.titleMedium)
+                Text(title, style = MaterialTheme.typography.titleMedium)
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -45,9 +47,10 @@ fun DeviceNameCard(
             ) {
                 TextField(
                     value = value,
-                    placeholder = {
-                        Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.titleMedium)
-                    },
+                    placeholder = placeHolder,
+//                    placeholder = {
+//                        Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.titleMedium)
+//                    },
                     onValueChange = onValueChange,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -61,10 +64,45 @@ fun DeviceNameCard(
 
 }
 
+@Composable
+fun DeviceNameInputCard(
+    onValueChange: (String) -> Unit,
+    value: String = "",
+) {
+    InputCard(
+        onValueChange = onValueChange,
+        title = "Device Name",
+        placeHolder = { Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.titleMedium) },
+        value = value,
+    )
+}
+
+@Composable
+fun MeasuredSPLInputCard(
+    onValueChange: (String) -> Unit,
+    value: String = "",
+) {
+    InputCard(
+        onValueChange = onValueChange,
+        title = "Measured SPL",
+        placeHolder = { Text("e.g, 85 dB", style = MaterialTheme.typography.titleMedium) },
+        value = value,
+    )
+}
+
 @Preview
 @Composable
 fun DeviceNamePreview() {
-    DeviceNameCard(
+    DeviceNameInputCard(
         onValueChange = {},
+        value = "Sony WH-1000XM4"
+    )
+}
+@Preview
+@Composable
+fun MeasuredSPLPreview() {
+    MeasuredSPLInputCard(
+        onValueChange = {},
+        value = "85 dB"
     )
 }

@@ -16,7 +16,8 @@ fun AudiosenseScaffold(
     screenTitle: String,
     canNavigateBack: Boolean,
     onNavigateBack: () -> Unit,
-    content: @Composable () -> Unit,
+    floatingActionButton : @Composable (() -> Unit) = {},
+    content: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -25,12 +26,14 @@ fun AudiosenseScaffold(
                 title = screenTitle,
                 onNavigateBack = onNavigateBack
             )
-        }
+        },
+        floatingActionButton = floatingActionButton,
     ) { innerPadding ->
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
                 .padding(start = 25.dp, end = 25.dp, bottom = 25.dp)
-                .consumeWindowInsets(innerPadding)
+                .consumeWindowInsets(innerPadding).
+            verticalScroll(rememberScrollState())
         ) {
             content()
         }

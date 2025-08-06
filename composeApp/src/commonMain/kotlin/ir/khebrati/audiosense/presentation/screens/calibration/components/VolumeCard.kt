@@ -27,6 +27,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VolumeCard(
+    title: @Composable () -> Unit = {},
     volume: Int,
     onVolumeChange: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -40,7 +41,7 @@ fun VolumeCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("VOLUME (dB)", style = MaterialTheme.typography.titleMedium)
+                title()
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -71,6 +72,32 @@ fun VolumeCard(
             }
         }
     }
+}
+@Composable
+fun PlayVolumeCard(
+    volume: Int,
+    onVolumeChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    VolumeCard(
+        title = { Text("PLAY VOLUME (dB)", style = MaterialTheme.typography.titleMedium) },
+        volume = volume,
+        onVolumeChange = onVolumeChange,
+        modifier = modifier
+    )
+}
+@Composable
+fun MeasureVolumeCard(
+    volume: Int,
+    onVolumeChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    VolumeCard(
+        title = { Text("MEASURED VOLUME (dB)", style = MaterialTheme.typography.titleMedium) },
+        volume = volume,
+        onVolumeChange = onVolumeChange,
+        modifier = modifier
+    )
 }
 
 @Preview

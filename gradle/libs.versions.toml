@@ -1,7 +1,8 @@
 [versions]
 
 kotlin = "2.2.0"
-compose = "1.8.2"
+compose = "1.9.0-beta01"
+material3 = "1.9.0-alpha04"
 agp = "8.10.0"
 androidx-activityCompose = "1.10.1"
 androidx-uiTest = "1.8.1"
@@ -48,6 +49,7 @@ junit = { module = "junit:junit", version.ref = "juint" }
 
 # Theme
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 [plugins]
