@@ -3,14 +3,12 @@
 package ir.khebrati.audiosense.data.repository
 
 import ir.khebrati.audiosense.data.source.local.dao.HeadphoneDao
-import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
-import ir.khebrati.audiosense.data.source.local.entity.LocalTest
 import ir.khebrati.audiosense.data.toExternal
-import ir.khebrati.audiosense.domain.model.Headphone
+import ir.khebrati.audiosense.data.toLocal
+import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlin.uuid.ExperimentalUuidApi
@@ -22,7 +20,7 @@ class HeadphoneRepositoryImpl(
 ) : HeadphoneRepository {
     override suspend fun createHeadphone(
         model: String,
-        calibrationCoefficients: Map<Int, Int>,
+        calibrationCoefficients: Map<Int, VolumeRecordPerFrequency>,
     ) : String{
         return withContext(dispatcher) {
             val uuid = withContext(dispatcher) {
@@ -31,7 +29,7 @@ class HeadphoneRepositoryImpl(
             val localHeadphone = LocalHeadphone(
                 id = uuid,
                 model = model,
-                calibrationCoefficients = calibrationCoefficients
+                calibrationCoefficients = calibrationCoefficients.toLocal()
             )
             headphoneDao.add(localHeadphone)
             uuid

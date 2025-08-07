@@ -8,42 +8,42 @@ import kotlin.test.assertTrue
 
 class ConvertorsTest {
     @Test
-    fun stringToMap_givenSampleEncodedMap_extractsIt() {
+    fun stringToMap_givenSampleEncodedMap_Pair_extractsIt() {
         //Arrange
         val convertor = createConvertors()
         val encodedMap = "1:2,3:4,5:6"
         val expectedMap = mapOf(1 to 2, 3 to 4, 5 to 6)
         //Action
-        val result = convertor.stringToMap(encodedMap)
+        val result = convertor.stringToMapPair(encodedMap)
         //Assert
         assertTrue(result == expectedMap, message = "Expected map $expectedMap but got $result")
     }
 
     @Test
-    fun stringToMapAndMapToString_whenChained_canInterpretEachOtherResults() {
+    fun stringToMapAndMapPairToString_whenChained_canInterpretEachOtherResultsPair() {
         //Arrange
         val convertor = createConvertors()
         val sampleString = "1:2,3:4,5:6"
         //Action
-        val encoded = convertor.stringToMap(sampleString)
-        val decoded = convertor.mapToString(encoded)
+        val encoded = convertor.stringToMapPair(sampleString)
+        val decoded = convertor.mapPairToString(encoded)
         //Assert
         assertEquals(sampleString, decoded)
     }
 
     @Test
-    fun stringToMap_givenEmptyString_returnsEmptyMap() {
+    fun stringToMap_givenEmptyString_returnsEmptyMapPair() {
         //Arrange
         val convertor = createConvertors()
         val emptyString = ""
         //Action
-        val result = convertor.stringToMap(emptyString)
+        val result = convertor.stringToMapPair(emptyString)
         //Assert
         assertTrue { result.isEmpty() }
     }
 
     @Test
-    fun mapToString_givenEmptyMap_returnsEmptyString() {
+    fun mapToString_givenEmptyMap_Pair_returnsEmptyString() {
         //Arrange
         val convertor = createConvertors()
         val emptyMap = emptyMap<Int, Int>()

@@ -5,14 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.useCase.GlobalConstants
+import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
+import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SaveCalibrationUi
-import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetVolumeToPlayForCurrentFrequency
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetFrequency
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetMeasuredVolumeForCurrentFrequency
-import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
-import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
-import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
-import ir.khebrati.audiosense.domain.useCase.calibrator.PerFrequencyCalibrationData
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetVolumeToPlayForCurrentFrequency
 import ir.khebrati.audiosense.utils.copy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,13 +85,14 @@ class CalibrationViewModel(
         if (saveJob?.isActive == true) return
         saveJob =
             viewModelScope.launch {
-                val calibrationCoefficients =
-                    calibrator.calibrate(_frequenciesVolumeData.value.toRawData())
-                headphoneRepository.createHeadphone(headphoneModel, calibrationCoefficients)
+                val calibrationData =
+                    _frequenciesVolumeData.value.toModel()
+                headphoneRepository.createHeadphone(headphoneModel, calibrationData)
             }
     }
+
     fun playSound() {
-        //TODO
+        // TODO
     }
 }
 
@@ -105,13 +106,15 @@ sealed interface CalibrationUiAction {
 
     data class SetMeasuredVolumeForCurrentFrequency(val measuredVolumeDbSpl: Int) :
         CalibrationUiAction
+
     data object PlaySound : CalibrationUiAction
+
     data class Save(val headphoneModel: String) : CalibrationUiAction
 }
 
 @Immutable
 data class CalibrationUiState(
-    val frequencies : List<Int> = GlobalConstants.frequencyOctaves,
+    val frequencies: List<Int> = GlobalConstants.frequencyOctaves,
     val frequency: Int = GlobalConstants.frequencyOctaves.first(),
     val volumeToPlay: Int = 50,
     val measuredVolume: Int = 50,
@@ -120,10 +123,10 @@ data class CalibrationUiState(
 @Immutable
 data class VolumeData(val volumeToPlayDbSpl: Int = 50, val measuredVolumeDbSpl: Int = 50)
 
-fun Map<Int, VolumeData>.toRawData() =
+fun Map<Int, VolumeData>.toModel() =
     this.mapValues {
-        PerFrequencyCalibrationData(
-            recordedVolumeDbSPL = it.value.measuredVolumeDbSpl,
+        VolumeRecordPerFrequency(
             playedVolumeDbSpl = it.value.volumeToPlayDbSpl,
+            measuredVolumeDbSpl = it.value.measuredVolumeDbSpl,
         )
     }
