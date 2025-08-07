@@ -26,6 +26,7 @@ fun InputCard(
     title: String,
     placeHolder: @Composable (() -> Unit) = {},
     value: String = "",
+    isError: Boolean,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -45,17 +46,24 @@ fun InputCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
+                val colors = if(isError) {
+                    TextFieldDefaults.colors(
+                        focusedIndicatorColor = MaterialTheme.colorScheme.error,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.error,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                    )
+                } else {
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                    )
+                }
                 TextField(
                     value = value,
                     placeholder = placeHolder,
-//                    placeholder = {
-//                        Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.titleMedium)
-//                    },
                     onValueChange = onValueChange,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                    ),
+                    colors = colors,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -67,42 +75,25 @@ fun InputCard(
 @Composable
 fun DeviceNameInputCard(
     onValueChange: (String) -> Unit,
-    value: String = "",
+    isError: Boolean,
+    value: String,
 ) {
     InputCard(
         onValueChange = onValueChange,
         title = "Device Name",
         placeHolder = { Text("e.g, Sony WH-1000XM4", style = MaterialTheme.typography.titleMedium) },
+        isError = isError,
         value = value,
     )
 }
 
-@Composable
-fun MeasuredSPLInputCard(
-    onValueChange: (String) -> Unit,
-    value: String = "",
-) {
-    InputCard(
-        onValueChange = onValueChange,
-        title = "Measured SPL",
-        placeHolder = { Text("e.g, 85 dB", style = MaterialTheme.typography.titleMedium) },
-        value = value,
-    )
-}
 
 @Preview
 @Composable
 fun DeviceNamePreview() {
     DeviceNameInputCard(
         onValueChange = {},
+        isError = false,
         value = "Sony WH-1000XM4"
-    )
-}
-@Preview
-@Composable
-fun MeasuredSPLPreview() {
-    MeasuredSPLInputCard(
-        onValueChange = {},
-        value = "85 dB"
     )
 }

@@ -42,24 +42,28 @@ fun CalibrationScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var headphoneModel by remember { mutableStateOf("") }
+    var isHeadphoneModelTextFieldError by remember { mutableStateOf(false) }
+    fun handleSaveClick() {
+        if (headphoneModel.isBlank()) {
+            isHeadphoneModelTextFieldError = true
+        }
+        else {
+            viewModel.onUiAction(Save(headphoneModel))
+            onNavigateBack()
+        }
+    }
     AudiosenseScaffold(
         screenTitle = calibrationRoute.title,
         canNavigateBack = true,
         onNavigateBack = onNavigateBack,
-        floatingActionButton = {
-            SaveFAB(
-                onClick = {
-                    viewModel.onUiAction(Save(headphoneModel))
-                    onNavigateBack()
-                }
-            )
-        },
+        floatingActionButton = { SaveFAB(onClick = ::handleSaveClick) },
     ) {
         CalibrationScreenContent(
             state = uiState,
             onUiAction = viewModel::onUiAction,
             headphoneModel = headphoneModel,
             onHeadphoneModelChange = { headphoneModel = it },
+            isHeadphoneModelTextFieldError = isHeadphoneModelTextFieldError,
         )
     }
 }
@@ -70,10 +74,11 @@ fun CalibrationScreenContent(
     onUiAction: (CalibrationUiAction) -> Unit,
     headphoneModel: String = "",
     onHeadphoneModelChange: (String) -> Unit,
+    isHeadphoneModelTextFieldError: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        DeviceNameInputCard(onValueChange = onHeadphoneModelChange, value = headphoneModel)
+        DeviceNameInputCard(onValueChange = onHeadphoneModelChange, value = headphoneModel, isError = isHeadphoneModelTextFieldError)
         Spacer(modifier = Modifier.height(25.dp))
         FrequencyCard(
             frequency = state.frequency,
