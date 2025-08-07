@@ -10,24 +10,37 @@ import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.getRoomDatabase
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.GlobalConstants
+import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
+import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibratorImpl
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-internal fun commonModule() : Module = module{
-    //Database
-    single<AppDatabase> {
-        getRoomDatabase(
-            get<RoomDatabase.Builder<AppDatabase>>()
-        )
-    }
-    //Dao
+internal fun commonModule(): Module = module {
+    // Database
+    single<AppDatabase> { getRoomDatabase(get<RoomDatabase.Builder<AppDatabase>>()) }
+    // Dao
     single<HeadphoneDao> { get<AppDatabase>().headphoneDao() }
     single<TestDao> { get<AppDatabase>().testDao() }
     single<TestHeadphoneDao> { get<AppDatabase>().testHeadphoneDao() }
-    //Repository
-    single<HeadphoneRepository>{ HeadphoneRepositoryImpl(headphoneDao = get(), dispatcher = Dispatchers.IO) }
-    single<TestRepository>{ TestRepositoryImpl(testDao = get(), testHeadphoneDao = get(), dispatcher = Dispatchers.IO) }
+    // Repository
+    single<HeadphoneRepository> {
+        HeadphoneRepositoryImpl(headphoneDao = get(), dispatcher = Dispatchers.IO)
+    }
+    single<TestRepository> {
+        TestRepositoryImpl(testDao = get(), testHeadphoneDao = get(), dispatcher = Dispatchers.IO)
+    }
+    // View Model
+    viewModelOf(::CalibrationViewModel)
+    //UseCase
+    factory<HeadphoneCalibrator>{
+        HeadphoneCalibratorImpl()
+    }
 }
-expect fun platformModule() : Module
+
+expect fun platformModule(): Module

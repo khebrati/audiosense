@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastRoundToInt
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -26,36 +27,34 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun FrequencyCard(
     frequency: Int,
     frequencies: List<Int>,
-    onFreqChange: (Float) -> Unit,
+    onFreqChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-    ) {
+    ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(30.dp),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("FREQUENCY", style = MaterialTheme.typography.titleMedium)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = frequency.toString(),
                     style = MaterialTheme.typography.displayLargeEmphasized,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             Row {
                 Slider(
                     steps = frequencies.size - 2,
                     valueRange = 0f..frequencies.size.toFloat() - 1,
-                    onValueChange = onFreqChange,
+                    onValueChange = { onFreqChange(frequencies[it.fastRoundToInt()]) },
                     value = frequencies.indexOf(frequency).toFloat(),
                 )
             }
@@ -72,10 +71,8 @@ internal fun FrequencyCardPreview() {
         FrequencyCard(
             frequency = frequency.value,
             frequencies = frequencies,
-            onFreqChange = {
-                frequency.value = frequencies[it.toInt()]
-            },
-            modifier = Modifier.height(200.dp)
+            onFreqChange = { frequency.value = frequencies[it] },
+            modifier = Modifier.height(200.dp),
         )
     }
 }

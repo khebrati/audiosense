@@ -4,22 +4,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetFrequency
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetMeasuredVolumeForCurrentFrequency
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetVolumeToPlayForCurrentFrequency
 import ir.khebrati.audiosense.presentation.screens.calibration.components.DeviceNameInputCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.FrequencyCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.MeasureVolumeCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.PlayButton
 import ir.khebrati.audiosense.presentation.screens.calibration.components.PlayVolumeCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.SaveFAB
-import ir.khebrati.audiosense.presentation.screens.calibration.components.VolumeCard
 import ir.khebrati.audiosense.presentation.theme.AppTheme
-import kotlin.collections.listOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinNavViewModel
 
 @Preview
 @Composable
@@ -28,63 +35,62 @@ fun CalibrationScreenContentPreview() {
 }
 
 @Composable
-fun CalibrationScreen(calibrationRoute: Calibration, onNavigateBack: () -> Unit) {
-    val frequency = remember { mutableStateOf(1000) }
-    val frequencies = listOf(125, 250, 500, 1000, 2000, 4000, 8000)
-    val volume = remember { mutableStateOf(50) }
-    val deviceName = remember { mutableStateOf("") }
-    val measuredSPL = remember { mutableStateOf(60) }
+fun CalibrationScreen(
+    calibrationRoute: Calibration,
+    onNavigateBack: () -> Unit,
+    viewModel: CalibrationViewModel = koinNavViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var headphoneModel by remember { mutableStateOf("") }
     AudiosenseScaffold(
         screenTitle = calibrationRoute.title,
         canNavigateBack = true,
         onNavigateBack = onNavigateBack,
-        floatingActionButton = { SaveFAB(onClick = onNavigateBack) },
+        floatingActionButton = {
+            SaveFAB(
+                onClick = {
+                    viewModel.onUiAction(Save(headphoneModel))
+                    onNavigateBack()
+                }
+            )
+        },
     ) {
         CalibrationScreenContent(
-            onDeviceNameChange = { deviceName.value = it },
-            onFrequencyChange = { frequency.value = frequencies[it.toInt()] },
-            frequency = frequency.value,
-            volume = volume.value,
-            onVolumeChange = { volume.value = it },
-            deviceName = deviceName.value,
-            frequencies = frequencies,
-            onPlayClick = {},
-            measuredVolume = measuredSPL.value,
-            onMeasuredVolumeChange = { measuredSPL.value = it },
+            state = uiState,
+            onUiAction = viewModel::onUiAction,
+            headphoneModel = headphoneModel,
+            onHeadphoneModelChange = { headphoneModel = it },
         )
     }
 }
 
 @Composable()
 fun CalibrationScreenContent(
-    onDeviceNameChange: (String) -> Unit,
-    deviceName: String = "",
-    onFrequencyChange: (Float) -> Unit,
-    frequencies: List<Int>,
-    frequency: Int,
-    volume: Int,
-    onVolumeChange: (Int) -> Unit,
-    onPlayClick: () -> Unit,
-    measuredVolume: Int,
-    onMeasuredVolumeChange: (Int) -> Unit,
+    state: CalibrationUiState,
+    onUiAction: (CalibrationUiAction) -> Unit,
+    headphoneModel: String = "",
+    onHeadphoneModelChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        DeviceNameInputCard(onValueChange = onDeviceNameChange, value = deviceName)
+        DeviceNameInputCard(onValueChange = onHeadphoneModelChange, value = headphoneModel)
         Spacer(modifier = Modifier.height(25.dp))
         FrequencyCard(
-            frequency = frequency,
-            frequencies = frequencies,
-            onFreqChange = onFrequencyChange,
+            frequency = state.frequency,
+            frequencies = state.frequencies,
+            onFreqChange = { onUiAction(SetFrequency(it)) },
         )
         Spacer(modifier = Modifier.height(25.dp))
-        PlayVolumeCard(volume = volume, onVolumeChange = onVolumeChange)
+        PlayVolumeCard(
+            volume = state.volumeToPlay,
+            onVolumeChange = { onUiAction(SetVolumeToPlayForCurrentFrequency(it)) },
+        )
         Spacer(modifier = Modifier.height(25.dp))
         MeasureVolumeCard(
-            volume = measuredVolume,
-            onVolumeChange = onMeasuredVolumeChange,
+            volume = state.measuredVolume,
+            onVolumeChange = { onUiAction(SetMeasuredVolumeForCurrentFrequency(it)) },
         )
         Spacer(modifier = Modifier.height(25.dp))
-        PlayButton(onClick = onPlayClick)
+        PlayButton(onClick = { onUiAction(PlaySound) })
     }
 }
