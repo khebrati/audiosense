@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
-import ir.khebrati.audiosense.domain.useCase.GlobalConstants
+import ir.khebrati.audiosense.domain.model.GlobalConstants
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound

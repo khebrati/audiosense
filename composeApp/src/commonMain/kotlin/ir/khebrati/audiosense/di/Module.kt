@@ -10,14 +10,12 @@ import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.getRoomDatabase
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
-import ir.khebrati.audiosense.domain.useCase.GlobalConstants
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibratorImpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
