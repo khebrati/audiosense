@@ -21,6 +21,7 @@ kotlin {
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
     }
+    jvmToolchain(21)
 
     listOf(
         iosX64(),

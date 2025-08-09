@@ -1,10 +1,8 @@
-package ir.khebrati.audiosense.domain.useCase
+package ir.khebrati.audiosense.domain.useCase.sound.player
 
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
-import ir.khebrati.audiosense.domain.useCase.player.AudioChannel
-import ir.khebrati.audiosense.domain.useCase.player.SoundPlayer
 import kotlin.math.max
 
 class SoundPlayerImpl : SoundPlayer {
