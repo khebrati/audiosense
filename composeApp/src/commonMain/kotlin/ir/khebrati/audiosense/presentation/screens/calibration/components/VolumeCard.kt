@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -23,48 +24,43 @@ import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VolumeCard(
     title: @Composable () -> Unit = {},
     volume: Int,
     onVolumeChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-    ) {
+    ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(30.dp),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 title()
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(25.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = {
-                        onVolumeChange((volume - 1).coerceAtLeast(0))
-                    }
+                    onClick = { onVolumeChange((volume - 5)) },
+                    modifier = Modifier.size(60.dp)
                 ) {
                     Icon(Icons.Default.Remove, "Decrease Volume")
                 }
                 Text(
                     text = volume.toString(),
                     style = MaterialTheme.typography.displayLargeEmphasized,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 IconButton(
-                    onClick = {
-                        onVolumeChange((volume + 1).coerceAtMost(350))
-                    }
+                    onClick = { onVolumeChange((volume + 5)) },
+                    modifier = Modifier.size(60.dp)
                 ) {
                     Icon(Icons.Default.Add, "Increase Volume")
                 }
@@ -73,41 +69,29 @@ fun VolumeCard(
         }
     }
 }
+
 @Composable
-fun PlayVolumeCard(
-    volume: Int,
-    onVolumeChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun PlayVolumeCard(volume: Int, onVolumeChange: (Int) -> Unit, modifier: Modifier = Modifier) {
     VolumeCard(
         title = { Text("PLAY VOLUME (dB)", style = MaterialTheme.typography.titleMedium) },
         volume = volume,
         onVolumeChange = onVolumeChange,
-        modifier = modifier
+        modifier = modifier,
     )
 }
+
 @Composable
-fun MeasureVolumeCard(
-    volume: Int,
-    onVolumeChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun MeasureVolumeCard(volume: Int, onVolumeChange: (Int) -> Unit, modifier: Modifier = Modifier) {
     VolumeCard(
         title = { Text("MEASURED VOLUME (dB)", style = MaterialTheme.typography.titleMedium) },
         volume = volume,
         onVolumeChange = onVolumeChange,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
 @Preview
 @Composable
 fun VolumeCardPreview() {
-    AppTheme {
-        VolumeCard(
-            volume = 50,
-            modifier = Modifier.height(150.dp),
-            onVolumeChange = {}
-        )
-    }
+    AppTheme { VolumeCard(volume = 50, modifier = Modifier.height(150.dp), onVolumeChange = {}) }
 }

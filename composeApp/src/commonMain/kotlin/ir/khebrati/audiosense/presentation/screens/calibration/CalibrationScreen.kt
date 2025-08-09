@@ -2,6 +2,7 @@ package ir.khebrati.audiosense.presentation.screens.calibration
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
@@ -18,8 +20,10 @@ import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiActi
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetFrequency
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetMeasuredVolumeForCurrentFrequency
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetVolumeToPlayForCurrentFrequency
+import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetSide
 import ir.khebrati.audiosense.presentation.screens.calibration.components.DeviceNameInputCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.FrequencyCard
+import ir.khebrati.audiosense.presentation.screens.calibration.components.LeftRightSelector
 import ir.khebrati.audiosense.presentation.screens.calibration.components.MeasureVolumeCard
 import ir.khebrati.audiosense.presentation.screens.calibration.components.PlayButton
 import ir.khebrati.audiosense.presentation.screens.calibration.components.PlayVolumeCard
@@ -31,7 +35,29 @@ import org.koin.compose.viewmodel.koinNavViewModel
 @Preview
 @Composable
 fun CalibrationScreenContentPreview() {
-    AppTheme { CalibrationScreen(calibrationRoute = Calibration, onNavigateBack = {}) }
+    AppTheme {
+        AudiosenseScaffold(
+            screenTitle = "calibration",
+            canNavigateBack = true,
+            onNavigateBack = {},
+            floatingActionButton = { SaveFAB {  } },
+        ) {
+            CalibrationScreenContent(
+                state = CalibrationUiState(
+                    frequencies = listOf(100, 200, 300, 400, 500),
+                    frequency = 20,
+                    volumeData = VolumeData(
+                        volumeToPlayDbSpl = 50,
+                        measuredVolumeDbSpl = 45
+                    ),
+                    side = Side.LEFT,
+                ),
+                onUiAction = {},
+                onHeadphoneModelChange = {},
+                isHeadphoneModelTextFieldError = false
+            )
+        }
+    }
 }
 
 @Composable
@@ -79,6 +105,12 @@ fun CalibrationScreenContent(
 ) {
     Column(modifier = modifier) {
         DeviceNameInputCard(onValueChange = onHeadphoneModelChange, value = headphoneModel, isError = isHeadphoneModelTextFieldError)
+        Spacer(modifier = Modifier.height(25.dp))
+        LeftRightSelector(
+            selectedSide = state.side,
+            onSideChange = {onUiAction(SetSide(it))},
+            modifier = Modifier.fillMaxWidth().height(60.dp)
+        )
         Spacer(modifier = Modifier.height(25.dp))
         FrequencyCard(
             frequency = state.frequency,
