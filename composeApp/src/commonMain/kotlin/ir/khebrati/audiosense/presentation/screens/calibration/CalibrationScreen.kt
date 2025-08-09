@@ -87,12 +87,12 @@ fun CalibrationScreenContent(
         )
         Spacer(modifier = Modifier.height(25.dp))
         PlayVolumeCard(
-            volume = state.volumeToPlay,
+            volume = state.volumeData.volumeToPlayDbSpl,
             onVolumeChange = { onUiAction(SetVolumeToPlayForCurrentFrequency(it)) },
         )
         Spacer(modifier = Modifier.height(25.dp))
         MeasureVolumeCard(
-            volume = state.measuredVolume,
+            volume = state.volumeData.measuredVolumeDbSpl,
             onVolumeChange = { onUiAction(SetMeasuredVolumeForCurrentFrequency(it)) },
         )
         Spacer(modifier = Modifier.height(25.dp))

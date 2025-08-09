@@ -12,6 +12,7 @@ class SoundPlayerImpl : SoundPlayer {
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build()
+        //TODO match given sample rate with device sample rate
         val audioFormat =
             AudioFormat.Builder()
                 .setSampleRate(sampleRate)

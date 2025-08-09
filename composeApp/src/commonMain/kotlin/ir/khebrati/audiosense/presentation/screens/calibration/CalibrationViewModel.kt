@@ -3,10 +3,14 @@ package ir.khebrati.audiosense.presentation.screens.calibration
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.model.GlobalConstants
-import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
+import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
+import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
+import ir.khebrati.audiosense.domain.useCase.sound.maker.test.TestSoundGenerator
+import ir.khebrati.audiosense.domain.useCase.sound.player.AudioChannel
+import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayer
+import ir.khebrati.audiosense.domain.useCase.spl.fromDbSpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SaveCalibrationUi
@@ -16,19 +20,47 @@ import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiActi
 import ir.khebrati.audiosense.utils.copy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CalibrationViewModel(
     private val headphoneRepository: HeadphoneRepository,
     private val calibrator: HeadphoneCalibrator,
+    private val testSoundGenerator: TestSoundGenerator,
+    private val soundPlayer: SoundPlayer,
 ) : ViewModel() {
     val frequencyOctaves = GlobalConstants.frequencyOctaves
     private val _selectedFrequency = MutableStateFlow(frequencyOctaves.first())
     private val _frequenciesVolumeData =
         MutableStateFlow(frequencyOctaves.associateWith { VolumeData() })
+
+    private val currentVolumeToPlay =
+        _selectedFrequency
+            .combine(_frequenciesVolumeData) { frequency, frequenciesVolumeData ->
+                frequenciesVolumeData[frequency]?.volumeToPlayDbSpl
+                    ?: throw IllegalStateException("Frequency $frequency not found")
+            }
+            .stateIn(
+                viewModelScope,
+                initialValue = 50,
+                started = SharingStarted.WhileSubscribed(5000),
+            )
+
+    private val currentMeasuredVolume =
+        _selectedFrequency
+            .combine(_frequenciesVolumeData) { frequency, frequenciesVolumeData ->
+                frequenciesVolumeData[frequency]?.measuredVolumeDbSpl
+                    ?: throw IllegalStateException("Frequency $frequency not found")
+            }
+            .stateIn(
+                viewModelScope,
+                initialValue = 50,
+                started = SharingStarted.WhileSubscribed(5000),
+            )
 
     private val _uiState = MutableStateFlow(CalibrationUiState())
     val uiState = _uiState.asStateFlow()
@@ -38,15 +70,13 @@ class CalibrationViewModel(
     }
 
     private fun combineUiFlows() =
-        combine(_selectedFrequency, _frequenciesVolumeData) { frequency, frequenciesVolumeData ->
+        combine(_selectedFrequency, currentVolumeToPlay, currentMeasuredVolume) {
+            frequency,
+            volumeToPlay,
+            measuredVolume ->
             CalibrationUiState(
                 frequency = frequency,
-                volumeToPlay =
-                    frequenciesVolumeData[frequency]?.volumeToPlayDbSpl
-                        ?: throw IllegalStateException("Frequency $frequency not found"),
-                measuredVolume =
-                    frequenciesVolumeData[frequency]?.measuredVolumeDbSpl
-                        ?: throw IllegalStateException("Frequency $frequency not found"),
+                volumeData = VolumeData(volumeToPlay, measuredVolume),
             )
         }
 
@@ -85,14 +115,18 @@ class CalibrationViewModel(
         if (saveJob?.isActive == true) return
         saveJob =
             viewModelScope.launch {
-                val calibrationData =
-                    _frequenciesVolumeData.value.toModel()
+                val calibrationData = _frequenciesVolumeData.value.toModel()
                 headphoneRepository.createHeadphone(headphoneModel, calibrationData)
             }
     }
 
     fun playSound() {
-        // TODO
+        val soundSamples =
+            testSoundGenerator.makeTestSound(
+                frequency = _selectedFrequency.value,
+                amplitude = currentVolumeToPlay.value.fromDbSpl(),
+            )
+        soundPlayer.play(samples = soundSamples, channel = AudioChannel.LEFT)
     }
 }
 
@@ -116,12 +150,11 @@ sealed interface CalibrationUiAction {
 data class CalibrationUiState(
     val frequencies: List<Int> = GlobalConstants.frequencyOctaves,
     val frequency: Int = GlobalConstants.frequencyOctaves.first(),
-    val volumeToPlay: Int = 50,
-    val measuredVolume: Int = 50,
+    val volumeData: VolumeData = VolumeData(),
 )
 
 @Immutable
-data class VolumeData(val volumeToPlayDbSpl: Int = 50, val measuredVolumeDbSpl: Int = 50)
+data class VolumeData(val volumeToPlayDbSpl: Int = 20, val measuredVolumeDbSpl: Int = 20)
 
 fun Map<Int, VolumeData>.toModel() =
     this.mapValues {

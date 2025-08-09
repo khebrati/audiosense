@@ -1,6 +1,6 @@
-package ir.khebrati.audiosense.domain.useCase.sound.maker
+package ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic
 
-interface SoundMaker {
+interface HarmonicGenerator {
     /**
      * Generates a harmonic wave with the formula:
      * `y(t) = A sin(2πf/fs t)` where :
@@ -15,11 +15,12 @@ interface SoundMaker {
      * @throws IllegalArgumentException if fadeRatio > 0.5 or < 0
      */
     fun makeHarmonicWave(
-        amplitude: Double,
+        amplitude: Float,
         frequency: Int,
         sampleRate: Int,
         durationSeconds: Float,
         fadeRatio: Float
-    ): DoubleArray
+    ): FloatArray
+
 
 }

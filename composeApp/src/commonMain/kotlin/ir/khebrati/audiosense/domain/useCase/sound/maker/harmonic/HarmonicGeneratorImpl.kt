@@ -1,21 +1,20 @@
-package ir.khebrati.audiosense.domain.useCase.sound.maker
+package ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic
 
 import kotlin.math.PI
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sin
 
-class SoundMakerImpl : SoundMaker {
+class HarmonicGeneratorImpl : HarmonicGenerator {
     override fun makeHarmonicWave(
-        amplitude: Double,
+        amplitude: Float,
         frequency: Int,
         sampleRate: Int,
         durationSeconds: Float,
         fadeRatio: Float,
-    ): DoubleArray {
+    ): FloatArray {
         val numOfSamples = (sampleRate * durationSeconds).toInt()
         val emptySoundSamples = FloatArray(numOfSamples)
-        val angle = (2 * PI * frequency) / sampleRate
+        val angle = (2 * PI.toFloat() * frequency) / sampleRate
         val maxFadeInSampleIndex = max(1, (numOfSamples * fadeRatio).toInt())
         val generatedSoundSamples =
             emptySoundSamples.mapIndexed { index, value ->
@@ -29,6 +28,6 @@ class SoundMakerImpl : SoundMaker {
                 value
             }
 
-        return generatedSoundSamples.toDoubleArray()
+        return generatedSoundSamples.toFloatArray()
     }
 }

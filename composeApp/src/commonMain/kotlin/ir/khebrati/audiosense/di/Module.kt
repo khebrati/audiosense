@@ -12,6 +12,10 @@ import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibratorImpl
+import ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic.HarmonicGenerator
+import ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic.HarmonicGeneratorImpl
+import ir.khebrati.audiosense.domain.useCase.sound.maker.test.TestSoundGenerator
+import ir.khebrati.audiosense.domain.useCase.sound.maker.test.TestSoundGeneratorImpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -38,6 +42,12 @@ internal fun commonModule(): Module = module {
     //UseCase
     factory<HeadphoneCalibrator>{
         HeadphoneCalibratorImpl()
+    }
+    factory<HarmonicGenerator>{
+        HarmonicGeneratorImpl()
+    }
+    factory<TestSoundGenerator>{
+        TestSoundGeneratorImpl(get())
     }
 }
 
