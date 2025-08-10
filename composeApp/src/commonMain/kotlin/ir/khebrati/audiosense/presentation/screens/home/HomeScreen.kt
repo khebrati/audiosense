@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Home
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Results
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDevice
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Setting
+import org.koin.compose.viewmodel.koinNavViewModel
 
 @Composable
 fun HomeScreen(
@@ -17,33 +20,19 @@ fun HomeScreen(
     onNavigateSetting: (Setting) -> Unit,
     onNavigateCalibration: (Calibration) -> Unit,
     onNavigateResult: (Results) -> Unit,
+    viewModel: HomeViewModel = koinNavViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     AudiosenseScaffold(
-        screenTitle = Home.title,
+        screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
-        onNavigateBack = { /* No back navigation in Home */ }
-    ){
+        onNavigateBack = { /* No back navigation in Home */ },
+    ) {
         Column {
-            Button(
-                onClick = { onNavigateSelectDevice(SelectDevice) }
-            ){
-                Text("Start Test")
-            }
-            Button(
-                onClick = { onNavigateSetting(Setting) }
-            ){
-                Text("Settings")
-            }
-            Button(
-                onClick = { onNavigateCalibration(Calibration) }
-            ){
-                Text("Calibration")
-            }
-            Button(
-                onClick = { onNavigateResult(Results) }
-            ){
-                Text("Results")
-            }
+            Button(onClick = { onNavigateSelectDevice(SelectDevice) }) { Text("Start Test") }
+            Button(onClick = { onNavigateSetting(Setting) }) { Text("Settings") }
+            Button(onClick = { onNavigateCalibration(Calibration) }) { Text("Calibration") }
+            Button(onClick = { onNavigateResult(Results) }) { Text("Results") }
         }
     }
 }

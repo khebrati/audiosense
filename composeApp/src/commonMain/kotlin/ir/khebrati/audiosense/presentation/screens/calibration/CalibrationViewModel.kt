@@ -37,7 +37,7 @@ class CalibrationViewModel(
     private val testSoundGenerator: TestSoundGenerator,
     private val soundPlayer: SoundPlayer,
 ) : ViewModel() {
-    val frequencyOctaves = AcousticConstants.frequencyOctaves
+    private val frequencyOctaves = AcousticConstants.frequencyOctaves
     private val _selectedSide = MutableStateFlow(Side.LEFT)
     private val _selectedFrequency = MutableStateFlow(frequencyOctaves.first())
     private val _frequenciesVolumeData =
@@ -124,7 +124,7 @@ class CalibrationViewModel(
 
     private var saveJob: Job? = null
 
-    fun saveCalibration(headphoneModel: String) {
+    private fun saveCalibration(headphoneModel: String) {
         if (saveJob?.isActive == true) return
         saveJob =
             viewModelScope.launch {
@@ -133,7 +133,7 @@ class CalibrationViewModel(
             }
     }
 
-    fun playSound() {
+    private fun playSound() {
         val soundSamples =
             testSoundGenerator.makeTestSound(
                 frequency = _selectedFrequency.value,
