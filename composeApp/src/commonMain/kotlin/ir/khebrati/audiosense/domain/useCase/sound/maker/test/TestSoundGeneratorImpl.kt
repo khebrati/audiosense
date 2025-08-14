@@ -16,7 +16,7 @@ class TestSoundGeneratorImpl(private val harmonicGenerator: HarmonicGenerator) :
                     ),
                 frequency = frequency,
                 sampleRate = 44800,
-                durationSeconds = 2f,
+                durationSeconds = 5f,
                 fadeRatio = 0.1f,
             )
             .map { it / (MAX_PCM_16BIT_VALUE + 1) }
