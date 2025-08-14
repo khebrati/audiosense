@@ -170,7 +170,7 @@ data class CalibrationUiState(
 )
 
 @Immutable
-data class VolumeData(val volumeToPlayDbSpl: Int = 20, val measuredVolumeDbSpl: Int = 20)
+data class VolumeData(val volumeToPlayDbSpl: Int = 50, val measuredVolumeDbSpl: Int = 50)
 
 fun Map<Int, VolumeData>.toModel() =
     this.mapValues {

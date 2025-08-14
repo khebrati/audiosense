@@ -12,6 +12,7 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibratio
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Results
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDevice
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Setting
+import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
 import org.koin.compose.viewmodel.koinNavViewModel
 
 @Composable
@@ -26,13 +27,14 @@ fun HomeScreen(
     AudiosenseScaffold(
         screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
+        floatingActionButton = {
+            HomeFAB(
+                onNavigateCalibration = {onNavigateCalibration(Calibration)},
+                onNavigateSelectDevice = {onNavigateSelectDevice(SelectDevice)}
+            )
+        },
         onNavigateBack = { /* No back navigation in Home */ },
-    ) {
-        Column {
-            Button(onClick = { onNavigateSelectDevice(SelectDevice) }) { Text("Start Test") }
-            Button(onClick = { onNavigateSetting(Setting) }) { Text("Settings") }
-            Button(onClick = { onNavigateCalibration(Calibration) }) { Text("Calibration") }
-            Button(onClick = { onNavigateResult(Results) }) { Text("Results") }
-        }
+    ){
+
     }
 }
