@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.androidx.navigation.compose)
+            implementation(libs.androidx.graphics.shapes)
             implementation(libs.kotlinx.datetime)
             implementation(libs.materialKolor)
             implementation(libs.room.runtime)

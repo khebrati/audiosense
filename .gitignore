@@ -13,6 +13,7 @@ local.properties
 xcuserdata/
 Pods/
 docs/.obsidian/
+composeApp/release
 *.jks
 *.gpg
 *yarn.lock

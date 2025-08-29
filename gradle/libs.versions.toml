@@ -10,6 +10,7 @@ kermit = "2.0.6"
 kotlinx-coroutines = "1.10.2"
 androidx-lifecycle = "2.9.1"
 androidx-navigation = "2.9.0-beta03"
+androidx-graphics-shapes = "1.0.1"
 kotlinx-datetime = "0.7.1"
 buildConfig = "5.6.5"
 materialKolor = "3.0.0"
@@ -26,6 +27,7 @@ juint = "4.13.2"
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-uitest-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-uiTest" }
+androidx-graphics-shapes = {module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
 androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-uiTest" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
