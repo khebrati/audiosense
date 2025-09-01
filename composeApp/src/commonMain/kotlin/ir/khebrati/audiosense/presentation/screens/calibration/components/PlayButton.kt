@@ -16,27 +16,16 @@ import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PlayButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AppTheme {
-        Button(
-            modifier = modifier.fillMaxWidth().height(60.dp),
-            onClick = onClick
-        ) {
-            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("PLAY")
-        }
+fun PlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(modifier = modifier.fillMaxWidth().height(60.dp), onClick = onClick) {
+        Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
+        Spacer(modifier = Modifier.width(4.dp))
+        Text("PLAY")
     }
 }
 
 @Preview
 @Composable
 internal fun PlayButtonPreview() {
-    PlayButton(
-        modifier = Modifier,
-        onClick = {}
-    )
+    AppTheme { PlayButton(modifier = Modifier, onClick = {}) }
 }

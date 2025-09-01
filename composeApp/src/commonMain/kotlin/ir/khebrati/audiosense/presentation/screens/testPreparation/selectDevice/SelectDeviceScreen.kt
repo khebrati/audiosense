@@ -1,20 +1,35 @@
 package ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Earbuds
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -39,26 +54,124 @@ fun SelectDeviceScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun HeadphoneItem(modelName: String, modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier.padding(12.dp),
+fun HeadphonesList(
+    headphoneNames: List<String>,
+    selectedIndex: Int? = null,
+    onSelectedChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        item {
+            Row(
+                modifier = modifier.fillMaxWidth().height(63.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = "Select your device",
+                    style = MaterialTheme.typography.titleLargeEmphasized,
+                )
+            }
+        }
+        itemsIndexed(headphoneNames) { index, name ->
+            HeadphoneItem(
+                modelName = name,
+                onClick = { onSelectedChange(index) },
+                isSelected = selectedIndex == index,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectDevicePreview() {
+    var headphones by remember {
+        mutableStateOf(listOf("Galaxy buds", "Sony headphone", "Airpods"))
+    }
+    var selectedIndex: Int? by remember { mutableStateOf(null) }
+    AppTheme {
+        AudiosenseScaffold(screenTitle = "New Test", canNavigateBack = true, onNavigateBack = {}) {
+            SelectDeviceContent(
+                headphones,
+                selectedIndex,
+                onSelectedChange = { selectedIndex = it },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SelectDeviceContent(
+    headphones: List<String>,
+    selectedIndex: Int?,
+    onSelectedChange: (Int) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxHeight()
     ) {
-        Box(
-            modifier =
-                Modifier.background(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+        HeadphonesList(
+            headphones,
+            selectedIndex,
+            onSelectedChange = onSelectedChange,
+        )
+        NextButton(onClick = {})
+    }
+}
+
+@Composable
+private fun NextButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(modifier = Modifier.fillMaxWidth().height(60.dp), onClick = onClick) { Text("Next") }
+}
+
+@Composable
+fun HeadphoneItem(
+    modelName: String,
+    onClick: () -> Unit = {},
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+            ),
+        modifier =
+            if (isSelected)
+                Modifier.clickable(interactionSource = null, indication = null) { onClick() }
+                    .border(
+                        border = BorderStroke(3.dp, color = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.medium,
                     )
-                    .size(50.dp),
-            contentAlignment = Alignment.Center,
+            else Modifier.clickable { onClick() },
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = modifier.padding(12.dp).fillMaxWidth(),
         ) {
-            val icon = if (isEarbuds(modelName)) Icons.Default.Earbuds else Icons.Default.Headphones
-            Icon(contentDescription = "Headphone icon", imageVector = icon)
+            Box(
+                modifier =
+                    Modifier.background(
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            shape = MaterialTheme.shapes.medium,
+                        )
+                        .size(50.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                val icon =
+                    if (isEarbuds(modelName)) Icons.Default.Earbuds else Icons.Default.Headphones
+                Icon(
+                    contentDescription = "Headphone icon",
+                    imageVector = icon,
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+            }
+            Text(text = modelName, style = MaterialTheme.typography.bodyLarge)
         }
-        Text(text = modelName)
     }
 }
 
@@ -67,5 +180,11 @@ private fun isEarbuds(name: String) = name.lowercase().contains(Regex("bud|buds|
 @Preview(showBackground = true)
 @Composable
 fun HeadphoneItemPreview() {
-    AppTheme { HeadphoneItem(modelName = "Galaxy Buds", modifier = Modifier.fillMaxWidth()) }
+    AppTheme {
+        HeadphoneItem(
+            modelName = "Galaxy Buds",
+            modifier = Modifier.fillMaxWidth(),
+            isSelected = true,
+        )
+    }
 }
