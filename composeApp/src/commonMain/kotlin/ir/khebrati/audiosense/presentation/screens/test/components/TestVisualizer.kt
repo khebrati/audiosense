@@ -1,4 +1,4 @@
-package ir.khebrati.audiosense.presentation.screens.test
+package ir.khebrati.audiosense.presentation.screens.test.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -6,6 +6,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -67,12 +68,16 @@ fun RotatingSmoothStar(modifier: Modifier = Modifier, numVerticesPerRadius: Int,
 
 @Composable
 fun AnimatedTestVisualizer(
-    color: Color,
     modifier: Modifier
 ){
-    RotatingSmoothStar(modifier = modifier,4, color.copy(alpha = 0.8f),50000)
-    RotatingSmoothStar(modifier = modifier,5,color.copy(alpha = 0.5f),90000,)
-    RotatingSmoothStar(modifier = modifier,3,color.copy(alpha = 0.3f),70000)
+    val color = MaterialTheme.colorScheme.primary
+    Box(
+        modifier = modifier
+    ){
+        RotatingSmoothStar(modifier = modifier,4, color.copy(alpha = 0.8f),50000)
+        RotatingSmoothStar(modifier = modifier,5,color.copy(alpha = 0.5f),90000)
+        RotatingSmoothStar(modifier = modifier,3,color.copy(alpha = 0.3f),70000)
+    }
 }
 
 @Preview(showBackground = true)
@@ -80,6 +85,6 @@ fun AnimatedTestVisualizer(
 fun PreviewTestVisualizer() {
     AppTheme {
         val color = MaterialTheme.colorScheme.primary
-        AnimatedTestVisualizer(color = color, modifier = Modifier.fillMaxSize())
+        AnimatedTestVisualizer(modifier = Modifier.fillMaxSize())
     }
 }

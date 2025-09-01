@@ -32,8 +32,7 @@ fun AudiosenseScaffold(
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
                 .padding(start = 25.dp, end = 25.dp, bottom = 25.dp)
-                .consumeWindowInsets(innerPadding).
-            verticalScroll(rememberScrollState())
+                .consumeWindowInsets(innerPadding)
         ) {
             content()
         }
