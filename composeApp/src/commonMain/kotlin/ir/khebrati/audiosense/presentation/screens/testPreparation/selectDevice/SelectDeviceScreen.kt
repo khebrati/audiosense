@@ -26,31 +26,46 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeter
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDevice
+import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinNavViewModel
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SelectDeviceScreen(
     selectDeviceRoute: SelectDevice,
     onNavigateNoiseMeter: (NoiseMeter) -> Unit,
     onNavigateBack: () -> Unit,
+    viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
+    val uiState = viewModel.uiState.collectAsState().value
+    BackHandler{
+        onNavigateBack()
+    }
     AudiosenseScaffold(
         screenTitle = selectDeviceRoute.title,
         canNavigateBack = true,
         onNavigateBack = onNavigateBack,
     ) {
-        Button(onClick = { onNavigateNoiseMeter(NoiseMeter) }) { Text("Select Device") }
+        SelectDeviceContent(
+            uiState = uiState,
+            onUiAction = viewModel::handleAction,
+            onNavigateNoiseMeter = onNavigateNoiseMeter
+        )
     }
 }
 
@@ -88,37 +103,38 @@ fun HeadphonesList(
 @Preview(showBackground = true)
 @Composable
 fun SelectDevicePreview() {
-    var headphones by remember {
-        mutableStateOf(listOf("Galaxy buds", "Sony headphone", "Airpods"))
+    var uiState by remember {
+        mutableStateOf(
+            SelectDeviceUiState(
+                headphones =
+                    listOf(
+                        HeadphoneUiState(model = "Galaxy buds", id = "0"),
+                        HeadphoneUiState(model = "Sony Headphones", id = "1"),
+                        HeadphoneUiState(model = "Airpods", id = "2"),
+                    )
+            )
+        )
     }
-    var selectedIndex: Int? by remember { mutableStateOf(null) }
     AppTheme {
         AudiosenseScaffold(screenTitle = "New Test", canNavigateBack = true, onNavigateBack = {}) {
-            SelectDeviceContent(
-                headphones,
-                selectedIndex,
-                onSelectedChange = { selectedIndex = it },
-            )
+            SelectDeviceContent(uiState, {},{})
         }
     }
 }
 
 @Composable
 private fun SelectDeviceContent(
-    headphones: List<String>,
-    selectedIndex: Int?,
-    onSelectedChange: (Int) -> Unit,
+    uiState: SelectDeviceUiState,
+    onUiAction: (SelectDeviceUiAction) -> Unit,
+    onNavigateNoiseMeter: (NoiseMeter) -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxHeight()
-    ) {
+    Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
         HeadphonesList(
-            headphones,
-            selectedIndex,
-            onSelectedChange = onSelectedChange,
+            uiState.headphones.map { it.model },
+            uiState.selectedHeadphoneIndex,
+            onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
         )
-        NextButton(onClick = {})
+        NextButton(onClick = {onNavigateNoiseMeter(NoiseMeter)})
     }
 }
 

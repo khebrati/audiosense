@@ -5,14 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ir.khebrati.audiosense.domain.model.Headphone
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
+import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SelectDeviceScreenModel(private val headphoneRepository: HeadphoneRepository) : ViewModel() {
+class SelectDeviceViewModel(private val headphoneRepository: HeadphoneRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(SelectDeviceUiState())
-    private val uiState = _uiState.asStateFlow()
+    val uiState = _uiState.asStateFlow()
 
     init {
         loadHeadphones()
@@ -25,13 +26,22 @@ class SelectDeviceScreenModel(private val headphoneRepository: HeadphoneReposito
             }
         }
     }
-    fun 
+
+    fun handleAction(action: SelectDeviceUiAction) =
+        when (action) {
+            is SetSelectedDevice -> setSelectedDevice(action.index)
+        }
+
+    fun setSelectedDevice(index: Int?) {
+        _uiState.update { it.copy(selectedHeadphoneIndex = index) }
+    }
 }
 
 @Immutable
-sealed interface SelectDeviceUiAction{
-    data class SetSelectedDevice(val index: Int?): SelectDeviceUiAction
+sealed interface SelectDeviceUiAction {
+    data class SetSelectedDevice(val index: Int?) : SelectDeviceUiAction
 }
+
 @Immutable
 data class SelectDeviceUiState(
     val headphones: List<HeadphoneUiState> = emptyList(),
