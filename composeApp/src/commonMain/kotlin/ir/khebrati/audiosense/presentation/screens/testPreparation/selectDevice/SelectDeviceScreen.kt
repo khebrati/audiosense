@@ -147,7 +147,7 @@ private fun SelectDeviceContent(
 
 @Composable
 private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) {
-    Button(modifier = Modifier.fillMaxWidth().height(60.dp), onClick = onClick, enabled = enabled) {
+    Button(modifier = modifier.fillMaxWidth().height(60.dp), onClick = onClick, enabled = enabled) {
         Text("Next")
     }
 }
