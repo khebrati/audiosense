@@ -9,11 +9,11 @@ class AudiosenseRouteSerializationTest {
     @Test
     fun testSerializableRoutes_whenSerialized_throwNoExceptions(){
         val routes = listOf(
-            AudiosenseRoute.NoiseMeter,
-            AudiosenseRoute.Setting,
-            AudiosenseRoute.DescriptiveResult,
-            AudiosenseRoute.Test,
-            AudiosenseRoute.Results
+            AudiosenseRoute.NoiseMeterRoute,
+            AudiosenseRoute.SettingRoute,
+            AudiosenseRoute.DescriptiveResultRoute,
+            AudiosenseRoute.TestRoute,
+            AudiosenseRoute.ResultsRoute
         )
         routes.forEach { route ->
             // This will throw an exception if the route is not serializable

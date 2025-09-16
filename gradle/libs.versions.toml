@@ -48,6 +48,7 @@ koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-view
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 turbine = {module = "app.cash.turbine:turbine",version.ref = "turbine"}
 junit = { module = "junit:junit", version.ref = "juint" }
+back-handler = {module = "org.jetbrains.compose.ui:ui-backhandler" }
 
 # Theme
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }

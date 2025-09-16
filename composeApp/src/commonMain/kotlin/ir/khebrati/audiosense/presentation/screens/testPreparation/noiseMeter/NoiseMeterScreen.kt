@@ -4,13 +4,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeter
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Test
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeterRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
 
 @Composable
 fun NoiseMeterScreen(
-    noiseMeterRoute : NoiseMeter,
-    onNavigateTest: (Test) -> Unit,
+    noiseMeterRoute : NoiseMeterRoute,
+    onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     AudiosenseScaffold(
@@ -21,7 +21,7 @@ fun NoiseMeterScreen(
     ) {
         Button(
             onClick = {
-                onNavigateTest(Test)
+//                onNavigateTest(TestRoute)
             }
         ) {
             Text("Get noise")

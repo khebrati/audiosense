@@ -5,14 +5,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResult
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Home
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeter
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Results
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDevice
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Setting
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Test
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResultRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.HomeRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeterRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultsRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationScreen
 import ir.khebrati.audiosense.presentation.screens.descriptiveResult.DescriptiveResultScreen
 import ir.khebrati.audiosense.presentation.screens.home.HomeScreen
@@ -24,8 +24,8 @@ import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.
 
 @Composable
 fun AudiosenseNavHost(navController: NavHostController) {
-    NavHost(startDestination = Home, navController = navController) {
-        composable<Home> {
+    NavHost(startDestination = HomeRoute, navController = navController) {
+        composable<HomeRoute> {
             HomeScreen(
                 onNavigateSelectDevice = { navController.navigate(it) },
                 onNavigateSetting = { navController.navigate(it) },
@@ -33,54 +33,54 @@ fun AudiosenseNavHost(navController: NavHostController) {
                 onNavigateResult = { navController.navigate(it) },
             )
         }
-        composable<SelectDevice> { backStackEntry ->
-            val selectDeviceRoute: SelectDevice = backStackEntry.toRoute()
+        composable<SelectDeviceRoute> { backStackEntry ->
+            val selectDeviceRoute: SelectDeviceRoute = backStackEntry.toRoute()
             SelectDeviceScreen(
                 selectDeviceRoute = selectDeviceRoute,
-                onNavigateNoiseMeter = { navController.navigate(it) },
+                onNavigateTest = { navController.navigate(it) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<NoiseMeter> { backStackEntry ->
-            val noiseMeterRoute: NoiseMeter = backStackEntry.toRoute()
+        composable<NoiseMeterRoute> { backStackEntry ->
+            val noiseMeterRoute: NoiseMeterRoute = backStackEntry.toRoute()
             NoiseMeterScreen(
                 noiseMeterRoute = noiseMeterRoute,
                 onNavigateTest = { navController.navigate(it) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<Test> { backStackEntry ->
-            val testRoute: Test = backStackEntry.toRoute()
+        composable<TestRoute> { backStackEntry ->
+            val testRoute: TestRoute = backStackEntry.toRoute()
             TestScreen(
                 testRoute = testRoute,
                 onNavigateResult = { navController.navigate(it) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<Results> { backStackEntry ->
-            val resultRoute: Results = backStackEntry.toRoute()
+        composable<ResultsRoute> { backStackEntry ->
+            val resultRoute: ResultsRoute = backStackEntry.toRoute()
             ResultScreen(
                 resultRoute = resultRoute,
-                onNavigateBack = { navController.popBackStack<Home>(inclusive = false) },
+                onNavigateBack = { navController.popBackStack<HomeRoute>(inclusive = false) },
                 onNavigateDescriptiveResult = { navController.navigate(it) },
             )
         }
-        composable<DescriptiveResult> { backStackEntry ->
-            val descriptiveResultRoute: DescriptiveResult = backStackEntry.toRoute()
+        composable<DescriptiveResultRoute> { backStackEntry ->
+            val descriptiveResultRoute: DescriptiveResultRoute = backStackEntry.toRoute()
             DescriptiveResultScreen(
                 descriptiveResultRoute = descriptiveResultRoute,
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<Calibration> { backStackEntry ->
-            val calibrationRoute: Calibration = backStackEntry.toRoute()
+        composable<CalibrationRoute> { backStackEntry ->
+            val calibrationRoute: CalibrationRoute = backStackEntry.toRoute()
             CalibrationScreen(
                 calibrationRoute = calibrationRoute,
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<Setting> { backStackEntry ->
-            val settingRoute: Setting = backStackEntry.toRoute()
+        composable<SettingRoute> { backStackEntry ->
+            val settingRoute: SettingRoute = backStackEntry.toRoute()
             SettingScreen(
                 settingRoute = settingRoute,
                 onNavigateBack = { navController.popBackStack() },
