@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -29,8 +29,7 @@ import androidx.compose.ui.semantics.traversalIndex
 @Composable
 fun M3ExpressiveFAB(items: List<M3ExpressiveMenuItem>, modifier: Modifier = Modifier) {
     var fabExpanded by rememberSaveable { mutableStateOf(false) }
-    //TODO for weired reasons this does not compile. Find replacement or fix this
-//    BackHandler(fabExpanded) { fabExpanded = false }
+    BackHandler(fabExpanded) { fabExpanded = false }
     FloatingActionButtonMenu(
         expanded = fabExpanded,
         button = {

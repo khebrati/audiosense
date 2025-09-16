@@ -1,7 +1,6 @@
 package ir.khebrati.audiosense.presentation.screens.test
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,17 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Results
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Test
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultsRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
 import ir.khebrati.audiosense.presentation.screens.test.components.AnimatedTestVisualizer
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -35,8 +30,8 @@ import org.koin.compose.viewmodel.koinNavViewModel
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TestScreen(
-    testRoute: Test,
-    onNavigateResult: (Results) -> Unit,
+    testRoute: TestRoute,
+    onNavigateResult: (ResultsRoute) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: TestViewModel = koinNavViewModel(),
 ) {

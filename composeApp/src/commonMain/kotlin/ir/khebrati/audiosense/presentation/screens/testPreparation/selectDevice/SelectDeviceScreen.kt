@@ -37,8 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeter
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDevice
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -47,15 +46,13 @@ import org.koin.compose.viewmodel.koinNavViewModel
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SelectDeviceScreen(
-    selectDeviceRoute: SelectDevice,
-    onNavigateNoiseMeter: (NoiseMeter) -> Unit,
+    selectDeviceRoute: SelectDeviceRoute,
+    onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    BackHandler{
-        onNavigateBack()
-    }
+    BackHandler { onNavigateBack() }
     AudiosenseScaffold(
         screenTitle = selectDeviceRoute.title,
         canNavigateBack = true,
@@ -64,7 +61,7 @@ fun SelectDeviceScreen(
         SelectDeviceContent(
             uiState = uiState,
             onUiAction = viewModel::handleAction,
-            onNavigateNoiseMeter = onNavigateNoiseMeter
+            onNavigateTest = onNavigateTest,
         )
     }
 }
@@ -117,7 +114,7 @@ fun SelectDevicePreview() {
     }
     AppTheme {
         AudiosenseScaffold(screenTitle = "New Test", canNavigateBack = true, onNavigateBack = {}) {
-            SelectDeviceContent(uiState, {},{})
+            SelectDeviceContent(uiState, {}, {})
         }
     }
 }
@@ -126,7 +123,7 @@ fun SelectDevicePreview() {
 private fun SelectDeviceContent(
     uiState: SelectDeviceUiState,
     onUiAction: (SelectDeviceUiAction) -> Unit,
-    onNavigateNoiseMeter: (NoiseMeter) -> Unit,
+    onNavigateTest: (TestRoute) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
         HeadphonesList(
@@ -134,13 +131,25 @@ private fun SelectDeviceContent(
             uiState.selectedHeadphoneIndex,
             onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
         )
-        NextButton(onClick = {onNavigateNoiseMeter(NoiseMeter)})
+        val selectedHeadphoneId =
+            remember(uiState) {
+                uiState.run {
+                    if (selectedHeadphoneIndex == null) null
+                    else headphones[selectedHeadphoneIndex].id
+                }
+            }
+        NextButton(
+            enabled = selectedHeadphoneId != null,
+            onClick = { onNavigateTest(TestRoute(selectedHeadphoneId!!)) },
+        )
     }
 }
 
 @Composable
-private fun NextButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(modifier = Modifier.fillMaxWidth().height(60.dp), onClick = onClick) { Text("Next") }
+private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) {
+    Button(modifier = Modifier.fillMaxWidth().height(60.dp), onClick = onClick, enabled = enabled) {
+        Text("Next")
+    }
 }
 
 @Composable

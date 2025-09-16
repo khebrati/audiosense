@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetFrequency
@@ -64,7 +64,7 @@ fun CalibrationScreenContentPreview() {
 
 @Composable
 fun CalibrationScreen(
-    calibrationRoute: Calibration,
+    calibrationRoute: CalibrationRoute,
     onNavigateBack: () -> Unit,
     viewModel: CalibrationViewModel = koinNavViewModel(),
 ) {

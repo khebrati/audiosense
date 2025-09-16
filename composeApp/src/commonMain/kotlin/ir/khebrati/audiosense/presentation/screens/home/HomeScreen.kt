@@ -1,26 +1,23 @@
 package ir.khebrati.audiosense.presentation.screens.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibration
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Results
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDevice
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Setting
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultsRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
 import org.koin.compose.viewmodel.koinNavViewModel
 
 @Composable
 fun HomeScreen(
-    onNavigateSelectDevice: (SelectDevice) -> Unit,
-    onNavigateSetting: (Setting) -> Unit,
-    onNavigateCalibration: (Calibration) -> Unit,
-    onNavigateResult: (Results) -> Unit,
+    onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
+    onNavigateSetting: (SettingRoute) -> Unit,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
+    onNavigateResult: (ResultsRoute) -> Unit,
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -29,8 +26,8 @@ fun HomeScreen(
         canNavigateBack = false,
         floatingActionButton = {
             HomeFAB(
-                onNavigateCalibration = {onNavigateCalibration(Calibration)},
-                onNavigateSelectDevice = {onNavigateSelectDevice(SelectDevice)}
+                onNavigateCalibration = {onNavigateCalibration(CalibrationRoute)},
+                onNavigateSelectDevice = {onNavigateSelectDevice(SelectDeviceRoute)}
             )
         },
         onNavigateBack = { /* No back navigation in Home */ },
