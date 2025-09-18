@@ -1,7 +1,6 @@
 package ir.khebrati.audiosense.presentation.screens.result.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,6 +35,18 @@ fun Audiogram(
                 Path().apply {
                     val firstPoint = leftACOffsets.first()
                     moveTo(firstPoint.x, firstPoint.y)
+                    drawLine(
+                        color = Color.Blue,
+                        start = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
+                        end = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
+                        strokeWidth = 2.dp.toPx(),
+                    )
+                    drawLine(
+                        color = Color.Blue,
+                        start = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
+                        end = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
+                        strokeWidth = 2.dp.toPx(),
+                    )
                     for (i in 1 until leftACOffsets.size) {
                         val point = leftACOffsets[i]
                         lineTo(point.x, point.y)
@@ -61,6 +72,12 @@ fun Audiogram(
             val rightACPath =
                 Path().apply {
                     val firstPoint = rightACOffsets.first()
+                    drawCircle(
+                        color = Color.Red, // Choose your desired color
+                        radius = 7.dp.toPx(), // Choose your desired radius
+                        center = Offset(firstPoint.x, firstPoint.y),
+                        style = Stroke(),
+                    )
                     moveTo(firstPoint.x, firstPoint.y)
                     for (i in 1 until rightACOffsets.size) {
                         val point = rightACOffsets[i]
@@ -80,14 +97,17 @@ fun Audiogram(
 
 private fun DrawScope.AllDbHLOffsets(): List<Float> {
     println("Calculating lines")
-    return yOffsets(size = size, yPoints = AcousticConstants.allPossibleDbHLs.filter { it % 10 == 0 })
+    return yOffsets(
+        size = size,
+        yPoints = AcousticConstants.allPossibleDbHLs.filter { it % 10 == 0 },
+    )
 }
 
 @Preview
 @Composable
 fun PreviewAudiogram() {
     Audiogram(
-        leftAC = hashMapOf(500 to 20,1000 to 20,2000 to 30,4000 to 55),
+        leftAC = hashMapOf(500 to 20, 1000 to 20, 2000 to 30, 4000 to 55),
         rightAC = hashMapOf(500 to 5, 1000 to 0, 2000 to 0, 4000 to 5, 8000 to 5),
     )
 }
