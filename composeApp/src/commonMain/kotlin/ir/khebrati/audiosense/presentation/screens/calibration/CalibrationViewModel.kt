@@ -37,7 +37,7 @@ class CalibrationViewModel(
     private val testSoundGenerator: TestSoundGenerator,
     private val soundPlayer: SoundPlayer,
 ) : ViewModel() {
-    private val frequencyOctaves = AcousticConstants.frequencyOctaves
+    private val frequencyOctaves = AcousticConstants.allFrequencyOctaves
     private val _selectedSide = MutableStateFlow(Side.LEFT)
     private val _selectedFrequency = MutableStateFlow(frequencyOctaves.first())
     private val _frequenciesVolumeData =
@@ -163,8 +163,8 @@ sealed interface CalibrationUiAction {
 
 @Immutable
 data class CalibrationUiState(
-    val frequencies: List<Int> = AcousticConstants.frequencyOctaves,
-    val frequency: Int = AcousticConstants.frequencyOctaves.first(),
+    val frequencies: List<Int> = AcousticConstants.allFrequencyOctaves,
+    val frequency: Int = AcousticConstants.allFrequencyOctaves.first(),
     val volumeData: VolumeData = VolumeData(),
     val side: Side = Side.LEFT,
 )
