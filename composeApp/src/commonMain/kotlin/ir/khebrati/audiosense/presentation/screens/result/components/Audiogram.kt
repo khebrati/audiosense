@@ -25,31 +25,32 @@ fun Audiogram(
     modifier: Modifier = Modifier.size(250.dp),
 ) {
     Canvas(modifier = modifier) {
-        val areaWidth = (size.width * 6) / 7 // 80% of the canvas width
-        val areaHeight = size.height// 60% of the canvas height
-        val areaX = (size.width - areaWidth) / 2 // Center the area horizontally
-        val areaY = (size.height - areaHeight) / 2 // Center the area vertically
+        AudiogramChart(leftAC, rightAC)
+    }
+}
 
-        with(drawContext.canvas.nativeCanvas) {
-            drawIntoCanvas {
-                translate(areaX, areaY) {
-                    println("size is $size")
-                    AllDbHLOffsets().forEach { y ->
-                        drawLine(
-                            color = Color(255, 255, 255),
-                            start = Offset(0f, y - areaY),
-                            end = Offset(areaWidth, y - areaY),
-                        )
-                    }
-                    println("Calculating left AC")
-                    val leftACOffsets = pointOffsets(Size(areaWidth, areaHeight), leftAC)
-                    drawACOffsets(leftACOffsets, SideUiState.LEFT)
-                    println("Calculating right AC")
-                    val rightACOffsets = pointOffsets(Size(areaWidth, areaHeight), rightAC)
-                    drawACOffsets(rightACOffsets, SideUiState.RIGHT)
-                }
-            }
-        }
+private fun DrawScope.AudiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
+    AllDbHLOffsets(size).forEach { y ->
+        drawLine(
+            color = Color(255, 255, 255),
+            start = Offset(0f, y),
+            end = Offset(size.width, y),
+        )
+    }
+    val areaWidth = (size.width * 6) / 7 // 80% of the canvas width
+    val areaHeight = size.height
+    val areaX = (size.width - areaWidth) / 2 // Center the area horizontally
+    val areaY = 0f // Center the area vertically
+    translate(areaX, areaY) {
+        val areaSize = Size(areaWidth, areaHeight)
+        println("size is $size")
+        println("area size is $areaSize")
+        println("Calculating left AC")
+        val leftACOffsets = pointOffsets(areaSize, leftAC)
+        drawACOffsets(leftACOffsets, SideUiState.LEFT)
+        println("Calculating right AC")
+        val rightACOffsets = pointOffsets(areaSize, rightAC)
+        drawACOffsets(rightACOffsets, SideUiState.RIGHT)
     }
 }
 
@@ -95,7 +96,7 @@ private fun DrawScope.drawX(firstPoint: Offset) {
     )
 }
 
-private fun DrawScope.AllDbHLOffsets(): List<Float> {
+private fun AllDbHLOffsets(size: Size): List<Float> {
     println("Calculating lines")
     return yOffsets(
         size = size,
