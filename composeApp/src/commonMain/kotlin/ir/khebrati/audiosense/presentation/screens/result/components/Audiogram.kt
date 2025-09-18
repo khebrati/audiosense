@@ -1,7 +1,16 @@
 package ir.khebrati.audiosense.presentation.screens.result.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -10,9 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
@@ -22,25 +30,40 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun Audiogram(
     leftAC: Map<Int, Int>,
     rightAC: Map<Int, Int>,
-    modifier: Modifier = Modifier.size(250.dp),
+    modifier: Modifier = Modifier.size(300.dp),
 ) {
-    Canvas(modifier = modifier) {
-        AudiogramChart(leftAC, rightAC)
+    Column(modifier = modifier) {
+        Row {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                AcousticConstants.allPossibleDbHLs
+                    .filter { it % 10 == 0 }
+                    .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row{
+                    Canvas(modifier = modifier) { AudiogramChart(leftAC, rightAC) }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+        Row{
+            Text(text = "90", style = MaterialTheme.typography.labelSmall, color = Color.Transparent)
+        }
     }
 }
 
 private fun DrawScope.AudiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
     AllDbHLOffsets(size).forEach { y ->
-        drawLine(
-            color = Color(255, 255, 255),
-            start = Offset(0f, y),
-            end = Offset(size.width, y),
-        )
+        drawLine(color = Color(255, 255, 255), start = Offset(0f, y), end = Offset(size.width, y))
     }
-    val areaWidth = (size.width * 6) / 7 // 80% of the canvas width
+    val areaWidth = (size.width * 6) / 7
     val areaHeight = size.height
-    val areaX = (size.width - areaWidth) / 2 // Center the area horizontally
-    val areaY = 0f // Center the area vertically
+    val areaX = (size.width - areaWidth) / 2
+    val areaY = 0f
     translate(areaX, areaY) {
         val areaSize = Size(areaWidth, areaHeight)
         println("size is $size")
@@ -108,7 +131,7 @@ private fun AllDbHLOffsets(size: Size): List<Float> {
 @Composable
 fun PreviewAudiogram() {
     Audiogram(
-        leftAC = hashMapOf(500 to 20, 1000 to 20, 2000 to 30, 4000 to 55,8000 to 35),
+        leftAC = hashMapOf(500 to 20, 1000 to 20, 2000 to 30, 4000 to 55, 8000 to 35),
         rightAC = hashMapOf(500 to 5, 1000 to 0, 2000 to 0, 4000 to 5, 8000 to 5),
     )
 }
