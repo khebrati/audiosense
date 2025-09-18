@@ -2,17 +2,20 @@ package ir.khebrati.audiosense.presentation.screens.result.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -34,20 +37,41 @@ fun Audiogram(
 ) {
     Row(modifier = modifier) {
         Column(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier.fillMaxHeight().padding(horizontal = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             AcousticConstants.allPossibleDbHLs
                 .filter { it % 10 == 0 }
                 .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
+            Spacer(modifier = Modifier.height(12.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
             Spacer(modifier = Modifier.height(8.dp))
-            Row { Canvas(modifier = Modifier.height(284.dp).fillMaxWidth()) { AudiogramChart(leftAC, rightAC) } }
-            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Canvas(modifier = Modifier.height(262.dp).fillMaxWidth()) {
+                    AudiogramChart(leftAC, rightAC)
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.padding(horizontal = 9.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                frequenciesLabels().map {
+                    Box(modifier = Modifier.size(20.dp), contentAlignment = Alignment.Center) {
+                        Text(text = it, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            }
         }
     }
 }
+
+fun frequenciesLabels() =
+    AcousticConstants.allFrequencyOctaves.map {
+        if (it % 1000 == 0) "${it/1000}k" else it.toString()
+    }
 
 private fun DrawScope.AudiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
     AllDbHLOffsets(size).forEach { y ->
@@ -124,7 +148,17 @@ private fun AllDbHLOffsets(size: Size): List<Float> {
 @Composable
 fun PreviewAudiogram() {
     Audiogram(
-        leftAC = hashMapOf(500 to 20, 1000 to 20, 2000 to 30, 4000 to 55, 8000 to 35),
-        rightAC = hashMapOf(500 to 5, 1000 to 0, 2000 to 0, 4000 to 5, 8000 to 5),
+        leftAC =
+            hashMapOf(
+                125 to 90,
+                250 to 50,
+                500 to 20,
+                1000 to 20,
+                2000 to 30,
+                4000 to 55,
+                8000 to 35,
+            ),
+        rightAC =
+            hashMapOf(125 to 30, 250 to 30, 500 to 5, 1000 to 0, 2000 to 0, 4000 to 5, 8000 to 5),
     )
 }
