@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,7 +21,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
@@ -32,26 +32,19 @@ fun Audiogram(
     rightAC: Map<Int, Int>,
     modifier: Modifier = Modifier.size(300.dp),
 ) {
-    Column(modifier = modifier) {
-        Row {
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                AcousticConstants.allPossibleDbHLs
-                    .filter { it % 10 == 0 }
-                    .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row{
-                    Canvas(modifier = modifier) { AudiogramChart(leftAC, rightAC) }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+    Row(modifier = modifier) {
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            AcousticConstants.allPossibleDbHLs
+                .filter { it % 10 == 0 }
+                .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
         }
-        Row{
-            Text(text = "90", style = MaterialTheme.typography.labelSmall, color = Color.Transparent)
+        Column(modifier = Modifier.weight(1f)) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row { Canvas(modifier = Modifier.height(284.dp).fillMaxWidth()) { AudiogramChart(leftAC, rightAC) } }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
