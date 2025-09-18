@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.domain.model.AcousticConstants
+import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -30,69 +31,53 @@ fun Audiogram(
         }
         println("Calculating left AC")
         val leftACOffsets = pointOffsets(size, leftAC)
-        if (leftACOffsets.isNotEmpty()) {
-            val leftACPath =
-                Path().apply {
-                    val firstPoint = leftACOffsets.first()
-                    moveTo(firstPoint.x, firstPoint.y)
-                    drawLine(
-                        color = Color.Blue,
-                        start = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
-                        end = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
-                        strokeWidth = 2.dp.toPx(),
-                    )
-                    drawLine(
-                        color = Color.Blue,
-                        start = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
-                        end = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
-                        strokeWidth = 2.dp.toPx(),
-                    )
-                    for (i in 1 until leftACOffsets.size) {
-                        val point = leftACOffsets[i]
-                        lineTo(point.x, point.y)
-                        drawLine(
-                            color = Color.Blue,
-                            start = Offset(point.x - 7.dp.toPx(), point.y - 7.dp.toPx()),
-                            end = Offset(point.x + 7.dp.toPx(), point.y + 7.dp.toPx()),
-                            strokeWidth = 2.dp.toPx(),
-                        )
-                        drawLine(
-                            color = Color.Blue,
-                            start = Offset(point.x + 7.dp.toPx(), point.y - 7.dp.toPx()),
-                            end = Offset(point.x - 7.dp.toPx(), point.y + 7.dp.toPx()),
-                            strokeWidth = 2.dp.toPx(),
-                        )
-                    }
-                }
-            drawPath(path = leftACPath, color = Color.Blue, style = Stroke(width = 1.dp.toPx()))
-        }
+        drawACOffsets(leftACOffsets, SideUiState.LEFT)
         println("Calculating right AC")
         val rightACOffsets = pointOffsets(size, rightAC)
-        if (rightACOffsets.isNotEmpty()) {
-            val rightACPath =
-                Path().apply {
-                    val firstPoint = rightACOffsets.first()
-                    drawCircle(
-                        color = Color.Red, // Choose your desired color
-                        radius = 7.dp.toPx(), // Choose your desired radius
-                        center = Offset(firstPoint.x, firstPoint.y),
-                        style = Stroke(),
-                    )
-                    moveTo(firstPoint.x, firstPoint.y)
-                    for (i in 1 until rightACOffsets.size) {
-                        val point = rightACOffsets[i]
-                        lineTo(point.x, point.y)
-                        drawCircle(
-                            color = Color.Red, // Choose your desired color
-                            radius = 7.dp.toPx(), // Choose your desired radius
-                            center = Offset(point.x, point.y),
-                            style = Stroke(),
-                        )
-                    }
-                }
-            drawPath(path = rightACPath, color = Color.Red, style = Stroke(width = 1.dp.toPx()))
-        }
+        drawACOffsets(rightACOffsets, SideUiState.RIGHT)
     }
+}
+
+private fun DrawScope.drawACCircle(point: Offset) {
+    drawCircle(
+        color = Color.Red,
+        radius = 7.dp.toPx(),
+        center = Offset(point.x, point.y),
+        style = Stroke(),
+    )
+}
+
+private fun DrawScope.drawACOffsets(acOffsets: List<Offset>, side: SideUiState) {
+    if (acOffsets.isNotEmpty()) {
+        val path =
+            Path().apply {
+                val firstPoint = acOffsets.first()
+                moveTo(firstPoint.x, firstPoint.y)
+                if(side == SideUiState.LEFT) drawX(firstPoint) else drawACCircle(firstPoint)
+                for (i in 1 until acOffsets.size) {
+                    val point = acOffsets[i]
+                    lineTo(point.x, point.y)
+                    if(side == SideUiState.LEFT) drawX(point) else drawACCircle(point)
+                }
+            }
+        val color = if(side == SideUiState.LEFT) Color.Blue else Color.Red
+        drawPath(path = path, color = color, style = Stroke(width = 1.dp.toPx()))
+    }
+}
+
+private fun DrawScope.drawX(firstPoint: Offset) {
+    drawLine(
+        color = Color.Blue,
+        start = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
+        end = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
+        strokeWidth = 2.dp.toPx(),
+    )
+    drawLine(
+        color = Color.Blue,
+        start = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
+        end = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
+        strokeWidth = 2.dp.toPx(),
+    )
 }
 
 private fun DrawScope.AllDbHLOffsets(): List<Float> {
