@@ -59,7 +59,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.back.handler)
+//            implementation(libs.back.handler)
         }
 
         commonTest.dependencies {

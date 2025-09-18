@@ -3,25 +3,38 @@ package ir.khebrati.audiosense.presentation.screens.result.components
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import ir.khebrati.audiosense.domain.model.AcousticConstants
+import kotlin.collections.sort
 
 fun pointOffsets(size: Size, points: Map<Int, Int>): List<Offset> {
-    val xOffsets = xOffsets(size,points.keys.toList())
-    val yValues = yOffsets(size, points.values.toList())
-    return xOffsets.zip(yValues).map { pair -> Offset(pair.first, pair.second) }
+    val sortedPoints = points.toSortedMap()
+    println("keys are ${sortedPoints.keys}")
+    val xOffsets = xOffsets(size,sortedPoints.keys.toList())
+    println("Y offsets are $xOffsets")
+    println("values are ${sortedPoints.values.toList()}")
+    val yOffsets = yOffsets(size, sortedPoints.values.toList())
+    println("Y offsets are $yOffsets")
+    return xOffsets.zip(yOffsets).map { pair -> Offset(pair.first, pair.second) }
 }
 
 fun yOffsets(size: Size, yPoints: List<Int>) : List<Float>{
     val allPossibleOffsets = distributePointsUniformInRange(size.height, AcousticConstants.allPossibleDbHLs)
     return yPoints.map { y ->
         val index = AcousticConstants.allPossibleDbHLs.indexOf(y)
+        println("given y $y maps to index $index so offset ${allPossibleOffsets[index]}")
         allPossibleOffsets[index]
     }
+}
+fun <K : Comparable<K>, V> Map<out K, V>.toSortedMap(): Map<K, V>{
+    val orderedKeys = this.keys.sorted()
+    val mappedValue = orderedKeys.map { this[it] }
+    return orderedKeys.zip(mappedValue).toMap() as Map<K, V>
 }
 
 fun xOffsets(size: Size, xPoints: List<Int>) : List<Float>{
     val allPossibleOffsets = distributePointsUniformInRange(size.width, AcousticConstants.allFrequencyOctaves)
-    return xPoints.map { y ->
-        val index = AcousticConstants.allFrequencyOctaves.indexOf(y)
+    return xPoints.map { x ->
+        val index = AcousticConstants.allFrequencyOctaves.indexOf(x)
+        println("given x $x maps to index $index so offset ${allPossibleOffsets[index]}")
         allPossibleOffsets[index]
     }
 }
