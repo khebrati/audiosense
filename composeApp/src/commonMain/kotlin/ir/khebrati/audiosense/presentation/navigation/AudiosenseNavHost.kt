@@ -61,7 +61,7 @@ fun AudiosenseNavHost(navController: NavHostController) {
             val resultRoute: ResultsRoute = backStackEntry.toRoute()
             ResultScreen(
                 resultRoute = resultRoute,
-                onNavigateBack = { navController.popBackStack<HomeRoute>(inclusive = false) },
+                onNavigateHome = { navController.popBackStack<HomeRoute>(inclusive = false) },
                 onNavigateDescriptiveResult = { navController.navigate(it) },
             )
         }

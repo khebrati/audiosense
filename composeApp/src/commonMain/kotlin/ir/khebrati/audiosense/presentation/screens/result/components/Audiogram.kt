@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.result.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -37,6 +40,7 @@ fun Audiogram(
     rightAC: Map<Int, Int>,
     modifier: Modifier = Modifier.size(300.dp),
 ) {
+    val systemIsDark = isSystemInDarkTheme()
     Row(modifier = modifier) {
         Column(modifier = Modifier.fillMaxHeight().padding(horizontal = 3.dp)) {
             Spacer(modifier = Modifier.height(4.dp))
@@ -59,7 +63,7 @@ fun Audiogram(
         Column {
             Spacer(modifier = Modifier.height(12.dp))
             Canvas(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                audiogramChart(leftAC, rightAC)
+                audiogramChart(leftAC, rightAC,systemIsDark)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -81,9 +85,9 @@ fun frequenciesLabels() =
         if (it % 1000 == 0) "${it/1000}k" else it.toString()
     }
 
-private fun DrawScope.audiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
+private fun DrawScope.audiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>,systemIsDark: Boolean) {
     allDbHLOffsets(size).forEach { y ->
-        drawLine(color = Color(255, 255, 255), start = Offset(0f, y), end = Offset(size.width, y))
+        drawLine(color = if(systemIsDark) Color.White else Color.Black, start = Offset(0f, y), end = Offset(size.width, y), strokeWidth = 2f)
     }
     val areaWidth = (size.width * 6) / 7
     val areaHeight = size.height

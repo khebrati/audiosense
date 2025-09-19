@@ -11,7 +11,7 @@ import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-private fun DoneButton(onClick: () -> Unit,modifier: Modifier = Modifier) {
+fun DoneButton(onClick: () -> Unit,modifier: Modifier = Modifier) {
     Button(modifier = modifier.fillMaxWidth().height(60.dp), onClick = onClick) {
         Text("Done")
     }

@@ -31,11 +31,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun HearingLossCard(lossDbHl: Int, side: SideUiState, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.size(185.dp),
+        modifier = modifier,
         colors =
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+            ),
     ) {
-        Column(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
@@ -53,10 +55,7 @@ fun HearingLossCard(lossDbHl: Int, side: SideUiState, modifier: Modifier = Modif
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    side.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                )
+                Text(side.toString(), style = MaterialTheme.typography.labelSmall)
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -90,11 +89,15 @@ private fun determineLossLevel(loss: Int) =
 @Preview
 @Composable
 fun previewHearingLossCardLeft() {
-    AppTheme { HearingLossCard(lossDbHl = 70, side = SideUiState.LEFT) }
+    AppTheme {
+        HearingLossCard(lossDbHl = 30, side = SideUiState.LEFT, modifier = Modifier.size(185.dp))
+    }
 }
 
 @Preview
 @Composable
 fun previewHearingLossCardRight() {
-    AppTheme { HearingLossCard(lossDbHl = 70, side = SideUiState.RIGHT) }
+    AppTheme {
+        HearingLossCard(lossDbHl = 46, side = SideUiState.RIGHT, modifier = Modifier.size(185.dp))
+    }
 }
