@@ -2,7 +2,6 @@ package ir.khebrati.audiosense.presentation.screens.result.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,14 +34,10 @@ fun Audiogram(
     rightAC: Map<Int, Int>,
     modifier: Modifier = Modifier.size(300.dp),
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.TopStart) {
-        Column(
-            modifier = Modifier.fillMaxHeight().padding(horizontal = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
+    Column(modifier = modifier) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Column(
-                modifier = Modifier.weight(13f),
+                modifier = Modifier.fillMaxHeight().padding(horizontal = 3.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -50,33 +45,34 @@ fun Audiogram(
                     .filter { it % 10 == 0 }
                     .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
             }
-            Spacer(modifier = Modifier.weight(1f))
-        }
-        AudiogramWithPaddings(leftAC, rightAC)
-        Row(
-            modifier = Modifier.padding(horizontal = 9.dp).fillMaxWidth().align(Alignment.BottomEnd),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            frequenciesLabels().map {
-                Column(
-                    modifier = Modifier.width(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(text = it, style = MaterialTheme.typography.labelSmall)
+            Column {
+                Spacer(modifier = Modifier.weight(3f))
+                Canvas(modifier = Modifier.weight(100f).fillMaxWidth()) {
+                    AudiogramChart(leftAC, rightAC)
                 }
+                Spacer(modifier = Modifier.weight(3f))
             }
         }
+        //        Row(
+        //            modifier = Modifier.padding(horizontal =
+        // 9.dp).fillMaxWidth().align(Alignment.BottomEnd),
+        //            horizontalArrangement = Arrangement.SpaceBetween,
+        //        ) {
+        //            frequenciesLabels().map {
+        //                Column(
+        //                    modifier = Modifier.width(20.dp),
+        //                    horizontalAlignment = Alignment.CenterHorizontally,
+        //                ) {
+        //                    Text(text = it, style = MaterialTheme.typography.labelSmall)
+        //                }
+        //            }
+        //        }
     }
 }
 
 @Composable
 private fun AudiogramWithPaddings(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
     Spacer(modifier = Modifier.height(8.dp))
-    Row {
-        Canvas(modifier = Modifier.height(262.dp).fillMaxWidth()) {
-            AudiogramChart(leftAC, rightAC)
-        }
-    }
     Spacer(modifier = Modifier.height(10.dp))
 }
 
