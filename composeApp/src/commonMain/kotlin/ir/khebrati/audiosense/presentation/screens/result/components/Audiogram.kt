@@ -2,6 +2,7 @@ package ir.khebrati.audiosense.presentation.screens.result.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,10 +35,11 @@ fun Audiogram(
     rightAC: Map<Int, Int>,
     modifier: Modifier = Modifier.size(300.dp),
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+    Row(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxHeight().padding(horizontal = 3.dp)) {
+            Spacer(modifier = Modifier.height(4.dp))
             Column(
-                modifier = Modifier.fillMaxHeight().padding(horizontal = 3.dp),
+                modifier = Modifier.weight(80f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -45,28 +47,28 @@ fun Audiogram(
                     .filter { it % 10 == 0 }
                     .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
             }
-            Column {
-                Spacer(modifier = Modifier.weight(3f))
-                Canvas(modifier = Modifier.weight(100f).fillMaxWidth()) {
-                    AudiogramChart(leftAC, rightAC)
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+        Column {
+            Spacer(modifier = Modifier.height(12.dp))
+            Canvas(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                AudiogramChart(leftAC, rightAC)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                frequenciesLabels().map {
+                    Box(
+                        modifier = Modifier.weight(2f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = it, style = MaterialTheme.typography.labelSmall)
+                    }
                 }
-                Spacer(modifier = Modifier.weight(3f))
             }
         }
-        //        Row(
-        //            modifier = Modifier.padding(horizontal =
-        // 9.dp).fillMaxWidth().align(Alignment.BottomEnd),
-        //            horizontalArrangement = Arrangement.SpaceBetween,
-        //        ) {
-        //            frequenciesLabels().map {
-        //                Column(
-        //                    modifier = Modifier.width(20.dp),
-        //                    horizontalAlignment = Alignment.CenterHorizontally,
-        //                ) {
-        //                    Text(text = it, style = MaterialTheme.typography.labelSmall)
-        //                }
-        //            }
-        //        }
     }
 }
 
@@ -156,6 +158,7 @@ private fun AllDbHLOffsets(size: Size): List<Float> {
 @Composable
 fun PreviewAudiogram() {
     Audiogram(
+        modifier = Modifier.size(300.dp),
         leftAC =
             hashMapOf(
                 125 to 90,
