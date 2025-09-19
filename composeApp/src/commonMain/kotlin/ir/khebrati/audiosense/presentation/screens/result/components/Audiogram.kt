@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,10 +42,16 @@ fun Audiogram(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            AcousticConstants.allPossibleDbHLs
-                .filter { it % 10 == 0 }
-                .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
-            Spacer(modifier = Modifier.height(12.dp))
+            Column(
+                modifier = Modifier.weight(13f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                AcousticConstants.allPossibleDbHLs
+                    .filter { it % 10 == 0 }
+                    .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
+            }
+            Spacer(modifier = Modifier.weight(1f))
         }
         Column(modifier = Modifier.weight(1f)) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -59,7 +66,7 @@ fun Audiogram(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 frequenciesLabels().map {
-                    Box(modifier = Modifier.size(20.dp), contentAlignment = Alignment.Center) {
+                    Column(modifier = Modifier.width(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = it, style = MaterialTheme.typography.labelSmall)
                     }
                 }
