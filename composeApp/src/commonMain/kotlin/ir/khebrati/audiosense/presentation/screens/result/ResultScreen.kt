@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.HomeRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
+import ir.khebrati.audiosense.presentation.screens.result.TestResultUiState.*
 import ir.khebrati.audiosense.presentation.screens.result.components.Audiogram
 import ir.khebrati.audiosense.presentation.screens.result.components.DoneButton
 import ir.khebrati.audiosense.presentation.screens.result.components.HearingLossCard
@@ -38,15 +41,23 @@ fun ResultScreen(
         canNavigateBack = true,
         onNavigateBack = { onNavigateHome(HomeRoute) },
     ) {
-        ResultScreenContent(onNavigateHome, onNavigateDescriptiveResult, uiState)
+        if (uiState is Ready) {
+            ReadyResultScreenContent(onNavigateHome, onNavigateDescriptiveResult, uiState)
+        } else LoadingResultScreenContent()
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ResultScreenContent(
+private fun LoadingResultScreenContent() {
+    CircularWavyProgressIndicator()
+}
+
+@Composable
+private fun ReadyResultScreenContent(
     onNavigateHome: (HomeRoute) -> Unit,
     onNavigateDescriptiveResult: (DescriptiveResultRoute) -> Unit,
-    uiState: TestResultUiState,
+    uiState: Ready,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         val maxCardSize = 175.dp
@@ -82,7 +93,7 @@ private fun ResultScreenContent(
 fun PreviewResultScreen() {
     val uiState by remember {
         mutableStateOf(
-            TestResultUiState(
+            Ready(
                 averageLeftHearingLossDBHL = 46,
                 averageRightHearingLossDBHL = 30,
                 leftAC =
@@ -110,7 +121,7 @@ fun PreviewResultScreen() {
     }
     AppTheme {
         AudiosenseScaffold(screenTitle = "Results", canNavigateBack = true, onNavigateBack = {}) {
-            ResultScreenContent({}, {}, uiState)
+            ReadyResultScreenContent({}, {}, uiState)
         }
     }
 }

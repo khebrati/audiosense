@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
+import ir.khebrati.audiosense.presentation.screens.test.NavigationEvent.*
 import ir.khebrati.audiosense.presentation.screens.test.components.AnimatedTestVisualizer
 import ir.khebrati.audiosense.presentation.theme.AppTheme
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
@@ -35,6 +38,13 @@ fun TestScreen(
     onNavigateBack: () -> Unit,
     viewModel: TestViewModel = koinNavViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collectLatest {
+            when (it) {
+                is NavigateToResult -> onNavigateResult(it.route)
+            }
+        }
+    }
     val uiState = viewModel.uiState.collectAsState().value
     AudiosenseScaffold(
         screenTitle = testRoute.title,
@@ -44,12 +54,8 @@ fun TestScreen(
         TestScreenContent(
             uiState = uiState,
             onUiAction = {
-                when (it) {
-                    TestUiAction.OnClick -> {
-                        if (uiState.progress >= 1f) onNavigateResult(ResultRoute("dummy-test-id"))
-                        else viewModel.handleClick()
-                    }
-                }
+                if (uiState.progress >= 1f) onNavigateResult(ResultRoute("dummy-test-id"))
+                viewModel.onUiAction(it)
             },
         )
     }

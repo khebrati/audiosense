@@ -3,57 +3,62 @@ package ir.khebrati.audiosense.presentation.screens.result
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.Side
+import ir.khebrati.audiosense.domain.model.Test
+import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class TestResultViewModel(
-    private val handle: SavedStateHandle
+    private val handle: SavedStateHandle,
+    private val testRepository: TestRepository,
 ) : ViewModel() {
-    val _uiState = MutableStateFlow(
-        TestResultUiState(
-            averageLeftHearingLossDBHL = 46,
-            averageRightHearingLossDBHL = 30,
-            leftAC =
-                hashMapOf(
-                    125 to 90,
-                    250 to 50,
-                    500 to 20,
-                    1000 to 20,
-                    2000 to 30,
-                    4000 to 55,
-                    8000 to 35,
-                ),
-            rightAC =
-                hashMapOf(
-                    125 to 30,
-                    250 to 30,
-                    500 to 5,
-                    1000 to 0,
-                    2000 to 0,
-                    4000 to 5,
-                    8000 to 5,
-                ),
-        )
-    )
-    val uiState = _uiState.asStateFlow()
-    private val testId = handle.toRoute<ResultRoute>()
+    private val testId = handle.toRoute<ResultRoute>().testId
+    val resultFlow = testRepository.observe(testId)
+    val uiState: StateFlow<TestResultUiState> =
+        resultFlow
+            .map { result -> result.toUiState() }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = TestResultUiState.Loading,
+            )
+
     init {
         Logger.withTag("TestResultViewModel").d { "Got test id $testId" }
     }
 }
 
 @Immutable
-data class TestResultUiState(
-    val averageLeftHearingLossDBHL: Int,
-    val averageRightHearingLossDBHL: Int,
-    val leftAC: Map<Int, Int>,
-    val rightAC: Map<Int, Int>,
-)
+sealed interface TestResultUiState {
+    object Loading : TestResultUiState
 
+    data class Ready(
+        val averageLeftHearingLossDBHL: Int,
+        val averageRightHearingLossDBHL: Int,
+        val leftAC: Map<Int, Int>,
+        val rightAC: Map<Int, Int>,
+    ) : TestResultUiState
+}
+
+fun Test.toUiState() =
+    TestResultUiState.Ready(
+        leftAC = leftAC,
+        rightAC = rightAC,
+        averageLeftHearingLossDBHL = leftAC.values.average().toInt(),
+        averageRightHearingLossDBHL = rightAC.values.average().toInt(),
+    )
+
+@Immutable
 enum class SideUiState {
     LEFT,
     RIGHT,
