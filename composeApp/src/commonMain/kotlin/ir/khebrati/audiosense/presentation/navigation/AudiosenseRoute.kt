@@ -17,7 +17,7 @@ sealed class AudiosenseRoute(val title: String){
     data class TestRoute(val selectedDeviceId: String) : AudiosenseRoute("Hearing Test")
 
     @Serializable
-     object ResultsRoute : AudiosenseRoute("Test Results")
+    data class ResultRoute(val testId: String) : AudiosenseRoute("Test Results")
 
     @Serializable
      object DescriptiveResultRoute : AudiosenseRoute("Your Hearing World")

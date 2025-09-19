@@ -20,6 +20,7 @@ import ir.khebrati.audiosense.domain.useCase.time.TimeTeller
 import ir.khebrati.audiosense.domain.useCase.time.TimeTellerImpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationViewModel
 import ir.khebrati.audiosense.presentation.screens.home.HomeViewModel
+import ir.khebrati.audiosense.presentation.screens.result.TestResultViewModel
 import ir.khebrati.audiosense.presentation.screens.test.TestViewModel
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceViewModel
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ internal fun commonModule(): Module = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::TestViewModel)
     viewModelOf(::SelectDeviceViewModel)
+    viewModelOf(::TestResultViewModel)
     //UseCase
     factory<HeadphoneCalibrator>{
         HeadphoneCalibratorImpl()

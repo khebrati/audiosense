@@ -9,7 +9,7 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Calibratio
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.HomeRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeterRoute
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultsRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
@@ -57,8 +57,8 @@ fun AudiosenseNavHost(navController: NavHostController) {
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<ResultsRoute> { backStackEntry ->
-            val resultRoute: ResultsRoute = backStackEntry.toRoute()
+        composable<ResultRoute> { backStackEntry ->
+            val resultRoute: ResultRoute = backStackEntry.toRoute()
             ResultScreen(
                 resultRoute = resultRoute,
                 onNavigateHome = { navController.popBackStack<HomeRoute>(inclusive = false) },

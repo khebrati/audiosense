@@ -6,7 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultsRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
@@ -17,7 +17,7 @@ fun HomeScreen(
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
     onNavigateSetting: (SettingRoute) -> Unit,
     onNavigateCalibration: (CalibrationRoute) -> Unit,
-    onNavigateResult: (ResultsRoute) -> Unit,
+    onNavigateResult: (ResultRoute) -> Unit,
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultsRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
 import ir.khebrati.audiosense.presentation.screens.test.components.AnimatedTestVisualizer
 import ir.khebrati.audiosense.presentation.theme.AppTheme
@@ -31,7 +31,7 @@ import org.koin.compose.viewmodel.koinNavViewModel
 @Composable
 fun TestScreen(
     testRoute: TestRoute,
-    onNavigateResult: (ResultsRoute) -> Unit,
+    onNavigateResult: (ResultRoute) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: TestViewModel = koinNavViewModel(),
 ) {
@@ -41,7 +41,17 @@ fun TestScreen(
         canNavigateBack = true,
         onNavigateBack = onNavigateBack,
     ) {
-        TestScreenContent(uiState = uiState, onUiAction = viewModel::onUiAction)
+        TestScreenContent(
+            uiState = uiState,
+            onUiAction = {
+                when (it) {
+                    TestUiAction.OnClick -> {
+                        if (uiState.progress >= 1f) onNavigateResult(ResultRoute("dummy-test-id"))
+                        else viewModel.handleClick()
+                    }
+                }
+            },
+        )
     }
 }
 
@@ -57,12 +67,10 @@ private fun TestScreenContent(uiState: TestUiState, onUiAction: (TestUiAction) -
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxSize().clickable(
-            interactionSource = null,
-            indication = null
-        ) {
-            onUiAction(TestUiAction.OnClick)
-        },
+        modifier =
+            Modifier.fillMaxSize().clickable(interactionSource = null, indication = null) {
+                onUiAction(TestUiAction.OnClick)
+            },
     ) {
         Text("Left Ear", style = MaterialTheme.typography.titleMedium)
         AnimatedTestVisualizer(modifier = Modifier.fillMaxWidth().height(300.dp))
@@ -77,10 +85,5 @@ private fun TestScreenContent(uiState: TestUiState, onUiAction: (TestUiAction) -
 @Preview(showBackground = true)
 @Composable
 fun TestScreenPreview() {
-    AppTheme {
-        TestScreenContent(
-            onUiAction = {},
-            uiState = TestUiState()
-        )
-    }
+    AppTheme { TestScreenContent(onUiAction = {}, uiState = TestUiState()) }
 }
