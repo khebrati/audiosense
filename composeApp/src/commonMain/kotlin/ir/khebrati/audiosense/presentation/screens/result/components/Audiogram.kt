@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +27,10 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
+import ir.khebrati.audiosense.utils.toSortedMap
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Audiogram(
     leftAC: Map<Int, Int>,
@@ -45,14 +47,19 @@ fun Audiogram(
             ) {
                 AcousticConstants.allPossibleDbHLs
                     .filter { it % 10 == 0 }
-                    .map { Text(text = it.toString(), style = MaterialTheme.typography.labelSmall) }
+                    .map {
+                        Text(
+                            text = it.toString(),
+                            style = MaterialTheme.typography.labelSmallEmphasized,
+                        )
+                    }
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
         Column {
             Spacer(modifier = Modifier.height(12.dp))
             Canvas(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                AudiogramChart(leftAC, rightAC)
+                audiogramChart(leftAC, rightAC)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -60,11 +67,8 @@ fun Audiogram(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 frequenciesLabels().map {
-                    Box(
-                        modifier = Modifier.weight(2f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = it, style = MaterialTheme.typography.labelSmall)
+                    Box(modifier = Modifier.weight(2f), contentAlignment = Alignment.Center) {
+                        Text(text = it, style = MaterialTheme.typography.labelSmallEmphasized)
                     }
                 }
             }
@@ -72,19 +76,13 @@ fun Audiogram(
     }
 }
 
-@Composable
-private fun AudiogramWithPaddings(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
-    Spacer(modifier = Modifier.height(8.dp))
-    Spacer(modifier = Modifier.height(10.dp))
-}
-
 fun frequenciesLabels() =
     AcousticConstants.allFrequencyOctaves.map {
         if (it % 1000 == 0) "${it/1000}k" else it.toString()
     }
 
-private fun DrawScope.AudiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
-    AllDbHLOffsets(size).forEach { y ->
+private fun DrawScope.audiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
+    allDbHLOffsets(size).forEach { y ->
         drawLine(color = Color(255, 255, 255), start = Offset(0f, y), end = Offset(size.width, y))
     }
     val areaWidth = (size.width * 6) / 7
@@ -93,12 +91,8 @@ private fun DrawScope.AudiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, In
     val areaY = 0f
     translate(areaX, areaY) {
         val areaSize = Size(areaWidth, areaHeight)
-        println("size is $size")
-        println("area size is $areaSize")
-        println("Calculating left AC")
         val leftACOffsets = pointOffsets(areaSize, leftAC)
         drawACOffsets(leftACOffsets, SideUiState.LEFT)
-        println("Calculating right AC")
         val rightACOffsets = pointOffsets(areaSize, rightAC)
         drawACOffsets(rightACOffsets, SideUiState.RIGHT)
     }
@@ -146,13 +140,53 @@ private fun DrawScope.drawX(firstPoint: Offset) {
     )
 }
 
-private fun AllDbHLOffsets(size: Size): List<Float> {
-    println("Calculating lines")
+private fun allDbHLOffsets(size: Size): List<Float> {
     return yOffsets(
         size = size,
         yPoints = AcousticConstants.allPossibleDbHLs.filter { it % 10 == 0 },
     )
 }
+
+fun pointOffsets(size: Size, points: Map<Int, Int>): List<Offset> {
+    val sortedPoints = points.toSortedMap()
+    val xOffsets = xOffsets(size, sortedPoints.keys.toList())
+    val yOffsets = yOffsets(size, sortedPoints.values.toList())
+    return xOffsets.zip(yOffsets).map { pair -> Offset(pair.first, pair.second) }
+}
+
+fun yOffsets(size: Size, yPoints: List<Int>): List<Float> {
+    val allPossibleOffsets =
+        distributePointsUniformInRange(size.height, AcousticConstants.allPossibleDbHLs)
+    return yPoints.map { y ->
+        val index = AcousticConstants.allPossibleDbHLs.indexOf(y)
+        allPossibleOffsets[index]
+    }
+}
+
+fun xOffsets(size: Size, xPoints: List<Int>): List<Float> {
+    val allPossibleOffsets =
+        distributePointsUniformInRange(size.width, AcousticConstants.allFrequencyOctaves)
+    return xPoints.map { x ->
+        val index = AcousticConstants.allFrequencyOctaves.indexOf(x)
+        allPossibleOffsets[index]
+    }
+}
+
+/**
+ * Distributes some points evenly in a range of custom size and returns their position.
+ *
+ * listOf(0,1,2,3,4,5)
+ *
+ * range: ------------
+ *
+ * rangeSize = 10cm
+ *
+ * distributes: 0---1---2---3---4---5
+ *
+ * returns: listOf(0,2cm,4cm,6cm,8cm,10cm)
+ */
+fun distributePointsUniformInRange(rangeSize: Float, points: List<Int>) =
+    points.mapIndexed { index, value -> (rangeSize * index) / (points.size - 1) }
 
 @Preview
 @Composable
