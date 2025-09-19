@@ -22,17 +22,25 @@ fun ResultScreen(
             onNavigateBack(HomeRoute)
         },
     ){
-        Column {
-            Button(
-                onClick = { onNavigateBack(HomeRoute) }
-            ){
-                Text("Back to Home")
-            }
-            Button(
-                onClick = { onNavigateDescriptiveResult(DescriptiveResultRoute) }
-            ){
-                Text("View Descriptive Result")
-            }
+        ResultScreenContent(onNavigateBack, onNavigateDescriptiveResult)
+    }
+}
+
+@Composable
+private fun ResultScreenContent(
+    onNavigateBack: (HomeRoute) -> Unit,
+    onNavigateDescriptiveResult: (DescriptiveResultRoute) -> Unit
+) {
+    Column {
+        Button(
+            onClick = { onNavigateBack(HomeRoute) }
+        ) {
+            Text("Back to Home")
+        }
+        Button(
+            onClick = { onNavigateDescriptiveResult(DescriptiveResultRoute) }
+        ) {
+            Text("View Descriptive Result")
         }
     }
 }
