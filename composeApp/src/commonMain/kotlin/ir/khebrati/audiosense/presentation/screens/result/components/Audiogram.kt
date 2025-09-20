@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,11 @@ fun Audiogram(
 ) {
     val systemIsDark = isSystemInDarkTheme()
     BoxWithConstraints(modifier) {
+        println("max height: $maxHeight")
+        println("min height: $minHeight")
+        println("max width: $maxWidth")
+        println("min width: $minWidth")
+        val minHeight = this.minHeight
         val minDim = min(minHeight, minWidth)
         val isMoreThan100 = minDim > 100.dp
         val hasSymbols = isMoreThan100
@@ -46,7 +52,7 @@ fun Audiogram(
         Row {
             if (hasLabels) {
                 Column(modifier = Modifier.fillMaxHeight().padding(horizontal = 3.dp)) {
-                    Spacer(modifier = Modifier.height(minDim/50))
+                    Spacer(modifier = Modifier.height(minHeight/50))
                     Column(
                         modifier = Modifier.weight(80f),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -62,11 +68,11 @@ fun Audiogram(
                                 )
                             }
                     }
-                    Spacer(modifier = Modifier.height(minDim / 15))
+                    Spacer(modifier = Modifier.height(minHeight / 15))
                 }
             }
             Column {
-                if(hasLabels) Spacer(modifier = Modifier.height(minDim / 25))
+                if(hasLabels) Spacer(modifier = Modifier.height(minHeight / 25))
                 Canvas(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     audiogramChart(
                         leftAC,
@@ -80,7 +86,7 @@ fun Audiogram(
                     )
                 }
                 if (hasLabels) {
-                    Spacer(modifier = Modifier.height(minDim / 22))
+                    Spacer(modifier = Modifier.height(minHeight / 22))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
@@ -174,6 +180,25 @@ fun PreviewAudiogramSmall() {
 fun PreviewAudiogramCompact() {
     Audiogram(
         modifier = Modifier.size(100.dp),
+        leftAC =
+            hashMapOf(
+                125 to 90,
+                250 to 50,
+                500 to 20,
+                1000 to 20,
+                2000 to 30,
+                4000 to 55,
+                8000 to 35,
+            ),
+        rightAC =
+            hashMapOf(125 to 30, 250 to 30, 500 to 5, 1000 to 0, 2000 to 0, 4000 to 5, 8000 to 5),
+    )
+}
+@Preview
+@Composable
+fun PhonePreview() {
+    Audiogram(
+        modifier = Modifier.height(300.dp).width(342.dp),
         leftAC =
             hashMapOf(
                 125 to 90,
