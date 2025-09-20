@@ -8,8 +8,23 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TestHeadphoneDao {
-    @Query("SELECT * FROM LocalHeadphone JOIN LocalTest ON LocalTest.headphoneId = LocalHeadphone.id")
-    suspend fun getAll() : Map<LocalHeadphone,List<LocalTest>>
-    @Query("SELECT * FROM LocalHeadphone JOIN LocalTest ON LocalTest.headphoneId = LocalHeadphone.id")
-    fun observeAll() : Flow<Map<LocalHeadphone, List<LocalTest>>>
+    @Query(
+        "SELECT * FROM LocalHeadphone JOIN LocalTest ON LocalTest.headphoneId = LocalHeadphone.id"
+    )
+    suspend fun getAll(): Map<LocalHeadphone, List<LocalTest>>
+
+    @Query(
+        "SELECT * FROM LocalHeadphone JOIN LocalTest ON LocalTest.headphoneId = LocalHeadphone.id WHERE LocalTest.id = :id"
+    )
+    suspend fun get(id: String): Map<LocalHeadphone, List<LocalTest>>
+
+    @Query(
+        "SELECT * FROM LocalHeadphone JOIN LocalTest ON LocalTest.headphoneId = LocalHeadphone.id WHERE LocalTest.id = :id"
+    )
+    fun observe(id: String): Flow<Map<LocalHeadphone, List<LocalTest>>>
+
+    @Query(
+        "SELECT * FROM LocalHeadphone JOIN LocalTest ON LocalTest.headphoneId = LocalHeadphone.id"
+    )
+    fun observeAll(): Flow<Map<LocalHeadphone, List<LocalTest>>>
 }

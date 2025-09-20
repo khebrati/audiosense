@@ -34,7 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
+//import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
@@ -52,7 +52,8 @@ fun SelectDeviceScreen(
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    BackHandler { onNavigateBack() }
+    //TODO commented to build previews
+//    BackHandler { onNavigateBack() }
     AudiosenseScaffold(
         screenTitle = selectDeviceRoute.title,
         canNavigateBack = true,
@@ -147,7 +148,7 @@ private fun SelectDeviceContent(
 
 @Composable
 private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) {
-    Button(modifier = Modifier.fillMaxWidth().height(60.dp), onClick = onClick, enabled = enabled) {
+    Button(modifier = modifier.fillMaxWidth().height(60.dp), onClick = onClick, enabled = enabled) {
         Text("Next")
     }
 }

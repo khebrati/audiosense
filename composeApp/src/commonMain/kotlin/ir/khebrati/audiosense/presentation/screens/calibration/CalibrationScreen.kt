@@ -109,16 +109,16 @@ fun CalibrationScreenContent(
     ) {
         DeviceNameInputCard(onValueChange = onHeadphoneModelChange, value = headphoneModel, isError = isHeadphoneModelTextFieldError)
         Spacer(modifier = Modifier.height(25.dp))
-        LeftRightSelector(
-            selectedSide = state.side,
-            onSideChange = {onUiAction(SetSide(it))},
-            modifier = Modifier.fillMaxWidth().height(60.dp)
-        )
-        Spacer(modifier = Modifier.height(25.dp))
         FrequencyCard(
             frequency = state.frequency,
             frequencies = state.frequencies,
             onFreqChange = { onUiAction(SetFrequency(it)) },
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        LeftRightSelector(
+            selectedSide = state.side,
+            onSideChange = {onUiAction(SetSide(it))},
+            modifier = Modifier.fillMaxWidth().height(60.dp)
         )
         Spacer(modifier = Modifier.height(25.dp))
         PlayVolumeCard(
