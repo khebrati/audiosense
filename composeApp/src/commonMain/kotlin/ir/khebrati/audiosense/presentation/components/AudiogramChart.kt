@@ -7,15 +7,30 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.utils.toSortedMap
 
-fun DrawScope.audiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>,hasAudiometricSymbols: Boolean,systemIsDark: Boolean) {
-    allDbHLOffsets(size).forEach { y ->
-        drawLine(color = if(systemIsDark) Color.White else Color.Black, start = Offset(0f, y), end = Offset(size.width, y), strokeWidth = 2f)
-    }
+fun DrawScope.audiogramChart(
+    leftAC: Map<Int, Int>,
+    rightAC: Map<Int, Int>,
+    hasAudiometricSymbols: Boolean,
+    symbolRadius: Dp,
+    systemIsDark: Boolean,
+    backgroundLineStrokeWidth: Float,
+    acStrokeWidth: Float,
+    hasBackgroundLines: Boolean,
+) {
+    if (hasBackgroundLines)
+        allDbHLOffsets(size).forEach { y ->
+            drawLine(
+                color = if (systemIsDark) Color.White else Color.Black,
+                start = Offset(0f, y),
+                end = Offset(size.width, y),
+                strokeWidth = backgroundLineStrokeWidth,
+            )
+        }
     val areaWidth = (size.width * 6) / 7
     val areaHeight = size.height
     val areaX = (size.width - areaWidth) / 2
@@ -23,55 +38,75 @@ fun DrawScope.audiogramChart(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>,hasAu
     translate(areaX, areaY) {
         val areaSize = Size(areaWidth, areaHeight)
         val leftACOffsets = pointOffsets(areaSize, leftAC)
-        drawACOffsets(leftACOffsets, SideUiState.LEFT,hasAudiometricSymbols)
+        drawACOffsets(
+            acOffsets = leftACOffsets,
+            side = SideUiState.LEFT,
+            hasAudiometricSymbols = hasAudiometricSymbols,
+            strokeWidth = acStrokeWidth,
+            symbolRadius = symbolRadius,
+        )
         val rightACOffsets = pointOffsets(areaSize, rightAC)
-        drawACOffsets(rightACOffsets, SideUiState.RIGHT,hasAudiometricSymbols)
+        this.drawACOffsets(
+            acOffsets = rightACOffsets,
+            side = SideUiState.RIGHT,
+            hasAudiometricSymbols = hasAudiometricSymbols,
+            strokeWidth = acStrokeWidth,
+            symbolRadius = symbolRadius,
+        )
     }
 }
 
-private fun DrawScope.drawACCircle(point: Offset) {
+private fun DrawScope.drawACCircle(point: Offset, radius: Dp) {
     drawCircle(
         color = Color.Red,
-        radius = 7.dp.toPx(),
+        radius = radius.toPx(),
         center = Offset(point.x, point.y),
-        style = Stroke(),
+        style = Stroke(width = (radius / 6).toPx()),
     )
 }
 
-private fun DrawScope.drawACOffsets(acOffsets: List<Offset>, side: SideUiState,hasAudiometricSymbols: Boolean) {
+private fun DrawScope.drawACOffsets(
+    acOffsets: List<Offset>,
+    side: SideUiState,
+    hasAudiometricSymbols: Boolean,
+    strokeWidth: Float,
+    symbolRadius: Dp,
+) {
     if (acOffsets.isNotEmpty()) {
         val path =
             Path().apply {
                 val firstPoint = acOffsets.first()
                 moveTo(firstPoint.x, firstPoint.y)
-                if(hasAudiometricSymbols){
-                    if (side == SideUiState.LEFT) drawX(firstPoint) else drawACCircle(firstPoint)
+                if (hasAudiometricSymbols) {
+                    if (side == SideUiState.LEFT) drawX(firstPoint, symbolRadius)
+                    else drawACCircle(firstPoint, symbolRadius)
                 }
                 for (i in 1 until acOffsets.size) {
                     val point = acOffsets[i]
                     lineTo(point.x, point.y)
-                    if(hasAudiometricSymbols){
-                        if (side == SideUiState.LEFT) drawX(point) else drawACCircle(point)
+                    if (hasAudiometricSymbols) {
+                        if (side == SideUiState.LEFT) drawX(point, symbolRadius)
+                        else drawACCircle(point, symbolRadius)
                     }
                 }
             }
         val color = if (side == SideUiState.LEFT) Color.Blue else Color.Red
-        drawPath(path = path, color = color, style = Stroke(width = 1.dp.toPx()))
+        drawPath(path = path, color = color, style = Stroke(width = strokeWidth))
     }
 }
 
-private fun DrawScope.drawX(firstPoint: Offset) {
+private fun DrawScope.drawX(firstPoint: Offset, xSymbolRadius: Dp) {
     drawLine(
         color = Color.Blue,
-        start = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
-        end = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
-        strokeWidth = 2.dp.toPx(),
+        start = Offset(firstPoint.x - xSymbolRadius.toPx(), firstPoint.y - xSymbolRadius.toPx()),
+        end = Offset(firstPoint.x + xSymbolRadius.toPx(), firstPoint.y + xSymbolRadius.toPx()),
+        strokeWidth = (xSymbolRadius / 6).toPx(),
     )
     drawLine(
         color = Color.Blue,
-        start = Offset(firstPoint.x + 7.dp.toPx(), firstPoint.y - 7.dp.toPx()),
-        end = Offset(firstPoint.x - 7.dp.toPx(), firstPoint.y + 7.dp.toPx()),
-        strokeWidth = 2.dp.toPx(),
+        start = Offset(firstPoint.x + xSymbolRadius.toPx(), firstPoint.y - xSymbolRadius.toPx()),
+        end = Offset(firstPoint.x - xSymbolRadius.toPx(), firstPoint.y + xSymbolRadius.toPx()),
+        strokeWidth = (xSymbolRadius / 6).toPx(),
     )
 }
 

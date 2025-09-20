@@ -17,7 +17,7 @@ fun CompactAudiogram(
 ){
     val systemIsDark = isSystemInDarkTheme()
     Canvas(modifier = modifier){
-        audiogramChart(leftAC,rightAC,false,systemIsDark)
+//        audiogramChart(leftAC,rightAC,false,systemIsDark)
     }
 }
 
