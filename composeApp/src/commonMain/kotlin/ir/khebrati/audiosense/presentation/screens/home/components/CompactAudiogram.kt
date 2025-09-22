@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ir.khebrati.audiosense.presentation.components.audiogramChart
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
