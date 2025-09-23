@@ -91,7 +91,7 @@ fun DrawScope.audiogramChart(
     textMeasurer: TextMeasurer,
 ) {
     val areaWidth = (size.width * 14) / 16
-    val areaHeight = (size.height * 10 ) / 12
+    val areaHeight = (size.height * 20 ) / 26
     val areaX = (size.width - areaWidth) / 2
     val areaY = (size.height - areaHeight) / 2
     val chartWithoutLabelsSize = Size(
@@ -101,7 +101,9 @@ fun DrawScope.audiogramChart(
     allDbHLOffsets(chartWithoutLabelsSize).forEachIndexed { index,y ->
         val labelResult =
             textMeasurer.measure(AnnotatedString(dbHLLabels()[index]), style = TextStyle(fontSize = 8.sp))
-        drawText(topLeft = Offset(0f, areaY + y - 15), textLayoutResult = labelResult)
+        val textWidth = labelResult.size.width
+        val textHeight = labelResult.size.height
+        drawText(topLeft = Offset((size.width / 32) - (textWidth/2), areaY + y - textHeight/2), textLayoutResult = labelResult)
     }
     FreqLabels(size, textMeasurer)
     translate(
@@ -124,7 +126,8 @@ private fun DrawScope.FreqLabels(size: Size, textMeasurer: TextMeasurer) {
             val labelResult =
                 textMeasurer.measure(AnnotatedString(frequenciesLabels()[index]), style = TextStyle(fontSize = 8.sp))
             val textWidth = labelResult.size.width
-            drawText(topLeft = Offset(x - textWidth / 2f, size.height - 25), textLayoutResult = labelResult)
+            val textHeight = labelResult.size.height
+            drawText(topLeft = Offset(x - textWidth / 2f, size.height - 3*(size.height/26)/2 - textHeight/2), textLayoutResult = labelResult)
         }
     }
 }
