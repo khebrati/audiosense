@@ -56,7 +56,7 @@ fun Audiogram(
         val hasBackgroundLines = isMoreThan100
         val textMeasurer = rememberTextMeasurer()
         Canvas(modifier = modifier.fillMaxWidth()) {
-            audiogramChart(
+            drawableAudiogram(
                 leftAC,
                 rightAC,
                 systemIsDark = systemIsDark,
@@ -76,10 +76,9 @@ fun frequenciesLabels() =
         if (it % 1000 == 0) "${it/1000}k" else it.toString()
     }
 
-fun dbHLLabels() =
-    AcousticConstants.allPossibleDbHLs.map {it.toString()}
+fun dbHLLabels() = AcousticConstants.allPossibleDbHLs.map { it.toString() }
 
-fun DrawScope.audiogramChart(
+fun DrawScope.drawableAudiogram(
     leftAC: Map<Int, Int>,
     rightAC: Map<Int, Int>,
     hasAudiometricSymbols: Boolean,
@@ -90,106 +89,147 @@ fun DrawScope.audiogramChart(
     hasBackgroundLines: Boolean,
     textMeasurer: TextMeasurer,
 ) {
-    val areaWidth = (size.width * 14) / 16
-    val areaHeight = (size.height * 20 ) / 26
-    val areaX = (size.width - areaWidth) / 2
-    val areaY = (size.height - areaHeight) / 2
-    val chartWithoutLabelsSize = Size(
-        width = areaWidth,
-        height = areaHeight
+    // This is basically the adaptive sizing unit we will use to position anything on x-axis
+    // this value is equal to distance between 2 AC points, twice the space for labels, twice
+    // the distance between first/last ac points and chart line end.
+    val xUnit = size.width / ((AcousticConstants.allFrequencyOctaves.size + 1) * 2)
+    val yUnit = size.height / ((AcousticConstants.allPossibleDbHLs.size + 1) * 2)
+
+    val chartWidth = (AcousticConstants.allFrequencyOctaves.size) * 2 * xUnit
+    val chartHeight = (AcousticConstants.allPossibleDbHLs.size - 1) * 2 * yUnit
+    val chartSize = Size(chartWidth, chartHeight)
+    dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer)
+    FreqLabels(chartSize, xUnit, yUnit, textMeasurer)
+    audiogramChart(
+        leftAC,
+        rightAC,
+        xUnit,
+        yUnit,
+        hasBackgroundLines,
+        systemIsDark,
+        backgroundLineStrokeWidth,
+        hasAudiometricSymbols,
+        acStrokeWidth,
+        symbolRadius,
+        chartSize,
     )
-    allDbHLOffsets(chartWithoutLabelsSize).forEachIndexed { index,y ->
+}
+
+private fun DrawScope.audiogramChart(
+    leftAC: Map<Int, Int>,
+    rightAC: Map<Int, Int>,
+    xUnit: Float,
+    yUnit: Float,
+    hasBackgroundLines: Boolean,
+    systemIsDark: Boolean,
+    backgroundLineStrokeWidth: Float,
+    hasAudiometricSymbols: Boolean,
+    acStrokeWidth: Float,
+    symbolRadius: Dp,
+    chartSize: Size,
+) {
+    translate(left = xUnit, top = 2 * yUnit) {
+        if (hasBackgroundLines) {
+            drawChartLines(systemIsDark, backgroundLineStrokeWidth, chartSize)
+        }
+        val acPaddedAreaSize = Size(chartSize.width - 2 * xUnit,chartSize.height)
+        acLines(leftAC, rightAC, hasAudiometricSymbols, acStrokeWidth, symbolRadius, acPaddedAreaSize,xUnit,yUnit)
+    }
+}
+
+private fun DrawScope.dbHlLabels(
+    chartHeight: Float,
+    xUnit: Float,
+    yUnit: Float,
+    textMeasurer: TextMeasurer,
+) {
+    allDbHLOffsets(chartHeight).forEachIndexed { index, y ->
         val labelResult =
-            textMeasurer.measure(AnnotatedString(dbHLLabels()[index]), style = TextStyle(fontSize = 8.sp))
+            textMeasurer.measure(
+                AnnotatedString(dbHLLabels()[2 * index]),
+                style = TextStyle(fontSize = 8.sp),
+            )
         val textWidth = labelResult.size.width
         val textHeight = labelResult.size.height
-        drawText(topLeft = Offset((size.width / 32) - (textWidth/2), areaY + y - textHeight/2), textLayoutResult = labelResult)
-    }
-    FreqLabels(size, textMeasurer)
-    translate(
-        left = areaX,
-        top = areaY
-    ){
-        LinesArea(hasBackgroundLines, textMeasurer, systemIsDark, backgroundLineStrokeWidth,chartWithoutLabelsSize)
-        ACArea(leftAC, hasAudiometricSymbols, acStrokeWidth, symbolRadius, rightAC,chartWithoutLabelsSize)
+        drawText(
+            topLeft = Offset(xUnit / 2 - (textWidth / 2), 2 * yUnit + y - textHeight / 2),
+            textLayoutResult = labelResult,
+        )
     }
 }
 
-private fun DrawScope.FreqLabels(size: Size, textMeasurer: TextMeasurer) {
-    val areaWidth = (size.width * 12) / 16
-    val areaHeight = size.height
-    val areaX = ((size.width - areaWidth) / 2)
-    val areaY = 0f
-    val acPaddedAreaSize = Size(areaWidth, areaHeight)
-    translate(areaX, areaY) {
-        allFreqOffsets(acPaddedAreaSize).forEachIndexed { index,x ->
-            val labelResult =
-                textMeasurer.measure(AnnotatedString(frequenciesLabels()[index]), style = TextStyle(fontSize = 8.sp))
-            val textWidth = labelResult.size.width
-            val textHeight = labelResult.size.height
-            drawText(topLeft = Offset(x - textWidth / 2f, size.height - 3*(size.height/26)/2 - textHeight/2), textLayoutResult = labelResult)
-        }
-    }
-}
-
-private fun DrawScope.LinesArea(
-    hasBackgroundLines: Boolean,
+private fun DrawScope.FreqLabels(
+    chartSize: Size,
+    xUnit: Float,
+    yUnit: Float,
     textMeasurer: TextMeasurer,
+) {
+    val acPaddedAreaWidth = chartSize.width - 2 * xUnit
+    allFreqOffsets(acPaddedAreaWidth).forEachIndexed { index, x ->
+        val labelResult =
+            textMeasurer.measure(
+                AnnotatedString(frequenciesLabels()[index]),
+                style = TextStyle(fontSize = 8.sp),
+            )
+        val textWidth = labelResult.size.width
+        val textHeight = labelResult.size.height
+        drawText(
+            topLeft =
+                Offset(2 * xUnit + x - (textWidth / 2f), size.height - yUnit / 2 - textHeight / 2),
+            textLayoutResult = labelResult,
+        )
+    }
+}
+
+private fun DrawScope.drawChartLines(
     systemIsDark: Boolean,
     backgroundLineStrokeWidth: Float,
-    size: Size
+    size: Size,
 ) {
-    if (hasBackgroundLines)
-        allDbHLOffsets(size).forEach { y ->
-            drawLine(
-                color = if (systemIsDark) Color.White else Color.Black,
-                start = Offset(0f, y),
-                end = Offset(size.width, y),
-                strokeWidth = backgroundLineStrokeWidth,
-            )
-        }
+    allDbHLOffsets(size.height).forEach { y ->
+        drawLine(
+            color = if (systemIsDark) Color.White else Color.Black,
+            start = Offset(0f, y),
+            end = Offset(size.width, y),
+            strokeWidth = backgroundLineStrokeWidth,
+        )
+    }
 }
 
-private fun DrawScope.ACArea(
+private fun DrawScope.acLines(
     leftAC: Map<Int, Int>,
+    rightAC: Map<Int, Int>,
     hasAudiometricSymbols: Boolean,
     acStrokeWidth: Float,
     symbolRadius: Dp,
-    rightAC: Map<Int, Int>,
-    size: Size
+    size: Size,
+    xUnit: Float,
+    yUnit: Float,
 ) {
-    val areaWidth = (size.width * 14) / 16
-    val areaHeight = size.height
-    val areaX = (size.width - areaWidth) / 2
+    val areaX = xUnit
     val areaY = 0f
-    val acPaddedAreaSize = Size(areaWidth, areaHeight)
     translate(areaX, areaY) {
-        val leftACOffsets = pointOffsets(acPaddedAreaSize, leftAC)
-        drawACOffsets(
-            acOffsets = leftACOffsets,
-            side = SideUiState.LEFT,
-            hasAudiometricSymbols = hasAudiometricSymbols,
-            strokeWidth = acStrokeWidth,
-            symbolRadius = symbolRadius,
-        )
-        val rightACOffsets = pointOffsets(acPaddedAreaSize, rightAC)
-        this.drawACOffsets(
-            acOffsets = rightACOffsets,
-            side = SideUiState.RIGHT,
-            hasAudiometricSymbols = hasAudiometricSymbols,
-            strokeWidth = acStrokeWidth,
-            symbolRadius = symbolRadius,
-        )
+        val leftACOffsets = acOffsets(size, leftAC)
+        if (leftACOffsets.isNotEmpty()) {
+            drawACOffsets(
+                acOffsets = leftACOffsets,
+                side = SideUiState.LEFT,
+                hasAudiometricSymbols = hasAudiometricSymbols,
+                strokeWidth = acStrokeWidth,
+                symbolRadius = symbolRadius,
+            )
+        }
+        val rightACOffsets = acOffsets(size, rightAC)
+        if (rightACOffsets.isNotEmpty()) {
+            drawACOffsets(
+                acOffsets = rightACOffsets,
+                side = SideUiState.RIGHT,
+                hasAudiometricSymbols = hasAudiometricSymbols,
+                strokeWidth = acStrokeWidth,
+                symbolRadius = symbolRadius,
+            )
+        }
     }
-}
-
-private fun DrawScope.drawACCircle(point: Offset, radius: Dp) {
-    drawCircle(
-        color = Color.Red,
-        radius = radius.toPx(),
-        center = Offset(point.x, point.y),
-        style = Stroke(width = (radius / 6).toPx()),
-    )
 }
 
 private fun DrawScope.drawACOffsets(
@@ -199,77 +239,86 @@ private fun DrawScope.drawACOffsets(
     strokeWidth: Float,
     symbolRadius: Dp,
 ) {
-    if (acOffsets.isNotEmpty()) {
-        val path =
-            Path().apply {
-                val firstPoint = acOffsets.first()
-                moveTo(firstPoint.x, firstPoint.y)
+    val color = if (side == SideUiState.LEFT) Color.Blue else Color.Red
+    val drawSymbol =
+        if (side == SideUiState.LEFT)
+            { offset: Offset, radius: Dp -> drawXSymbol(offset, radius, color) }
+        else { offset: Offset, radius: Dp -> drawCircle(offset, radius, color) }
+    val path =
+        Path().apply {
+            val firstPoint = acOffsets.first()
+            moveTo(firstPoint.x, firstPoint.y)
+            if (hasAudiometricSymbols) {
+                drawSymbol(firstPoint, symbolRadius)
+            }
+            for (i in 1 until acOffsets.size) {
+                val point = acOffsets[i]
+                lineTo(point.x, point.y)
                 if (hasAudiometricSymbols) {
-                    if (side == SideUiState.LEFT) drawX(firstPoint, symbolRadius)
-                    else drawACCircle(firstPoint, symbolRadius)
-                }
-                for (i in 1 until acOffsets.size) {
-                    val point = acOffsets[i]
-                    lineTo(point.x, point.y)
-                    if (hasAudiometricSymbols) {
-                        if (side == SideUiState.LEFT) drawX(point, symbolRadius)
-                        else drawACCircle(point, symbolRadius)
-                    }
+                    drawSymbol(point, symbolRadius)
                 }
             }
-        val color = if (side == SideUiState.LEFT) Color.Blue else Color.Red
-        drawPath(path = path, color = color, style = Stroke(width = strokeWidth))
-    }
+        }
+    drawPath(path = path, color = color, style = Stroke(width = strokeWidth))
 }
 
-private fun DrawScope.drawX(firstPoint: Offset, xSymbolRadius: Dp) {
+private fun DrawScope.drawXSymbol(offset: Offset, radius: Dp, color: Color) {
     drawLine(
-        color = Color.Blue,
-        start = Offset(firstPoint.x - xSymbolRadius.toPx(), firstPoint.y - xSymbolRadius.toPx()),
-        end = Offset(firstPoint.x + xSymbolRadius.toPx(), firstPoint.y + xSymbolRadius.toPx()),
-        strokeWidth = (xSymbolRadius / 6).toPx(),
+        color = color,
+        start = Offset(offset.x - radius.toPx(), offset.y - radius.toPx()),
+        end = Offset(offset.x + radius.toPx(), offset.y + radius.toPx()),
+        strokeWidth = (radius / 6).toPx(),
     )
     drawLine(
-        color = Color.Blue,
-        start = Offset(firstPoint.x + xSymbolRadius.toPx(), firstPoint.y - xSymbolRadius.toPx()),
-        end = Offset(firstPoint.x - xSymbolRadius.toPx(), firstPoint.y + xSymbolRadius.toPx()),
-        strokeWidth = (xSymbolRadius / 6).toPx(),
+        color = color,
+        start = Offset(offset.x + radius.toPx(), offset.y - radius.toPx()),
+        end = Offset(offset.x - radius.toPx(), offset.y + radius.toPx()),
+        strokeWidth = (radius / 6).toPx(),
     )
 }
 
-private fun allDbHLOffsets(size: Size): List<Float> {
-    return yOffsets(
-        size = size,
+private fun DrawScope.drawCircle(offset: Offset, radius: Dp, color: Color) {
+    drawCircle(
+        color = color,
+        radius = radius.toPx(),
+        center = Offset(offset.x, offset.y),
+        style = Stroke(width = (radius / 6).toPx()),
+    )
+}
+
+private fun allDbHLOffsets(height: Float): List<Float> {
+    return dbHLVerticalDistances(
+        height = height,
         yPoints = AcousticConstants.allPossibleDbHLs.filter { it % 10 == 0 },
     )
 }
 
-private fun allFreqOffsets(size: Size): List<Float> {
-    return xOffsets(
-        size = size,
+private fun allFreqOffsets(width: Float): List<Float> {
+    return frequencyHorizontalDistances(
+        width = width,
         xPoints = AcousticConstants.allFrequencyOctaves,
     )
 }
 
-fun pointOffsets(size: Size, points: Map<Int, Int>): List<Offset> {
+private fun acOffsets(size: Size, points: Map<Int, Int>): List<Offset> {
     val sortedPoints = points.toSortedMap()
-    val xOffsets = xOffsets(size, sortedPoints.keys.toList())
-    val yOffsets = yOffsets(size, sortedPoints.values.toList())
+    val xOffsets = frequencyHorizontalDistances(size.width, sortedPoints.keys.toList())
+    val yOffsets = dbHLVerticalDistances(size.height, sortedPoints.values.toList())
     return xOffsets.zip(yOffsets).map { pair -> Offset(pair.first, pair.second) }
 }
 
-fun yOffsets(size: Size, yPoints: List<Int>): List<Float> {
+private fun dbHLVerticalDistances(height: Float, yPoints: List<Int>): List<Float> {
     val allPossibleOffsets =
-        distributePointsUniformInRange(size.height, AcousticConstants.allPossibleDbHLs)
+        distributePointsUniformInRange(height, AcousticConstants.allPossibleDbHLs)
     return yPoints.map { y ->
         val index = AcousticConstants.allPossibleDbHLs.indexOf(y)
         allPossibleOffsets[index]
     }
 }
 
-fun xOffsets(size: Size, xPoints: List<Int>): List<Float> {
+private fun frequencyHorizontalDistances(width: Float, xPoints: List<Int>): List<Float> {
     val allPossibleOffsets =
-        distributePointsUniformInRange(size.width, AcousticConstants.allFrequencyOctaves)
+        distributePointsUniformInRange(width, AcousticConstants.allFrequencyOctaves)
     return xPoints.map { x ->
         val index = AcousticConstants.allFrequencyOctaves.indexOf(x)
         allPossibleOffsets[index]
@@ -289,7 +338,7 @@ fun xOffsets(size: Size, xPoints: List<Int>): List<Float> {
  *
  * returns: listOf(0,2cm,4cm,6cm,8cm,10cm)
  */
-fun distributePointsUniformInRange(rangeSize: Float, points: List<Int>) =
+private fun distributePointsUniformInRange(rangeSize: Float, points: List<Int>) =
     points.mapIndexed { index, value -> (rangeSize * index) / (points.size - 1) }
 
 @Preview
