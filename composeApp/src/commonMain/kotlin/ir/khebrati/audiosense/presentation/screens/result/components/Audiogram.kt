@@ -87,26 +87,41 @@ fun DrawScope.audiogramChart(
     hasBackgroundLines: Boolean,
     textMeasurer: TextMeasurer,
 ) {
+    val areaWidth = (size.width * 14) / 16
+    val areaHeight = (size.height * 10 ) / 12
+    val areaX = (size.width - areaWidth) / 2
+    val areaY = (size.height - areaHeight) / 2
     val chartWithoutLabelsSize = Size(
-        width = size.width - 20,
-        height = size.height - 80
+        width = areaWidth,
+        height = areaHeight
     )
     allDbHLOffsets(chartWithoutLabelsSize).forEach { y ->
         val labelResult =
             textMeasurer.measure(AnnotatedString("20"), style = TextStyle(fontSize = 10.sp))
-        drawText(topLeft = Offset(0f, y), textLayoutResult = labelResult)
+        drawText(topLeft = Offset(0f, areaY + y - 15), textLayoutResult = labelResult)
     }
-    allFreqOffsets(chartWithoutLabelsSize).forEach { x ->
-        val labelResult =
-            textMeasurer.measure(AnnotatedString("40"), style = TextStyle(fontSize = 10.sp))
-        drawText(topLeft = Offset(x + 90,size.height - 30), textLayoutResult = labelResult)
-    }
+    FreqLabels(size, textMeasurer)
     translate(
-        left = 45f,
-        top = 20f
+        left = areaX,
+        top = areaY
     ){
         LinesArea(hasBackgroundLines, textMeasurer, systemIsDark, backgroundLineStrokeWidth,chartWithoutLabelsSize)
         ACArea(leftAC, hasAudiometricSymbols, acStrokeWidth, symbolRadius, rightAC,chartWithoutLabelsSize)
+    }
+}
+
+private fun DrawScope.FreqLabels(size: Size, textMeasurer: TextMeasurer) {
+    val areaWidth = (size.width * 12) / 16
+    val areaHeight = size.height
+    val areaX = ((size.width - areaWidth) / 2) - 20
+    val areaY = 0f
+    val acPaddedAreaSize = Size(areaWidth, areaHeight)
+    translate(areaX, areaY) {
+        allFreqOffsets(acPaddedAreaSize).forEach { x ->
+            val labelResult =
+                textMeasurer.measure(AnnotatedString("40"), style = TextStyle(fontSize = 10.sp))
+            drawText(topLeft = Offset(x, size.height - 30), textLayoutResult = labelResult)
+        }
     }
 }
 
@@ -136,7 +151,7 @@ private fun DrawScope.ACArea(
     rightAC: Map<Int, Int>,
     size: Size
 ) {
-    val areaWidth = (size.width * 6) / 7
+    val areaWidth = (size.width * 14) / 16
     val areaHeight = size.height
     val areaX = (size.width - areaWidth) / 2
     val areaY = 0f
