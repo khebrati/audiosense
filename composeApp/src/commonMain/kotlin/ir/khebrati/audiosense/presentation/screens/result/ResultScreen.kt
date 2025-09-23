@@ -35,6 +35,7 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.Descriptiv
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.HomeRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.screens.result.TestResultUiState.*
+import ir.khebrati.audiosense.presentation.screens.result.components.Audiogram
 import ir.khebrati.audiosense.presentation.screens.result.components.DoneButton
 import ir.khebrati.audiosense.presentation.screens.result.components.HearingLossCard
 import ir.khebrati.audiosense.presentation.theme.AppTheme
@@ -91,11 +92,11 @@ private fun ReadyResultScreenContent(
             )
         }
         Spacer(modifier = Modifier.height(30.dp))
-//        Audiogram(
-//            leftAC = uiState.leftAC,
-//            rightAC = uiState.rightAC,
-//            modifier = Modifier.fillMaxWidth().height(300.dp),
-//        )
+        Audiogram(
+            leftAC = uiState.leftAC,
+            rightAC = uiState.rightAC,
+            modifier = Modifier.fillMaxWidth().height(300.dp),
+        )
         Spacer(modifier = Modifier.weight(1f))
         DoneButton(onClick = { onNavigateHome(HomeRoute) })
     }

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
+import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.utils.toSortedMap
@@ -41,10 +42,6 @@ fun Audiogram(
 ) {
     val systemIsDark = isSystemInDarkTheme()
     BoxWithConstraints(modifier) {
-        println("max height: $maxHeight")
-        println("min height: $minHeight")
-        println("max width: $maxWidth")
-        println("min width: $minWidth")
         val minHeight = this.minHeight
         val minDim = min(minHeight, minWidth)
         val isMoreThan100 = minDim > 100.dp
@@ -93,13 +90,13 @@ fun DrawScope.drawableAudiogram(
     // this value is equal to distance between 2 AC points, twice the space for labels, twice
     // the distance between first/last ac points and chart line end.
     val xUnit = size.width / ((AcousticConstants.allFrequencyOctaves.size + 1) * 2)
-    val yUnit = size.height / ((AcousticConstants.allPossibleDbHLs.size + 1) * 2)
+    val yUnit = size.height / (AcousticConstants.allPossibleDbHLs.size + 4)
 
-    val chartWidth = (AcousticConstants.allFrequencyOctaves.size) * 2 * xUnit
-    val chartHeight = (AcousticConstants.allPossibleDbHLs.size - 1) * 2 * yUnit
+    val chartWidth = size.width - 2 * xUnit
+    val chartHeight = size.height - 4 * yUnit
     val chartSize = Size(chartWidth, chartHeight)
     dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer)
-    FreqLabels(chartSize, xUnit, yUnit, textMeasurer)
+    freqLabels(chartSize, xUnit, yUnit, textMeasurer)
     audiogramChart(
         leftAC,
         rightAC,
@@ -147,7 +144,7 @@ private fun DrawScope.dbHlLabels(
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(dbHLLabels()[2 * index]),
-                style = TextStyle(fontSize = 8.sp),
+                style = TextStyle(fontSize = 12.sp),
             )
         val textWidth = labelResult.size.width
         val textHeight = labelResult.size.height
@@ -158,7 +155,7 @@ private fun DrawScope.dbHlLabels(
     }
 }
 
-private fun DrawScope.FreqLabels(
+private fun DrawScope.freqLabels(
     chartSize: Size,
     xUnit: Float,
     yUnit: Float,
@@ -169,13 +166,12 @@ private fun DrawScope.FreqLabels(
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(frequenciesLabels()[index]),
-                style = TextStyle(fontSize = 8.sp),
+                style = TextStyle(fontSize = 12.sp),
             )
         val textWidth = labelResult.size.width
-        val textHeight = labelResult.size.height
         drawText(
             topLeft =
-                Offset(2 * xUnit + x - (textWidth / 2f), size.height - yUnit / 2 - textHeight / 2),
+                Offset(2 * xUnit + x - (textWidth / 2f), size.height - yUnit),
             textLayoutResult = labelResult,
         )
     }

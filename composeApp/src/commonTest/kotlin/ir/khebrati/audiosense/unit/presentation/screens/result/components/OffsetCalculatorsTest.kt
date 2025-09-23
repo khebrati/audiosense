@@ -1,7 +1,6 @@
 package ir.khebrati.audiosense.unit.presentation.screens.result.components
 
 import androidx.compose.ui.geometry.Size
-import ir.khebrati.audiosense.presentation.screens.result.components.distributePointsUniformInRange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
