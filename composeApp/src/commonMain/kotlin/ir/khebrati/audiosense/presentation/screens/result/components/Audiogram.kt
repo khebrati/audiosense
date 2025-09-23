@@ -76,6 +76,9 @@ fun frequenciesLabels() =
         if (it % 1000 == 0) "${it/1000}k" else it.toString()
     }
 
+fun dbHLLabels() =
+    AcousticConstants.allPossibleDbHLs.map {it.toString()}
+
 fun DrawScope.audiogramChart(
     leftAC: Map<Int, Int>,
     rightAC: Map<Int, Int>,
@@ -95,9 +98,9 @@ fun DrawScope.audiogramChart(
         width = areaWidth,
         height = areaHeight
     )
-    allDbHLOffsets(chartWithoutLabelsSize).forEach { y ->
+    allDbHLOffsets(chartWithoutLabelsSize).forEachIndexed { index,y ->
         val labelResult =
-            textMeasurer.measure(AnnotatedString("20"), style = TextStyle(fontSize = 10.sp))
+            textMeasurer.measure(AnnotatedString(dbHLLabels()[index]), style = TextStyle(fontSize = 8.sp))
         drawText(topLeft = Offset(0f, areaY + y - 15), textLayoutResult = labelResult)
     }
     FreqLabels(size, textMeasurer)
@@ -113,14 +116,15 @@ fun DrawScope.audiogramChart(
 private fun DrawScope.FreqLabels(size: Size, textMeasurer: TextMeasurer) {
     val areaWidth = (size.width * 12) / 16
     val areaHeight = size.height
-    val areaX = ((size.width - areaWidth) / 2) - 20
+    val areaX = ((size.width - areaWidth) / 2)
     val areaY = 0f
     val acPaddedAreaSize = Size(areaWidth, areaHeight)
     translate(areaX, areaY) {
-        allFreqOffsets(acPaddedAreaSize).forEach { x ->
+        allFreqOffsets(acPaddedAreaSize).forEachIndexed { index,x ->
             val labelResult =
-                textMeasurer.measure(AnnotatedString("40"), style = TextStyle(fontSize = 10.sp))
-            drawText(topLeft = Offset(x, size.height - 30), textLayoutResult = labelResult)
+                textMeasurer.measure(AnnotatedString(frequenciesLabels()[index]), style = TextStyle(fontSize = 8.sp))
+            val textWidth = labelResult.size.width
+            drawText(topLeft = Offset(x - textWidth / 2f, size.height - 25), textLayoutResult = labelResult)
         }
     }
 }
