@@ -102,8 +102,9 @@ fun DrawScope.drawableAudiogram(
     val chartWidth = size.width - 2 * xUnit
     val chartHeight = size.height - 4 * yUnit
     val chartSize = Size(chartWidth, chartHeight)
-    dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer, labelFontSize, labelFontWeight)
-    freqLabels(chartSize, xUnit, yUnit, textMeasurer,labelFontSize,labelFontWeight)
+    val labelColor = if(systemIsDark) Color.White else Color.Black
+    dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer, labelFontSize, labelFontWeight,labelColor)
+    freqLabels(chartSize, xUnit, yUnit, textMeasurer,labelFontSize,labelFontWeight,labelColor)
     audiogramChart(
         leftAC,
         rightAC,
@@ -147,13 +148,14 @@ private fun DrawScope.dbHlLabels(
     yUnit: Float,
     textMeasurer: TextMeasurer,
     fontSize: TextUnit,
-    fontWeight: FontWeight
+    fontWeight: FontWeight,
+    color: Color
 ) {
     allDbHLOffsets(chartHeight).forEachIndexed { index, y ->
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(dbHLLabels()[2 * index]),
-                style = TextStyle(fontSize = fontSize, fontWeight = fontWeight)
+                style = TextStyle(color = color,fontSize = fontSize, fontWeight = fontWeight)
             )
         val textWidth = labelResult.size.width
         val textHeight = labelResult.size.height
@@ -170,14 +172,15 @@ private fun DrawScope.freqLabels(
     yUnit: Float,
     textMeasurer: TextMeasurer,
     fontSize: TextUnit,
-    fontWeight: FontWeight
+    fontWeight: FontWeight,
+    color: Color
 ) {
     val acPaddedAreaWidth = chartSize.width - 2 * xUnit
     allFreqOffsets(acPaddedAreaWidth).forEachIndexed { index, x ->
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(frequenciesLabels()[index]),
-                style = TextStyle(fontSize = fontSize, fontWeight = fontWeight),
+                style = TextStyle(color = color,fontSize = fontSize, fontWeight = fontWeight),
             )
         val textWidth = labelResult.size.width
         drawText(
