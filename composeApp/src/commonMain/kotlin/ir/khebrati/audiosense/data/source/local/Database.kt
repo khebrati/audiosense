@@ -25,24 +25,26 @@ fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase {
             object : RoomDatabase.Callback() {
                 override fun onCreate(connection: SQLiteConnection) {
                     super.onCreate(connection)
-                    connection.run {
-                        execSQL(
-                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc', 'Galaxy Buds FE', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
-                        )
-                        execSQL(
-                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('04cad680-777e-41a1-8770-f6bb5ed50ea8', 'Apple Airpods', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
-                        )
-                        execSQL(
-                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('9165f20d-1ce6-4eb6-b2a8-0955dd8f6407', 'Sony Headphones', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
-                        )
-                        execSQL(
-                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('1c7b54aa-61cd-487d-ac2f-7a41537a84e8', 'Default', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
-                        )
-                    }
+                    prepopulateDb(connection)
                 }
             }
         )
         .build()
+}
+
+private fun prepopulateDb(connection: SQLiteConnection) {
+    val headphones =
+        listOf(
+            Pair("a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc", "Galaxy Buds FE"),
+            Pair("04cad680-777e-41a1-8770-f6bb5ed50ea8", "Apple Airpods"),
+            Pair("9165f20d-1ce6-4eb6-b2a8-0955dd8f6407", "Sony Headphones"),
+            Pair("1c7b54aa-61cd-487d-ac2f-7a41537a84e8", "Default"),
+        )
+    headphones.forEach {
+        connection.execSQL(
+            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('${it.first}', '${it.second}', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
+        )
+    }
 }
 
 @TypeConverters(Convertors::class)
