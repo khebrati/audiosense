@@ -1,5 +1,6 @@
 package ir.khebrati.audiosense.presentation.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,8 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import audiosense.composeapp.generated.resources.Res
+import audiosense.composeapp.generated.resources.record_not_found
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
@@ -35,6 +40,7 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRou
 import ir.khebrati.audiosense.presentation.screens.home.components.CompactAudiogram
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
 import ir.khebrati.audiosense.presentation.theme.AppTheme
+import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
@@ -47,6 +53,15 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    HomeScreenContent(uiState, onNavigateCalibration, onNavigateSelectDevice)
+}
+
+@Composable
+private fun HomeScreenContent(
+    uiState: HomeUiState,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
+    onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
+) {
     AudiosenseScaffold(
         screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
@@ -58,44 +73,19 @@ fun HomeScreen(
         },
         onNavigateBack = { /* No back navigation in Home */ },
     ) {
-        HomeScreenContent(uiState)
-    }
-}
-
-@Preview
-@Composable
-fun SessionRecordContentPreview() {
-    AppTheme {
-        SessionRecordCard(
-            leftAC =
-                hashMapOf(
-                    125 to 90,
-                    250 to 50,
-                    500 to 20,
-                    1000 to 20,
-                    2000 to 30,
-                    4000 to 55,
-                    8000 to 35,
-                ),
-            rightAC =
-                hashMapOf(
-                    125 to 30,
-                    250 to 30,
-                    500 to 5,
-                    1000 to 0,
-                    2000 to 0,
-                    4000 to 5,
-                    8000 to 5,
-                ),
-            headphoneName = "Galaxy buds FE",
-            lossDescription = "Mild Hearing Loss",
-            date = "July 22, 2025",
-        )
+        FilledOrEmptyRecords(uiState)
     }
 }
 
 @Composable
-fun HomeScreenContent(uiState: HomeUiState) {
+fun FilledOrEmptyRecords(uiState: HomeUiState) {
+    if (uiState.compactTestRecordUiStates.isEmpty()) {
+        EmptyRecordsList()
+    } else RecordsList(uiState)
+}
+
+@Composable
+private fun RecordsList(uiState: HomeUiState) {
     LazyColumn {
         items(uiState.compactTestRecordUiStates) { record ->
             SessionRecordCard(
@@ -106,6 +96,21 @@ fun HomeScreenContent(uiState: HomeUiState) {
                 date = record.date,
             )
             Spacer(modifier = Modifier.height(15.dp))
+        }
+    }
+}
+
+@Composable
+fun EmptyRecordsList() {
+    Box(modifier = Modifier.fillMaxSize().padding(30.dp), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            NoRecordsIcon()
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "No test records yet. Start a new one!",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
@@ -159,6 +164,61 @@ fun SessionRecordCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun NoRecordsIcon() {
+    Image(
+        modifier = Modifier.size(100.dp),
+        imageVector = vectorResource(Res.drawable.record_not_found),
+        contentDescription = "No test records yet",
+    )
+}
+
+@Preview
+@Composable
+fun EmptyHomeScreenPreview() {
+    val emptyUiState =
+        HomeUiState(currentTimeOfDay = TimeOfDay.AFTERNOON, compactTestRecordUiStates = emptyList())
+    AppTheme {
+        HomeScreenContent(
+            uiState = emptyUiState,
+            onNavigateCalibration = {},
+            onNavigateSelectDevice = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SessionRecordContentPreview() {
+    AppTheme {
+        SessionRecordCard(
+            leftAC =
+                hashMapOf(
+                    125 to 90,
+                    250 to 50,
+                    500 to 20,
+                    1000 to 20,
+                    2000 to 30,
+                    4000 to 55,
+                    8000 to 35,
+                ),
+            rightAC =
+                hashMapOf(
+                    125 to 30,
+                    250 to 30,
+                    500 to 5,
+                    1000 to 0,
+                    2000 to 0,
+                    4000 to 5,
+                    8000 to 5,
+                ),
+            headphoneName = "Galaxy buds FE",
+            lossDescription = "Mild Hearing Loss",
+            date = "July 22, 2025",
+        )
     }
 }
 
@@ -223,15 +283,10 @@ fun HomeScreenPreview() {
                 ),
         )
     AppTheme {
-        AudiosenseScaffold(
-            screenTitle = "Good morning",
-            canNavigateBack = false,
-            floatingActionButton = {
-                HomeFAB(onNavigateCalibration = {}, onNavigateSelectDevice = {})
-            },
-            onNavigateBack = {},
-        ) {
-            HomeScreenContent(uiState)
-        }
+        HomeScreenContent(
+            uiState = uiState,
+            onNavigateCalibration = {},
+            onNavigateSelectDevice = {},
+        )
     }
 }

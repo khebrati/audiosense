@@ -1,26 +1,38 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- 
-        App Icon for AudioSense (V2)
-        Designed with Material 3 Expressive principles.
-        This version uses a more abstract and dynamic sound wave 
-        with a gradient to feel more fluid and energetic.
-    -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:aapt="http://schemas.android.com/aapt"
+        android:width="256dp"
+        android:height="256dp"
+        android:viewportWidth="256"
+        android:viewportHeight="256">
 
-    <!-- Background Squircle Shape -->
-    <rect width="256" height="256" rx="56" fill="#EAF5FF"/>
+    <path
+            android:fillColor="#FFEAF5FF"
+            android:pathData="M56,0L200,0A56,56,0,0,1,256,56L256,200A56,56,0,0,1,200,256L56,256A56,56,0,0,1,0,200L0,56A56,56,0,0,1,56,0Z" />
 
-    <!-- Gradient Definition -->
-    <defs>
-        <linearGradient id="waveGradient" x1="64" y1="64" x2="192" y2="192" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#007BFF"/>
-            <stop offset="1" stop-color="#7B68EE"/>
-        </linearGradient>
-    </defs>
+    <path
+            android:pathData="M64,128 C80,88 128,80 128,128 C128,176 176,168 192,128 C176,88 128,80 128,128 C128,176 80,168 64,128 Z"
+            android:strokeWidth="2"
+            android:strokeColor="#80FFFFFF">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                    android:endX="192"
+                    android:endY="192"
+                    android:startX="64"
+                    android:startY="64"
+                    android:type="linear">
+                <item
+                        android:color="#FF007BFF"
+                        android:offset="0.0" />
+                <item
+                        android:color="#FF7B68EE"
+                        android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Dynamic Sound Wave Shape -->
-    <path d="M64 128 C80 88 128 80 128 128 C128 176 176 168 192 128 C176 88 128 80 128 128 C128 176 80 168 64 128 Z" fill="url(#waveGradient)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-
-    <!-- Echo element for more depth -->
-    <path d="M80 128 C92 100 128 96 128 128 C128 160 164 156 176 128" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-opacity="0.5"/>
-
-</svg>
+    <path
+            android:pathData="M80,128 C92,100 128,96 128,128 C128,160 164,156 176,128"
+            android:strokeWidth="4"
+            android:strokeColor="#80FFFFFF"
+            android:strokeLineCap="round" />
+</vector>
