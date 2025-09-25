@@ -6,7 +6,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.execSQL
 import ir.khebrati.audiosense.data.source.local.dao.HeadphoneDao
 import ir.khebrati.audiosense.data.source.local.dao.TestDao
 import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
@@ -15,18 +17,41 @@ import ir.khebrati.audiosense.data.source.local.entity.LocalTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-
-fun getRoomDatabase(
-    builder: RoomDatabase.Builder<AppDatabase>
-): AppDatabase {
-    return builder.setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
+fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase {
+    return builder
+        .setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
+        .addCallback(
+            object : RoomDatabase.Callback() {
+                override fun onCreate(connection: SQLiteConnection) {
+                    super.onCreate(connection)
+                    connection.run {
+                        execSQL(
+                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc', 'Galaxy Buds FE', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
+                        )
+                        execSQL(
+                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('04cad680-777e-41a1-8770-f6bb5ed50ea8', 'Apple Airpods', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
+                        )
+                        execSQL(
+                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('9165f20d-1ce6-4eb6-b2a8-0955dd8f6407', 'Sony Headphones', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
+                        )
+                        execSQL(
+                            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('1c7b54aa-61cd-487d-ac2f-7a41537a84e8', 'Default', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
+                        )
+                    }
+                }
+            }
+        )
+        .build()
 }
 
 @TypeConverters(Convertors::class)
 @Database(entities = [LocalHeadphone::class, LocalTest::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun headphoneDao(): HeadphoneDao
+
     abstract fun testDao(): TestDao
+
     abstract fun testHeadphoneDao(): TestHeadphoneDao
 }
 
