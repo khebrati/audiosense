@@ -1,6 +1,8 @@
 package ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice
 
+// import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,8 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Earbuds
-import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -35,13 +35,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
+import audiosense.composeapp.generated.resources.AppleAirpodPro
+import audiosense.composeapp.generated.resources.GalaxyBudsFe
+import audiosense.composeapp.generated.resources.Res
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
@@ -54,8 +57,8 @@ fun SelectDeviceScreen(
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    //TODO commented to build previews
-//    BackHandler { onNavigateBack() }
+    // TODO commented to build previews
+    //    BackHandler { onNavigateBack() }
     AudiosenseScaffold(
         screenTitle = selectDeviceRoute.title,
         canNavigateBack = true,
@@ -97,11 +100,11 @@ fun HeadphonesList(
                 isSelected = selectedIndex == index,
             )
         }
-        item{
+        item {
             ListItem(
                 text = "Add new",
                 onClick = {
-                    //todo go to calibration screen
+                    // todo go to calibration screen
                 },
                 isSelected = false,
             )
@@ -117,9 +120,9 @@ fun SelectDevicePreview() {
             SelectDeviceUiState(
                 headphones =
                     listOf(
-                        HeadphoneUiState(model = "Galaxy buds", id = "0"),
+                        HeadphoneUiState(model = "Galaxy Buds FE", id = "0"),
+                        HeadphoneUiState(model = "Apple Airpods", id = "2"),
                         HeadphoneUiState(model = "Sony Headphones", id = "1"),
-                        HeadphoneUiState(model = "Airpods", id = "2"),
                     )
             )
         )
@@ -164,12 +167,8 @@ private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier
     }
 }
 
-@Composable
-fun AddHeadphone(
-    modifier: Modifier = Modifier
-){
+@Composable fun AddHeadphone(modifier: Modifier = Modifier) {}
 
-}
 @Composable
 fun ListItem(
     text: String,
@@ -180,7 +179,11 @@ fun ListItem(
     ElevatedCard(
         colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+                containerColor =
+                    if(text == "Add new"){
+                        MaterialTheme.colorScheme.tertiaryContainer
+                    }else
+                    MaterialTheme.colorScheme.surfaceContainerLowest
             ),
         modifier =
             if (isSelected)
@@ -196,19 +199,42 @@ fun ListItem(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             modifier = modifier.padding(12.dp).fillMaxWidth(),
         ) {
-            Box(
-                modifier =
-                    Modifier.background(
-                            color = MaterialTheme.colorScheme.tertiaryContainer,
-                            shape = MaterialTheme.shapes.medium,
-                        )
-                        .size(50.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                if(text == "Add new"){
+            when(text){
+                "Galaxy Buds FE" ->{
+                    Image(
+                        painter = painterResource(Res.drawable.GalaxyBudsFe),
+                        contentDescription = "Galaxy Buds FE image",
+                        modifier = Modifier.size(70.dp),
+                    )
+                }
+                "Apple Airpods" ->{
+                    Image(
+                        painter = painterResource(Res.drawable.AppleAirpodPro),
+                        contentDescription = "Apple Airpods",
+                        modifier = Modifier.size(70.dp),
+                    )
+                }
+                "Add new" ->{
                     AddNewIcon()
                 }
-                else HeadphoneIcon(text)
+                else ->{
+                    Box(
+                        modifier = Modifier.size(70.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Box(
+                            modifier =
+                                Modifier.background(
+                                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                                    shape = MaterialTheme.shapes.medium,
+                                )
+                                    .size(50.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            HeadphoneIcon(text)
+                        }
+                    }
+                }
             }
             Text(text = text, style = MaterialTheme.typography.bodyLarge)
         }
@@ -216,25 +242,18 @@ fun ListItem(
 }
 
 @Composable
-fun AddNewIcon(
-    modifier: Modifier = Modifier
-) {
+fun AddNewIcon(modifier: Modifier = Modifier) {
     Icon(
         contentDescription = "Headphone icon",
         imageVector = Icons.Default.Add,
-        modifier = modifier
+        modifier = modifier,
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
 fun HeadphoneItemPreview() {
     AppTheme {
-        ListItem(
-            text = "Galaxy Buds",
-            modifier = Modifier.fillMaxWidth(),
-            isSelected = true,
-        )
+        ListItem(text = "Galaxy Buds", modifier = Modifier.fillMaxWidth(), isSelected = true)
     }
 }
