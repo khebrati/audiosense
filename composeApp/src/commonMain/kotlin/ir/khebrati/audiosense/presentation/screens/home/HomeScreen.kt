@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
@@ -54,7 +57,9 @@ fun HomeScreen(
             )
         },
         onNavigateBack = { /* No back navigation in Home */ },
-    ) {}
+    ) {
+        HomeScreenContent(uiState)
+    }
 }
 
 @Preview
@@ -90,6 +95,22 @@ fun SessionRecordContentPreview() {
 }
 
 @Composable
+fun HomeScreenContent(uiState: HomeUiState) {
+    LazyColumn {
+        items(uiState.compactTestRecordUiStates) { record ->
+            SessionRecordCard(
+                record.leftAC,
+                record.rightAC,
+                record.headphoneModel,
+                record.lossDescription,
+                date = record.date,
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+    }
+}
+
+@Composable
 fun SessionRecordCard(
     rightAC: Map<Int, Int>,
     leftAC: Map<Int, Int>,
@@ -104,7 +125,7 @@ fun SessionRecordCard(
                 .copy(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
         modifier = modifier.height(200.dp).fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.fillMaxSize().padding(15.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth().weight(3f),
                 verticalAlignment = Alignment.CenterVertically,
@@ -115,13 +136,11 @@ fun SessionRecordCard(
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(text = date, style = MaterialTheme.typography.labelMedium)
                 }
-                Box(
-                    modifier = Modifier.padding(5.dp)
-                ) {
+                Box(modifier = Modifier.padding(5.dp)) {
                     CompactAudiogram(
                         rightAC = rightAC,
                         leftAC = leftAC,
-                        modifier = Modifier.width(150.dp).height(120.dp),
+                        modifier = Modifier.width(120.dp).height(90.dp),
                     )
                 }
             }
@@ -131,11 +150,11 @@ fun SessionRecordCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
-                    modifier = Modifier.width(110.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     HeadphoneIcon(headphoneName, modifier = Modifier.size(15.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(text = headphoneName, style = MaterialTheme.typography.labelSmall)
                 }
             }
@@ -146,11 +165,73 @@ fun SessionRecordCard(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    AudiosenseScaffold(
-        screenTitle = "Good morning",
-        canNavigateBack = false,
-        floatingActionButton = { HomeFAB(onNavigateCalibration = {}, onNavigateSelectDevice = {}) },
-        onNavigateBack = {},
-    ) {}
-    AppTheme {}
+    val uiState =
+        HomeUiState(
+            currentTimeOfDay = TimeOfDay.AFTERNOON,
+            compactTestRecordUiStates =
+                listOf(
+                    CompactTestRecordUiState(
+                        leftAC =
+                            hashMapOf(
+                                125 to 90,
+                                250 to 50,
+                                500 to 20,
+                                1000 to 20,
+                                2000 to 30,
+                                4000 to 55,
+                                8000 to 35,
+                            ),
+                        rightAC =
+                            hashMapOf(
+                                125 to 30,
+                                250 to 30,
+                                500 to 5,
+                                1000 to 0,
+                                2000 to 0,
+                                4000 to 5,
+                                8000 to 5,
+                            ),
+                        date = "July 22, 2025",
+                        headphoneModel = "Galaxy buds fe",
+                        lossDescription = "Profound loss",
+                    ),
+                    CompactTestRecordUiState(
+                        leftAC =
+                            hashMapOf(
+                                125 to 90,
+                                250 to 50,
+                                500 to 20,
+                                1000 to 20,
+                                2000 to 30,
+                                4000 to 55,
+                                8000 to 35,
+                            ),
+                        rightAC =
+                            hashMapOf(
+                                125 to 30,
+                                250 to 30,
+                                500 to 5,
+                                1000 to 0,
+                                2000 to 0,
+                                4000 to 5,
+                                8000 to 5,
+                            ),
+                        date = "Feb 22, 2025",
+                        headphoneModel = "Apple headphones",
+                        lossDescription = "Normal hearing",
+                    ),
+                ),
+        )
+    AppTheme {
+        AudiosenseScaffold(
+            screenTitle = "Good morning",
+            canNavigateBack = false,
+            floatingActionButton = {
+                HomeFAB(onNavigateCalibration = {}, onNavigateSelectDevice = {})
+            },
+            onNavigateBack = {},
+        ) {
+            HomeScreenContent(uiState)
+        }
+    }
 }

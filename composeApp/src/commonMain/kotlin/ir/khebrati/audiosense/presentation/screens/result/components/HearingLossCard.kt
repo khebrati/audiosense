@@ -29,7 +29,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun HearingLossCard(lossDbHl: Int, side: SideUiState, modifier: Modifier = Modifier) {
+fun HearingLossCard(describedLossLevel: String,lossDbHl: Int, side: SideUiState, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         colors =
@@ -71,26 +71,18 @@ fun HearingLossCard(lossDbHl: Int, side: SideUiState, modifier: Modifier = Modif
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
-                Text(determineLossLevel(lossDbHl), style = MaterialTheme.typography.labelSmall)
+                Text(describedLossLevel, style = MaterialTheme.typography.labelSmall)
             }
         }
     }
 }
 
-private fun determineLossLevel(loss: Int) =
-    when {
-        loss < 20 -> "Normal"
-        20 <= loss && loss < 40 -> "Mild Loss"
-        40 <= loss && loss < 70 -> "Moderate Loss"
-        70 <= loss && loss < 90 -> "Severe Loss"
-        else -> "Profound Loss"
-    }
 
 @Preview
 @Composable
 fun previewHearingLossCardLeft() {
     AppTheme {
-        HearingLossCard(lossDbHl = 30, side = SideUiState.LEFT, modifier = Modifier.size(185.dp))
+        HearingLossCard(lossDbHl = 30, side = SideUiState.LEFT, describedLossLevel = "Profound",modifier = Modifier.size(185.dp))
     }
 }
 
@@ -98,6 +90,6 @@ fun previewHearingLossCardLeft() {
 @Composable
 fun previewHearingLossCardRight() {
     AppTheme {
-        HearingLossCard(lossDbHl = 46, side = SideUiState.RIGHT, modifier = Modifier.size(185.dp))
+        HearingLossCard(lossDbHl = 46, side = SideUiState.RIGHT, describedLossLevel = "Normal", modifier = Modifier.size(185.dp))
     }
 }
