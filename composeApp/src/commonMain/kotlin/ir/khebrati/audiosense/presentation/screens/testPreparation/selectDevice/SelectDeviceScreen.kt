@@ -23,8 +23,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -100,15 +102,6 @@ fun HeadphonesList(
                 isSelected = selectedIndex == index,
             )
         }
-        item {
-            ListItem(
-                text = "Add new",
-                onClick = {
-                    // todo go to calibration screen
-                },
-                isSelected = false,
-            )
-        }
     }
 }
 
@@ -141,11 +134,27 @@ private fun SelectDeviceContent(
     onNavigateTest: (TestRoute) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
-        HeadphonesList(
-            uiState.headphones.map { it.model },
-            uiState.selectedHeadphoneIndex,
-            onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
-        )
+        Scaffold(
+            modifier = Modifier.weight(1f),
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        // TODO go to calibration
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add a new headphone"
+                    )
+                }
+            },
+        ) {
+            HeadphonesList(
+                uiState.headphones.map { it.model },
+                uiState.selectedHeadphoneIndex,
+                onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
+            )
+        }
         val selectedHeadphoneId =
             remember(uiState) {
                 uiState.run {
@@ -167,8 +176,6 @@ private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier
     }
 }
 
-@Composable fun AddHeadphone(modifier: Modifier = Modifier) {}
-
 @Composable
 fun ListItem(
     text: String,
@@ -179,11 +186,7 @@ fun ListItem(
     ElevatedCard(
         colors =
             CardDefaults.cardColors(
-                containerColor =
-                    if(text == "Add new"){
-                        MaterialTheme.colorScheme.tertiaryContainer
-                    }else
-                    MaterialTheme.colorScheme.surfaceContainerLowest
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             ),
         modifier =
             if (isSelected)
@@ -199,35 +202,29 @@ fun ListItem(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             modifier = modifier.padding(12.dp).fillMaxWidth(),
         ) {
-            when(text){
-                "Galaxy Buds FE" ->{
+            when (text) {
+                "Galaxy Buds FE" -> {
                     Image(
                         painter = painterResource(Res.drawable.GalaxyBudsFe),
                         contentDescription = "Galaxy Buds FE image",
                         modifier = Modifier.size(70.dp),
                     )
                 }
-                "Apple Airpods" ->{
+                "Apple Airpods" -> {
                     Image(
                         painter = painterResource(Res.drawable.AppleAirpodPro),
                         contentDescription = "Apple Airpods",
                         modifier = Modifier.size(70.dp),
                     )
                 }
-                "Add new" ->{
-                    AddNewIcon()
-                }
-                else ->{
-                    Box(
-                        modifier = Modifier.size(70.dp),
-                        contentAlignment = Alignment.Center
-                    ){
+                else -> {
+                    Box(modifier = Modifier.size(70.dp), contentAlignment = Alignment.Center) {
                         Box(
                             modifier =
                                 Modifier.background(
-                                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                                    shape = MaterialTheme.shapes.medium,
-                                )
+                                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                                        shape = MaterialTheme.shapes.medium,
+                                    )
                                     .size(50.dp),
                             contentAlignment = Alignment.Center,
                         ) {
