@@ -3,17 +3,22 @@ package ir.khebrati.audiosense.presentation.screens.home
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.khebrati.audiosense.domain.model.Test
+import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.TimeTeller
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
-class HomeViewModel(val timeTeller: TimeTeller) : ViewModel() {
+class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) : ViewModel() {
     private val currentTimeOfDay =
         timeTeller
             .observeTimeOfDay()
@@ -23,64 +28,9 @@ class HomeViewModel(val timeTeller: TimeTeller) : ViewModel() {
                 started = SharingStarted.WhileSubscribed(5000),
             )
 
-    // todo load from db
-    private val testRecords =
-        MutableStateFlow(
-            listOf(
-                CompactTestRecordUiState(
-                    leftAC =
-                        hashMapOf(
-                            125 to 90,
-                            250 to 50,
-                            500 to 20,
-                            1000 to 20,
-                            2000 to 30,
-                            4000 to 55,
-                            8000 to 35,
-                        ),
-                    rightAC =
-                        hashMapOf(
-                            125 to 30,
-                            250 to 30,
-                            500 to 5,
-                            1000 to 0,
-                            2000 to 0,
-                            4000 to 5,
-                            8000 to 5,
-                        ),
-                    date = "July 22, 2025",
-                    headphoneModel = "Galaxy buds fe",
-                    lossDescription = describeLossLevel(14)
-                ),
-                CompactTestRecordUiState(
-                    leftAC =
-                        hashMapOf(
-                            125 to 90,
-                            250 to 50,
-                            500 to 20,
-                            1000 to 20,
-                            2000 to 30,
-                            4000 to 55,
-                            8000 to 35,
-                        ),
-                    rightAC =
-                        hashMapOf(
-                            125 to 30,
-                            250 to 30,
-                            500 to 5,
-                            1000 to 0,
-                            2000 to 0,
-                            4000 to 5,
-                            8000 to 5,
-                        ),
-                    date = "Feb 22, 2025",
-                    headphoneModel = "Apple headphones",
-                    lossDescription = describeLossLevel(50)
-                ),
-            )
-        )
+    private val testRecords = testRepository.observeAll()
 
-    private val _uiState = MutableStateFlow(HomeUiState(currentTimeOfDay.value, testRecords.value))
+    private val _uiState = MutableStateFlow(HomeUiState(currentTimeOfDay.value, emptyList()))
     val uiState = _uiState
 
     init {
@@ -89,8 +39,22 @@ class HomeViewModel(val timeTeller: TimeTeller) : ViewModel() {
 
     private fun combineUiFlows() =
         combine(currentTimeOfDay, testRecords) { currentTime, testRecords ->
-            HomeUiState(currentTime, testRecords)
+            HomeUiState(currentTime, testRecords.map { it.toUiState() })
         }
+}
+
+private fun Test.toUiState() =
+    CompactTestRecordUiState(
+        leftAC = leftAC,
+        rightAC = rightAC,
+        date = toHumanReadableDate(dateTime),
+        headphoneModel = headphone.model,
+        lossDescription = describeLossLevel(leftAC, rightAC),
+    )
+
+private fun toHumanReadableDate(instant: Instant): String {
+    val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    return "${localDate.date.month} ${localDate.day}, ${localDate.year}"
 }
 
 data class CompactTestRecordUiState(
