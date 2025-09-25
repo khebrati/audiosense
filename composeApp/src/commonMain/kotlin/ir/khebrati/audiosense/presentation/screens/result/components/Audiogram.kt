@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
-import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.utils.toSortedMap
@@ -45,13 +44,13 @@ fun Audiogram(
     BoxWithConstraints(modifier) {
         val minHeight = this.minHeight
         val minDim = min(minHeight, minWidth)
-        val isMoreThan100 = minDim > 100.dp
-        val hasSymbols = isMoreThan100
+        val isCompact = minDim < 150.dp
+        val hasSymbols = !isCompact
         val symbolRadius = minDim / 40
-        val hasLabels = isMoreThan100
+        val hasLabels = !isCompact
         val labelFontSize = (minDim / 25).value.sp
         val labelFontWeight = FontWeight((minDim * 2).value.toInt())
-        val hasBackgroundLines = isMoreThan100
+        val hasBackgroundLines = !isCompact
         val textMeasurer = rememberTextMeasurer()
         Canvas(modifier = modifier.fillMaxWidth()) {
             drawableAudiogram(
@@ -103,8 +102,10 @@ fun DrawScope.drawableAudiogram(
     val chartHeight = size.height - 4 * yUnit
     val chartSize = Size(chartWidth, chartHeight)
     val labelColor = if(systemIsDark) Color.White else Color.Black
-    dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer, labelFontSize, labelFontWeight,labelColor)
-    freqLabels(chartSize, xUnit, yUnit, textMeasurer,labelFontSize,labelFontWeight,labelColor)
+    if(hasLabels){
+        dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer, labelFontSize, labelFontWeight,labelColor)
+        freqLabels(chartSize, xUnit, yUnit, textMeasurer,labelFontSize,labelFontWeight,labelColor)
+    }
     audiogramChart(
         leftAC,
         rightAC,
@@ -395,7 +396,7 @@ fun PreviewAudiogramHuge() {
 @Composable
 fun PreviewAudiogramSmall() {
     Audiogram(
-        modifier = Modifier.size(150.dp),
+        modifier = Modifier.size(200.dp),
         leftAC =
             hashMapOf(
                 125 to 90,
