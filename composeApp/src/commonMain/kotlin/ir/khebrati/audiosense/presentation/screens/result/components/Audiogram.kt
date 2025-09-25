@@ -24,6 +24,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
@@ -48,8 +49,8 @@ fun Audiogram(
         val hasSymbols = isMoreThan100
         val symbolRadius = minDim / 40
         val hasLabels = isMoreThan100
-        val labelFontSize = (minDim / 30).value.sp
-        val labelFontWeight = FontWeight((minDim * 3 / 2).value.toInt())
+        val labelFontSize = (minDim / 25).value.sp
+        val labelFontWeight = FontWeight((minDim * 2).value.toInt())
         val hasBackgroundLines = isMoreThan100
         val textMeasurer = rememberTextMeasurer()
         Canvas(modifier = modifier.fillMaxWidth()) {
@@ -63,6 +64,9 @@ fun Audiogram(
                 backgroundLineStrokeWidth = 2f,
                 acStrokeWidth = 5f,
                 textMeasurer = textMeasurer,
+                hasLabels = hasLabels,
+                labelFontSize = labelFontSize,
+                labelFontWeight = labelFontWeight
             )
         }
     }
@@ -85,6 +89,9 @@ fun DrawScope.drawableAudiogram(
     acStrokeWidth: Float,
     hasBackgroundLines: Boolean,
     textMeasurer: TextMeasurer,
+    hasLabels: Boolean,
+    labelFontSize: TextUnit,
+    labelFontWeight: FontWeight
 ) {
     // This is basically the adaptive sizing unit we will use to position anything on x-axis
     // this value is equal to distance between 2 AC points, twice the space for labels, twice
@@ -95,8 +102,8 @@ fun DrawScope.drawableAudiogram(
     val chartWidth = size.width - 2 * xUnit
     val chartHeight = size.height - 4 * yUnit
     val chartSize = Size(chartWidth, chartHeight)
-    dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer)
-    freqLabels(chartSize, xUnit, yUnit, textMeasurer)
+    dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer, labelFontSize, labelFontWeight)
+    freqLabels(chartSize, xUnit, yUnit, textMeasurer,labelFontSize,labelFontWeight)
     audiogramChart(
         leftAC,
         rightAC,
@@ -139,12 +146,14 @@ private fun DrawScope.dbHlLabels(
     xUnit: Float,
     yUnit: Float,
     textMeasurer: TextMeasurer,
+    fontSize: TextUnit,
+    fontWeight: FontWeight
 ) {
     allDbHLOffsets(chartHeight).forEachIndexed { index, y ->
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(dbHLLabels()[2 * index]),
-                style = TextStyle(fontSize = 12.sp),
+                style = TextStyle(fontSize = fontSize, fontWeight = fontWeight)
             )
         val textWidth = labelResult.size.width
         val textHeight = labelResult.size.height
@@ -160,13 +169,15 @@ private fun DrawScope.freqLabels(
     xUnit: Float,
     yUnit: Float,
     textMeasurer: TextMeasurer,
+    fontSize: TextUnit,
+    fontWeight: FontWeight
 ) {
     val acPaddedAreaWidth = chartSize.width - 2 * xUnit
     allFreqOffsets(acPaddedAreaWidth).forEachIndexed { index, x ->
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(frequenciesLabels()[index]),
-                style = TextStyle(fontSize = 12.sp),
+                style = TextStyle(fontSize = fontSize, fontWeight = fontWeight),
             )
         val textWidth = labelResult.size.width
         drawText(
