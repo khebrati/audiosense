@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Earbuds
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material3.Button
@@ -90,10 +91,19 @@ fun HeadphonesList(
             }
         }
         itemsIndexed(headphoneNames) { index, name ->
-            HeadphoneItem(
-                modelName = name,
+            ListItem(
+                text = name,
                 onClick = { onSelectedChange(index) },
                 isSelected = selectedIndex == index,
+            )
+        }
+        item{
+            ListItem(
+                text = "Add new",
+                onClick = {
+                    //todo go to calibration screen
+                },
+                isSelected = false,
             )
         }
     }
@@ -155,8 +165,14 @@ private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier
 }
 
 @Composable
-fun HeadphoneItem(
-    modelName: String,
+fun AddHeadphone(
+    modifier: Modifier = Modifier
+){
+
+}
+@Composable
+fun ListItem(
+    text: String,
     onClick: () -> Unit = {},
     isSelected: Boolean,
     modifier: Modifier = Modifier,
@@ -189,21 +205,34 @@ fun HeadphoneItem(
                         .size(50.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                HeadphoneIcon(modelName)
+                if(text == "Add new"){
+                    AddNewIcon()
+                }
+                else HeadphoneIcon(text)
             }
-            Text(text = modelName, style = MaterialTheme.typography.bodyLarge)
+            Text(text = text, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
 
+@Composable
+fun AddNewIcon(
+    modifier: Modifier = Modifier
+) {
+    Icon(
+        contentDescription = "Headphone icon",
+        imageVector = Icons.Default.Add,
+        modifier = modifier
+    )
+}
 
 
 @Preview(showBackground = true)
 @Composable
 fun HeadphoneItemPreview() {
     AppTheme {
-        HeadphoneItem(
-            modelName = "Galaxy Buds",
+        ListItem(
+            text = "Galaxy Buds",
             modifier = Modifier.fillMaxWidth(),
             isSelected = true,
         )
