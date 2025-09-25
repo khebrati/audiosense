@@ -21,7 +21,7 @@ fun CompactAudiogram(
     Card(
         colors =
             CardDefaults.cardColors()
-                .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                .copy(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(width = 0.2.dp, color = MaterialTheme.colorScheme.outline)
     ) {
         Audiogram(leftAC, rightAC, modifier)
