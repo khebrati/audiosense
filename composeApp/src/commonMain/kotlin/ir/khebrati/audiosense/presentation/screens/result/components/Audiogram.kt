@@ -1,8 +1,8 @@
 package ir.khebrati.audiosense.presentation.screens.result.components
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.DrawResult
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -52,22 +54,27 @@ fun Audiogram(
         val labelFontWeight = FontWeight((minDim * 2).value.toInt())
         val hasBackgroundLines = !isCompact
         val textMeasurer = rememberTextMeasurer()
-        Canvas(modifier = modifier.fillMaxWidth()) {
-            drawableAudiogram(
-                leftAC,
-                rightAC,
-                systemIsDark = systemIsDark,
-                hasAudiometricSymbols = hasSymbols,
-                symbolRadius = symbolRadius,
-                hasBackgroundLines = hasBackgroundLines,
-                backgroundLineStrokeWidth = 2f,
-                acStrokeWidth = 5f,
-                textMeasurer = textMeasurer,
-                hasLabels = hasLabels,
-                labelFontSize = labelFontSize,
-                labelFontWeight = labelFontWeight
-            )
-        }
+        Spacer(
+            modifier =
+                modifier.fillMaxWidth().drawWithCache() {
+                    onDrawBehind {
+                        drawableAudiogram(
+                            leftAC,
+                            rightAC,
+                            systemIsDark = systemIsDark,
+                            hasAudiometricSymbols = hasSymbols,
+                            symbolRadius = symbolRadius,
+                            hasBackgroundLines = hasBackgroundLines,
+                            backgroundLineStrokeWidth = 2f,
+                            acStrokeWidth = 5f,
+                            textMeasurer = textMeasurer,
+                            hasLabels = hasLabels,
+                            labelFontSize = labelFontSize,
+                            labelFontWeight = labelFontWeight,
+                        )
+                    }
+                }
+        )
     }
 }
 
@@ -90,8 +97,8 @@ fun DrawScope.drawableAudiogram(
     textMeasurer: TextMeasurer,
     hasLabels: Boolean,
     labelFontSize: TextUnit,
-    labelFontWeight: FontWeight
-) {
+    labelFontWeight: FontWeight,
+){
     // This is basically the adaptive sizing unit we will use to position anything on x-axis
     // this value is equal to distance between 2 AC points, twice the space for labels, twice
     // the distance between first/last ac points and chart line end.
@@ -101,10 +108,26 @@ fun DrawScope.drawableAudiogram(
     val chartWidth = size.width - 2 * xUnit
     val chartHeight = size.height - 4 * yUnit
     val chartSize = Size(chartWidth, chartHeight)
-    val labelColor = if(systemIsDark) Color.White else Color.Black
-    if(hasLabels){
-        dbHlLabels(chartHeight, xUnit, yUnit, textMeasurer, labelFontSize, labelFontWeight,labelColor)
-        freqLabels(chartSize, xUnit, yUnit, textMeasurer,labelFontSize,labelFontWeight,labelColor)
+    val labelColor = if (systemIsDark) Color.White else Color.Black
+    if (hasLabels) {
+        dbHlLabels(
+            chartHeight,
+            xUnit,
+            yUnit,
+            textMeasurer,
+            labelFontSize,
+            labelFontWeight,
+            labelColor,
+        )
+        freqLabels(
+            chartSize,
+            xUnit,
+            yUnit,
+            textMeasurer,
+            labelFontSize,
+            labelFontWeight,
+            labelColor,
+        )
     }
     audiogramChart(
         leftAC,
@@ -138,8 +161,17 @@ private fun DrawScope.audiogramChart(
         if (hasBackgroundLines) {
             drawChartLines(systemIsDark, backgroundLineStrokeWidth, chartSize)
         }
-        val acPaddedAreaSize = Size(chartSize.width - 2 * xUnit,chartSize.height)
-        acLines(leftAC, rightAC, hasAudiometricSymbols, acStrokeWidth, symbolRadius, acPaddedAreaSize,xUnit,yUnit)
+        val acPaddedAreaSize = Size(chartSize.width - 2 * xUnit, chartSize.height)
+        acLines(
+            leftAC,
+            rightAC,
+            hasAudiometricSymbols,
+            acStrokeWidth,
+            symbolRadius,
+            acPaddedAreaSize,
+            xUnit,
+            yUnit,
+        )
     }
 }
 
@@ -150,13 +182,13 @@ private fun DrawScope.dbHlLabels(
     textMeasurer: TextMeasurer,
     fontSize: TextUnit,
     fontWeight: FontWeight,
-    color: Color
+    color: Color,
 ) {
     allDbHLOffsets(chartHeight).forEachIndexed { index, y ->
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(dbHLLabels()[2 * index]),
-                style = TextStyle(color = color,fontSize = fontSize, fontWeight = fontWeight)
+                style = TextStyle(color = color, fontSize = fontSize, fontWeight = fontWeight),
             )
         val textWidth = labelResult.size.width
         val textHeight = labelResult.size.height
@@ -174,19 +206,18 @@ private fun DrawScope.freqLabels(
     textMeasurer: TextMeasurer,
     fontSize: TextUnit,
     fontWeight: FontWeight,
-    color: Color
+    color: Color,
 ) {
     val acPaddedAreaWidth = chartSize.width - 2 * xUnit
     allFreqOffsets(acPaddedAreaWidth).forEachIndexed { index, x ->
         val labelResult =
             textMeasurer.measure(
                 AnnotatedString(frequenciesLabels()[index]),
-                style = TextStyle(color = color,fontSize = fontSize, fontWeight = fontWeight),
+                style = TextStyle(color = color, fontSize = fontSize, fontWeight = fontWeight),
             )
         val textWidth = labelResult.size.width
         drawText(
-            topLeft =
-                Offset(2 * xUnit + x - (textWidth / 2f), size.height - yUnit),
+            topLeft = Offset(2 * xUnit + x - (textWidth / 2f), size.height - yUnit),
             textLayoutResult = labelResult,
         )
     }
