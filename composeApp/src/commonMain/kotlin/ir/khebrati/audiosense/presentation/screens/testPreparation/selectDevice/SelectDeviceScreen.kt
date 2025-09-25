@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 //import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
+import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
@@ -188,20 +189,14 @@ fun HeadphoneItem(
                         .size(50.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                val icon =
-                    if (isEarbuds(modelName)) Icons.Default.Earbuds else Icons.Default.Headphones
-                Icon(
-                    contentDescription = "Headphone icon",
-                    imageVector = icon,
-                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
+                HeadphoneIcon(modelName)
             }
             Text(text = modelName, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
 
-private fun isEarbuds(name: String) = name.lowercase().contains(Regex("bud|buds|airpod|airpods"))
+
 
 @Preview(showBackground = true)
 @Composable

@@ -66,15 +66,17 @@ private fun ReadyResultScreenContent(
             modifier = Modifier.fillMaxWidth().height(maxCardSize),
         ) {
             HearingLossCard(
-                lossDbHl = uiState.averageRightHearingLossDBHL,
+                lossDbHl = uiState.generalRightHearingLoss,
                 side = SideUiState.RIGHT,
                 modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
+                describedLossLevel = uiState.describedLeftHearingLoss
             )
             Spacer(modifier = Modifier.weight(1f))
             HearingLossCard(
-                lossDbHl = uiState.averageLeftHearingLossDBHL,
+                lossDbHl = uiState.generalLeftHearingLoss,
                 side = SideUiState.LEFT,
                 modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
+                describedLossLevel = uiState.describedRightHearingLoss
             )
         }
         Spacer(modifier = Modifier.height(30.dp))
@@ -94,8 +96,8 @@ fun PreviewResultScreen() {
     val uiState by remember {
         mutableStateOf(
             Ready(
-                averageLeftHearingLossDBHL = 46,
-                averageRightHearingLossDBHL = 30,
+                generalLeftHearingLoss = 46,
+                generalRightHearingLoss = 30,
                 leftAC =
                     hashMapOf(
                         125 to 90,
@@ -116,6 +118,8 @@ fun PreviewResultScreen() {
                         4000 to 5,
                         8000 to 5,
                     ),
+                describedRightHearingLoss = "Normal",
+                describedLeftHearingLoss = "Profound"
             )
         )
     }

@@ -9,12 +9,11 @@ import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.domain.model.Test
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
+import ir.khebrati.audiosense.domain.useCase.lossLevel.getLossLevel
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
@@ -43,8 +42,10 @@ sealed interface TestResultUiState {
     object Loading : TestResultUiState
 
     data class Ready(
-        val averageLeftHearingLossDBHL: Int,
-        val averageRightHearingLossDBHL: Int,
+        val generalLeftHearingLoss: Int,
+        val generalRightHearingLoss: Int,
+        val describedLeftHearingLoss: String,
+        val describedRightHearingLoss: String,
         val leftAC: Map<Int, Int>,
         val rightAC: Map<Int, Int>,
     ) : TestResultUiState
@@ -54,8 +55,10 @@ fun Test.toUiState() =
     TestResultUiState.Ready(
         leftAC = leftAC,
         rightAC = rightAC,
-        averageLeftHearingLossDBHL = leftAC.values.average().toInt(),
-        averageRightHearingLossDBHL = rightAC.values.average().toInt(),
+        generalLeftHearingLoss = getLossLevel(leftAC),
+        generalRightHearingLoss = getLossLevel(rightAC),
+        describedLeftHearingLoss = describeLossLevel(leftAC),
+        describedRightHearingLoss = describeLossLevel(rightAC)
     )
 
 @Immutable
