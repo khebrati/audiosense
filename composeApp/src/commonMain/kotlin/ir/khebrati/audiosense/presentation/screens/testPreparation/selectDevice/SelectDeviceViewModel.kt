@@ -29,7 +29,15 @@ class SelectDeviceViewModel(private val headphoneRepository: HeadphoneRepository
     fun handleAction(action: SelectDeviceUiAction) =
         when (action) {
             is SetSelectedDevice -> setSelectedDevice(action.index)
+            is DeleteHeadphone -> deleteHeadphone(action.index)
         }
+
+    private fun deleteHeadphone(index: Int) {
+        viewModelScope.launch {
+            val id = _uiState.value.headphones[index].id
+            headphoneRepository.deleteById(id)
+        }
+    }
 
     fun setSelectedDevice(index: Int?) {
         _uiState.update { it.copy(selectedHeadphoneIndex = index) }
@@ -39,6 +47,8 @@ class SelectDeviceViewModel(private val headphoneRepository: HeadphoneRepository
 @Immutable
 sealed interface SelectDeviceUiAction {
     data class SetSelectedDevice(val index: Int?) : SelectDeviceUiAction
+
+    data class DeleteHeadphone(val index: Int) : SelectDeviceUiAction
 }
 
 @Immutable

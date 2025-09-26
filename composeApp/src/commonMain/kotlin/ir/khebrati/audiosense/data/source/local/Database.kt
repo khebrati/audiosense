@@ -14,6 +14,7 @@ import ir.khebrati.audiosense.data.source.local.dao.TestDao
 import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
 import ir.khebrati.audiosense.data.source.local.entity.LocalTest
+import ir.khebrati.audiosense.domain.model.DefaultHeadphones
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -35,9 +36,9 @@ fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase {
 private fun prepopulateDb(connection: SQLiteConnection) {
     val headphones =
         listOf(
-            Pair("a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc", "Galaxy Buds FE"),
-            Pair("04cad680-777e-41a1-8770-f6bb5ed50ea8", "Apple Airpods"),
-            Pair("9165f20d-1ce6-4eb6-b2a8-0955dd8f6407", "Sony Headphones"),
+            Pair("a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc", DefaultHeadphones.GalaxyBudsFE.model),
+            Pair("04cad680-777e-41a1-8770-f6bb5ed50ea8", DefaultHeadphones.AppleAirpods.model),
+            Pair("9165f20d-1ce6-4eb6-b2a8-0955dd8f6407", DefaultHeadphones.SonyHeadphones.model),
             Pair("1c7b54aa-61cd-487d-ac2f-7a41537a84e8", "Default"),
         )
     headphones.forEach {
