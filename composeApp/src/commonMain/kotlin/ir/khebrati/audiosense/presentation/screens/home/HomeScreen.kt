@@ -51,18 +51,16 @@ import org.koin.compose.viewmodel.koinNavViewModel
 fun HomeScreen(
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
     onNavigateSetting: (SettingRoute) -> Unit,
-    onNavigateCalibration: (CalibrationRoute) -> Unit,
     onNavigateResult: (ResultRoute) -> Unit,
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeScreenContent(uiState, onNavigateCalibration, onNavigateSelectDevice)
+    HomeScreenContent(uiState,  onNavigateSelectDevice)
 }
 
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
-    onNavigateCalibration: (CalibrationRoute) -> Unit,
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
 ) {
     AudiosenseScaffold(
@@ -70,7 +68,6 @@ private fun HomeScreenContent(
         canNavigateBack = false,
         floatingActionButton = {
             HomeFAB(
-                onNavigateCalibration = { onNavigateCalibration(CalibrationRoute) },
                 onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) },
             )
         },
@@ -203,7 +200,6 @@ fun EmptyHomeScreenPreview() {
     AppTheme {
         HomeScreenContent(
             uiState = emptyUiState,
-            onNavigateCalibration = {},
             onNavigateSelectDevice = {},
         )
     }
@@ -306,7 +302,6 @@ fun HomeScreenPreview() {
     AppTheme {
         HomeScreenContent(
             uiState = uiState,
-            onNavigateCalibration = {},
             onNavigateSelectDevice = {},
         )
     }

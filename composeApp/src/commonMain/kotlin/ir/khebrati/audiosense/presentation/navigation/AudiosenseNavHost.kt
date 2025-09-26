@@ -29,7 +29,6 @@ fun AudiosenseNavHost(navController: NavHostController) {
             HomeScreen(
                 onNavigateSelectDevice = { navController.navigate(it) },
                 onNavigateSetting = { navController.navigate(it) },
-                onNavigateCalibration = { navController.navigate(it) },
                 onNavigateResult = { navController.navigate(it) },
             )
         }
