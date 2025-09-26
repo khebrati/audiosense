@@ -43,6 +43,7 @@ import audiosense.composeapp.generated.resources.GalaxyBudsFe
 import audiosense.composeapp.generated.resources.Res
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
@@ -56,6 +57,7 @@ fun SelectDeviceScreen(
     selectDeviceRoute: SelectDeviceRoute,
     onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
@@ -70,6 +72,7 @@ fun SelectDeviceScreen(
             uiState = uiState,
             onUiAction = viewModel::handleAction,
             onNavigateTest = onNavigateTest,
+            onNavigateCalibration = onNavigateCalibration
         )
     }
 }
@@ -80,6 +83,7 @@ fun HeadphonesList(
     headphoneNames: List<String>,
     selectedIndex: Int? = null,
     onSelectedChange: (Int) -> Unit,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -122,7 +126,7 @@ fun SelectDevicePreview() {
     }
     AppTheme {
         AudiosenseScaffold(screenTitle = "New Test", canNavigateBack = true, onNavigateBack = {}) {
-            SelectDeviceContent(uiState, {}, {})
+            SelectDeviceContent(uiState, {}, {},{})
         }
     }
 }
@@ -132,6 +136,7 @@ private fun SelectDeviceContent(
     uiState: SelectDeviceUiState,
     onUiAction: (SelectDeviceUiAction) -> Unit,
     onNavigateTest: (TestRoute) -> Unit,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
         Scaffold(
@@ -139,7 +144,7 @@ private fun SelectDeviceContent(
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        // TODO go to calibration
+                        onNavigateCalibration(CalibrationRoute)
                     }
                 ) {
                     Icon(
@@ -153,6 +158,7 @@ private fun SelectDeviceContent(
                 uiState.headphones.map { it.model },
                 uiState.selectedHeadphoneIndex,
                 onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
+                onNavigateCalibration = onNavigateCalibration
             )
         }
         val selectedHeadphoneId =

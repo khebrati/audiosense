@@ -39,6 +39,7 @@ fun AudiosenseNavHost(navController: NavHostController) {
                 selectDeviceRoute = selectDeviceRoute,
                 onNavigateTest = { navController.navigate(it) },
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateCalibration = {navController.navigate(it)}
             )
         }
         composable<NoiseMeterRoute> { backStackEntry ->
