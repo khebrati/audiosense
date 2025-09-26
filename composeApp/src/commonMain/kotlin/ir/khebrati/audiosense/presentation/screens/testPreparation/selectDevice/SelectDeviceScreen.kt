@@ -20,12 +20,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -129,7 +131,10 @@ fun SelectDevicePreview() {
                         HeadphoneUiState(model = AppleAirpods.model, id = "2"),
                         HeadphoneUiState(model = SonyHeadphones.model, id = "1"),
                         HeadphoneUiState(model = "Random headphone", id = "3"),
-                        HeadphoneUiState(model = "Very very long headphone name that will probably overflow", id = "4"),
+                        HeadphoneUiState(
+                            model = "Very very long headphone name that will probably overflow",
+                            id = "4",
+                        ),
                     )
             )
         )
@@ -214,19 +219,21 @@ fun ListItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier.padding(12.dp).fillMaxWidth(),
         ) {
-            HeadphonePicAndName(text,modifier = Modifier.weight(1f))
+            HeadphonePicAndName(text, modifier = Modifier.weight(1f))
             if (!isDefaultHeadphone(text)) {
-                DeleteHeadphoneIcon(onClick = onDeleteHeadphone)
+                DeleteHeadphoneIcon(onRemoveHeadphone = onDeleteHeadphone)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DeleteHeadphoneIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DeleteHeadphoneIcon(onRemoveHeadphone: () -> Unit, modifier: Modifier = Modifier) {
+    var showDialog by remember { mutableStateOf(false) }
     Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) {
         Card(
-            modifier = modifier.size(30.dp).clickable(onClick = onClick),
+            modifier = modifier.size(30.dp).clickable(onClick = { showDialog = true }),
             colors =
                 CardDefaults.cardColors()
                     .copy(containerColor = MaterialTheme.colorScheme.errorContainer),
@@ -240,10 +247,31 @@ private fun DeleteHeadphoneIcon(onClick: () -> Unit, modifier: Modifier = Modifi
             }
         }
     }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = onRemoveHeadphone,
+                    colors =
+                        ButtonDefaults.buttonColors()
+                            .copy(containerColor = MaterialTheme.colorScheme.errorContainer),
+                ) {
+                    Text("Yes", color = MaterialTheme.colorScheme.onErrorContainer)
+                }
+            },
+            dismissButton = { Button(onClick = { showDialog = false }) { Text("No") } },
+            text = {
+                Text(
+                    "Are you sure you want to delete this headphone? All of its data, including calibration, will be permanently removed."
+                )
+            },
+        )
+    }
 }
 
 @Composable
-private fun HeadphonePicAndName(text: String,modifier: Modifier) {
+private fun HeadphonePicAndName(text: String, modifier: Modifier) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -282,10 +310,13 @@ private fun HeadphonePicAndName(text: String,modifier: Modifier) {
                 }
             }
         }
-        Text(text = text, style = MaterialTheme.typography.bodyLarge, overflow = TextOverflow.Ellipsis)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
