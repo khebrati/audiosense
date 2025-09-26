@@ -39,7 +39,7 @@ private fun prepopulateDb(connection: SQLiteConnection) {
             Pair("a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc", DefaultHeadphones.GalaxyBudsFE.model),
             Pair("04cad680-777e-41a1-8770-f6bb5ed50ea8", DefaultHeadphones.AppleAirpods.model),
             Pair("9165f20d-1ce6-4eb6-b2a8-0955dd8f6407", DefaultHeadphones.SonyHeadphones.model),
-            Pair("1c7b54aa-61cd-487d-ac2f-7a41537a84e8", "Default"),
+            Pair("1c7b54aa-61cd-487d-ac2f-7a41537a84e8", DefaultHeadphones.Uncalibrated.model),
         )
     headphones.forEach {
         connection.execSQL(
