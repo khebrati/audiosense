@@ -46,6 +46,7 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
 
 private fun Test.toUiState() =
     CompactTestRecordUiState(
+        id = id,
         leftAC = leftAC,
         rightAC = rightAC,
         date = toHumanReadableDate(dateTime),
@@ -59,6 +60,7 @@ private fun toHumanReadableDate(instant: Instant): String {
 }
 
 data class CompactTestRecordUiState(
+    val id: String,
     val leftAC: Map<Int, Int>,
     val rightAC: Map<Int, Int>,
     val date: String,

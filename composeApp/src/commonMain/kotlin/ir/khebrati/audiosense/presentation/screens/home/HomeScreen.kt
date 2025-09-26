@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,13 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
-import ir.khebrati.audiosense.domain.model.DefaultHeadphones
 import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
@@ -55,36 +55,38 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeScreenContent(uiState,  onNavigateSelectDevice)
+    HomeScreenContent(uiState, onNavigateSelectDevice, onNavigateResult)
 }
 
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
+    onNavigateResult: (ResultRoute) -> Unit,
 ) {
     AudiosenseScaffold(
         screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
         floatingActionButton = {
-            HomeFAB(
-                onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) },
-            )
+            HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) })
         },
         onNavigateBack = { /* No back navigation in Home */ },
     ) {
-        TestRecordsList(uiState.testRecords)
+        TestRecordsList(
+            uiState.testRecords,
+            onClickRecord = { onNavigateResult(ResultRoute(it.id)) },
+        )
     }
 }
 
 @Composable
-fun TestRecordsList(testRecords: TestRecords) {
+fun TestRecordsList(testRecords: TestRecords, onClickRecord: (CompactTestRecordUiState) -> Unit) {
     when (testRecords) {
         is TestRecords.Loading -> LoadingTestRecords()
         is TestRecords.Ready -> {
             if (testRecords.compactTestRecordUiStates.isEmpty()) {
                 EmptyRecordsList()
-            } else RecordsList(testRecords)
+            } else RecordsList(testRecords, onClickRecord)
         }
     }
 }
@@ -98,7 +100,10 @@ fun LoadingTestRecords() {
 }
 
 @Composable
-private fun RecordsList(testRecords: TestRecords.Ready) {
+private fun RecordsList(
+    testRecords: TestRecords.Ready,
+    onClickRecord: (CompactTestRecordUiState) -> Unit,
+) {
     LazyColumn {
         items(testRecords.compactTestRecordUiStates) { record ->
             SessionRecordCard(
@@ -107,6 +112,7 @@ private fun RecordsList(testRecords: TestRecords.Ready) {
                 record.headphoneModel,
                 record.lossDescription,
                 date = record.date,
+                onClick = { onClickRecord(record) },
             )
             Spacer(modifier = Modifier.height(15.dp))
         }
@@ -135,13 +141,14 @@ fun SessionRecordCard(
     headphoneName: String,
     lossDescription: String,
     date: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         colors =
             CardDefaults.cardColors()
                 .copy(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        modifier = modifier.height(200.dp).fillMaxWidth(),
+        modifier = modifier.height(200.dp).fillMaxWidth().clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp)) {
             Row(
@@ -197,12 +204,7 @@ fun EmptyHomeScreenPreview() {
             currentTimeOfDay = TimeOfDay.AFTERNOON,
             testRecords = TestRecords.Ready(compactTestRecordUiStates = emptyList()),
         )
-    AppTheme {
-        HomeScreenContent(
-            uiState = emptyUiState,
-            onNavigateSelectDevice = {},
-        )
-    }
+    AppTheme { HomeScreenContent(uiState = emptyUiState, onNavigateSelectDevice = {},{}) }
 }
 
 @Preview
@@ -233,6 +235,7 @@ fun SessionRecordContentPreview() {
             headphoneName = GalaxyBudsFE.model,
             lossDescription = "Mild Hearing Loss",
             date = "July 22, 2025",
+            onClick = {}
         )
     }
 }
@@ -270,6 +273,7 @@ fun HomeScreenPreview() {
                             date = "July 22, 2025",
                             headphoneModel = GalaxyBudsFE.model,
                             lossDescription = "Profound loss",
+                            id = "23"
                         ),
                         CompactTestRecordUiState(
                             leftAC =
@@ -295,14 +299,10 @@ fun HomeScreenPreview() {
                             date = "Feb 22, 2025",
                             headphoneModel = "Apple headphones",
                             lossDescription = "Normal hearing",
+                            id = "232"
                         ),
                     )
                 ),
         )
-    AppTheme {
-        HomeScreenContent(
-            uiState = uiState,
-            onNavigateSelectDevice = {},
-        )
-    }
+    AppTheme { HomeScreenContent(uiState = uiState, onNavigateSelectDevice = {},{}) }
 }
