@@ -1,6 +1,6 @@
 [versions]
 
-kotlin = "2.2.0"
+kotlin = "2.1.21"
 compose = "1.9.0-beta01"
 material3 = "1.9.0-alpha04"
 agp = "8.10.0"
@@ -17,7 +17,7 @@ materialKolor = "3.0.0"
 room = "2.7.2"
 sqlite = "2.5.0-alpha01"
 koin-bom = "4.0.3"
-ksp = "2.2.0-2.0.2"
+ksp = "2.1.21-2.0.2"
 runner = "1.6.2"
 kotlinx-serialization = "1.7.3"
 turbine = "1.2.1"

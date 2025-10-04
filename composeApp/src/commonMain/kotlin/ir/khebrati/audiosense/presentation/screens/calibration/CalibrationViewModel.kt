@@ -7,10 +7,11 @@ import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MAX_DB_SPL
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MIN_DB_SPL
 import ir.khebrati.audiosense.domain.model.Side
+import ir.khebrati.audiosense.domain.model.SoundPoint
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
-import ir.khebrati.audiosense.domain.useCase.sound.maker.test.TestSoundGenerator
+import ir.khebrati.audiosense.domain.useCase.sound.maker.test.AudiometryPCMGenerator
 import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayer
 import ir.khebrati.audiosense.domain.useCase.sound.player.toAudioChannel
 import ir.khebrati.audiosense.domain.useCase.spl.fromDbSpl
@@ -34,7 +35,7 @@ import kotlinx.coroutines.launch
 class CalibrationViewModel(
     private val headphoneRepository: HeadphoneRepository,
     private val calibrator: HeadphoneCalibrator,
-    private val testSoundGenerator: TestSoundGenerator,
+    private val audiometryPCMGenerator: AudiometryPCMGenerator,
     private val soundPlayer: SoundPlayer,
 ) : ViewModel() {
     private val frequencyOctaves = AcousticConstants.allFrequencyOctaves
@@ -135,9 +136,11 @@ class CalibrationViewModel(
 
     private fun playSound() {
         val soundSamples =
-            testSoundGenerator.makeTestSound(
-                frequency = _selectedFrequency.value,
-                amplitude = currentVolumeToPlay.value.fromDbSpl(),
+            audiometryPCMGenerator.generate(
+                SoundPoint(
+                    frequency = _selectedFrequency.value,
+                    amplitude = currentVolumeToPlay.value.fromDbSpl(),
+                )
             )
         soundPlayer.play(samples = soundSamples, channel = _selectedSide.value.toAudioChannel())
     }

@@ -2,19 +2,20 @@ package ir.khebrati.audiosense.domain.useCase.sound.maker.test
 
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MAX_PCM_16BIT_VALUE
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MIN_PCM_16BIT_VALUE
+import ir.khebrati.audiosense.domain.model.SoundPoint
 import ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic.HarmonicGenerator
 
-class TestSoundGeneratorImpl(private val harmonicGenerator: HarmonicGenerator) :
-    TestSoundGenerator {
-    override fun makeTestSound(frequency: Int, amplitude: Float) =
+class AudiometryPCMGeneratorImpl(private val harmonicGenerator: HarmonicGenerator) :
+    AudiometryPCMGenerator {
+    override fun generate(soundPoint: SoundPoint) =
         harmonicGenerator
             .makeHarmonicWave(
                 amplitude =
-                    amplitude.coerceIn(
+                    soundPoint.amplitude.coerceIn(
                         MIN_PCM_16BIT_VALUE.toFloat(),
                         MAX_PCM_16BIT_VALUE.toFloat(),
                     ),
-                frequency = frequency,
+                frequency = soundPoint.frequency,
                 sampleRate = 44800,
                 durationSeconds = 5f,
                 fadeRatio = 0.1f,

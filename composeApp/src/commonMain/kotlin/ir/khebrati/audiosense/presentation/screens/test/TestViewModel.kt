@@ -7,7 +7,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.audiometry.PureToneAudiometry
+import ir.khebrati.audiosense.domain.useCase.sound.maker.test.AudiometryPCMGenerator
+import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayer
+import ir.khebrati.audiosense.domain.useCase.sound.player.toAudioChannel
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
+import ir.khebrati.audiosense.presentation.screens.result.SideUiState
+import ir.khebrati.audiosense.presentation.screens.result.toSide
 import ir.khebrati.audiosense.presentation.screens.test.TestUiAction.OnClick
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,13 +22,46 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TestViewModel(val handle: SavedStateHandle, val testRepository: TestRepository) :
+class TestViewModel(
+    val handle: SavedStateHandle,
+    val testRepository: TestRepository,
+    val audiometry: PureToneAudiometry,
+    val pcmGenerator: AudiometryPCMGenerator,
+    val soundPlayer: SoundPlayer
+) :
     ViewModel() {
     private val headphoneId = handle.toRoute<TestRoute>().selectedHeadphoneId
 
     init {
         Logger.withTag("TestViewModel").d { "Got device id $headphoneId" }
+        keepStatesUpdated()
+        startAudiometryProcedure()
     }
+
+    private fun startAudiometryProcedure() {
+        viewModelScope.launch {
+            audiometry.start()
+            audiometry.sounds.collect { soundPoint ->
+                val pcm = pcmGenerator.generate(soundPoint)
+                soundPlayer.play(
+                    samples = pcm,
+                    channel = _uiState.value.side.toSide().toAudioChannel()
+                )
+            }
+        }
+    }
+
+    private fun keepStatesUpdated() {
+        viewModelScope.launch {
+            combineFlows().collect { progress ->
+                _uiState.update {
+                    it.copy(progress = progress)
+                }
+            }
+        }
+    }
+
+    fun combineFlows() = audiometry.progress
 
     val navigationEvents = MutableSharedFlow<NavigationEvent>()
     private val _uiState = MutableStateFlow(TestUiState())
@@ -35,11 +74,7 @@ class TestViewModel(val handle: SavedStateHandle, val testRepository: TestReposi
     }
 
     fun handleClick() {
-        _uiState.update { it.copy(it.progress + 0.1f) }
-        if (uiState.value.progress >= 1f) {
-            // todo add real test
-            insertFakeTestToDb()
-        }
+        audiometry.onHeard()
     }
 
     private fun insertFakeTestToDb() {
@@ -75,7 +110,8 @@ class TestViewModel(val handle: SavedStateHandle, val testRepository: TestReposi
     }
 }
 
-@Immutable data class TestUiState(val progress: Float = 0f)
+@Immutable
+data class TestUiState(val progress: Float = 0f, val side: SideUiState = SideUiState.LEFT)
 
 @Immutable
 sealed interface TestUiAction {
