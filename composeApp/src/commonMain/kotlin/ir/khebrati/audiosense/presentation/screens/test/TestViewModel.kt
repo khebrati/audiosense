@@ -15,6 +15,7 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.presentation.screens.result.toSide
 import ir.khebrati.audiosense.presentation.screens.test.TestUiAction.OnClick
+import kotlinx.coroutines.Dispatchers
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,9 @@ class TestViewModel(
     ViewModel() {
     private val headphoneId = handle.toRoute<TestRoute>().selectedHeadphoneId
 
+    private val _uiState = MutableStateFlow(TestUiState())
+    val uiState = _uiState.asStateFlow()
+
     init {
         Logger.withTag("TestViewModel").d { "Got device id $headphoneId" }
         keepStatesUpdated()
@@ -41,12 +45,16 @@ class TestViewModel(
     private fun startAudiometryProcedure() {
         viewModelScope.launch {
             audiometry.start()
+        }
+        viewModelScope.launch(Dispatchers.Main) {
             audiometry.sounds.collect { soundPoint ->
                 val pcm = pcmGenerator.generate(soundPoint)
+                Logger.withTag("TestViewModel").d { "got pcm ${pcm.map { it }}" }
                 soundPlayer.play(
                     samples = pcm,
                     channel = _uiState.value.side.toSide().toAudioChannel()
                 )
+                Logger.withTag("TestViewModel").d { "after play ${pcm.map { it }}" }
             }
         }
     }
@@ -64,8 +72,6 @@ class TestViewModel(
     fun combineFlows() = audiometry.progress
 
     val navigationEvents = MutableSharedFlow<NavigationEvent>()
-    private val _uiState = MutableStateFlow(TestUiState())
-    val uiState = _uiState.asStateFlow()
 
     fun onUiAction(uiAction: TestUiAction) {
         when (uiAction) {

@@ -4,6 +4,8 @@ import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.domain.model.SoundPoint
+import ir.khebrati.audiosense.domain.useCase.spl.dbSpl
+import ir.khebrati.audiosense.domain.useCase.spl.fromDbSpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,14 +29,15 @@ class PureToneAudiometryImpl : PureToneAudiometry {
     override suspend fun start(calibrationCoefficients: Map<Int, Int>) {
         val size = AcousticConstants.allFrequencyOctaves.size
         AcousticConstants.allFrequencyOctaves.forEach { freq ->
-            delay(2.seconds)
-            _sounds.emit(SoundPoint(freq, 70f))
+            delay(5.seconds)
+            _sounds.emit(SoundPoint(freq, 60.dbSpl))
             Logger.withTag("Audiometry").d { "Played $freq 70f" }
             _progress.update { it + 1/size }
         }
     }
 
     override fun onHeard() {
+        if(_sounds.replayCache.isEmpty()) return
         Logger.withTag("Audiometry").d { "Heard ${_sounds.replayCache.first()}" }
     }
 

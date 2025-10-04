@@ -14,7 +14,7 @@ import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
 import ir.khebrati.audiosense.domain.useCase.sound.maker.test.AudiometryPCMGenerator
 import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayer
 import ir.khebrati.audiosense.domain.useCase.sound.player.toAudioChannel
-import ir.khebrati.audiosense.domain.useCase.spl.fromDbSpl
+import ir.khebrati.audiosense.domain.useCase.spl.dbSpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SaveCalibrationUi
@@ -139,10 +139,12 @@ class CalibrationViewModel(
             audiometryPCMGenerator.generate(
                 SoundPoint(
                     frequency = _selectedFrequency.value,
-                    amplitude = currentVolumeToPlay.value.fromDbSpl(),
+                    amplitude = currentVolumeToPlay.value.dbSpl,
                 )
             )
-        soundPlayer.play(samples = soundSamples, channel = _selectedSide.value.toAudioChannel())
+        viewModelScope.launch {
+            soundPlayer.play(samples = soundSamples, channel = _selectedSide.value.toAudioChannel())
+        }
     }
 }
 
