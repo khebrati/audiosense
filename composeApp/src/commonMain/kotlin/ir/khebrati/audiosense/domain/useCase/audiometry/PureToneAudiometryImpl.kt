@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.seconds
 
-class PureToneAudiometryImpl : PureToneAudiometry {
+class PureToneAudiometryImpl(
+    val logger: Logger
+) : PureToneAudiometry {
     private var _callbackWhenDone : ((Map<Int, Int>, Map<Int, Int>) -> Unit)? = null
     private val _progress = MutableStateFlow(0f)
     override val progress: StateFlow<Float> = _progress.asStateFlow()
@@ -31,14 +33,14 @@ class PureToneAudiometryImpl : PureToneAudiometry {
         AcousticConstants.allFrequencyOctaves.forEach { freq ->
             delay(5.seconds)
             _sounds.emit(SoundPoint(freq, 60.dbSpl))
-            Logger.withTag("Audiometry").d { "Played $freq 70f" }
+            logger.i { "Played $freq 70f" }
             _progress.update { it + 1/size }
         }
     }
 
     override fun onHeard() {
         if(_sounds.replayCache.isEmpty()) return
-        Logger.withTag("Audiometry").d { "Heard ${_sounds.replayCache.first()}" }
+        logger.i { "Heard ${_sounds.replayCache.first()}" }
     }
 
     override fun callbackWhenDone(action: (Map<Int, Int>, Map<Int, Int>) -> Unit) {

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.audiometry.PureToneAudiometry
 import ir.khebrati.audiosense.domain.useCase.sound.maker.test.AudiometryPCMGenerator
@@ -27,9 +28,10 @@ class TestViewModel(
     val testRepository: TestRepository,
     val audiometry: PureToneAudiometry,
     val pcmGenerator: AudiometryPCMGenerator,
-    val soundPlayer: SoundPlayer
+    val soundPlayer: SoundPlayer,
 ) :
     ViewModel() {
+    val logger = Logger.withTag("TestViewModel")
     private val headphoneId = handle.toRoute<TestRoute>().selectedHeadphoneId
 
     private val _uiState = MutableStateFlow(TestUiState())
@@ -60,6 +62,7 @@ class TestViewModel(
     private fun keepStatesUpdated() {
         viewModelScope.launch {
             combineFlows().collect { progress ->
+                logger.d { "Got progress $progress" }
                 _uiState.update {
                     it.copy(progress = progress)
                 }

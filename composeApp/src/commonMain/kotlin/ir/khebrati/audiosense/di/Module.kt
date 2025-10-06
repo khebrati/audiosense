@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.di
 
 import androidx.room.RoomDatabase
+import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.data.repository.HeadphoneRepositoryImpl
 import ir.khebrati.audiosense.data.repository.TestRepositoryImpl
 import ir.khebrati.audiosense.data.source.local.AppDatabase
@@ -29,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 internal fun commonModule(): Module = module {
@@ -65,7 +67,7 @@ internal fun commonModule(): Module = module {
         TimeTellerImpl()
     }
     factory<PureToneAudiometry>{
-        PureToneAudiometryImpl()
+        PureToneAudiometryImpl(get{ parametersOf("PureToneAudiometry") })
     }
 }
 
