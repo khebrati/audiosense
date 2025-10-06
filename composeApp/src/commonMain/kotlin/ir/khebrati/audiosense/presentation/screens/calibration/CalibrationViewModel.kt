@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class CalibrationViewModel(
     private val headphoneRepository: HeadphoneRepository,
@@ -76,8 +77,12 @@ class CalibrationViewModel(
     }
 
     private fun combineUiFlows() =
-        combine(_selectedFrequency, _selectedSide, currentVolumeToPlay, currentMeasuredVolume) {
-            frequency,
+        combine(
+            _selectedFrequency,
+            _selectedSide,
+            currentVolumeToPlay,
+            currentMeasuredVolume
+        ) { frequency,
             side,
             volumeToPlay,
             measuredVolume ->
@@ -94,8 +99,10 @@ class CalibrationViewModel(
             is SetFrequency -> onSetFrequency(action.frequency)
             is SetVolumeToPlayForCurrentFrequency ->
                 onSetPlayedVolumeForCurrentFrequency(action.playedVolumeDbSpl)
+
             is SetMeasuredVolumeForCurrentFrequency ->
                 onSetMeasuredVolumeForCurrentFrequency(action.measuredVolumeDbSpl)
+
             is Save -> saveCalibration(action.headphoneModel)
             is PlaySound -> playSound()
             is SetSide -> setSide(action.side)
@@ -135,15 +142,21 @@ class CalibrationViewModel(
     }
 
     private fun playSound() {
+        val duration = 5.seconds
         val soundSamples =
             audiometryPCMGenerator.generate(
+                duration = duration,
                 SoundPoint(
                     frequency = _selectedFrequency.value,
                     amplitude = currentVolumeToPlay.value.dbSpl,
                 )
             )
         viewModelScope.launch {
-            soundPlayer.play(samples = soundSamples, channel = _selectedSide.value.toAudioChannel())
+            soundPlayer.play(
+                duration = duration,
+                samples = soundSamples,
+                channel = _selectedSide.value.toAudioChannel()
+            )
         }
     }
 }

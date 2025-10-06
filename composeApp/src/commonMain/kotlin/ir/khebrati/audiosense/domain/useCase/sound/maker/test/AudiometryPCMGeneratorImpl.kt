@@ -4,10 +4,11 @@ import ir.khebrati.audiosense.domain.model.AcousticConstants.MAX_PCM_16BIT_VALUE
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MIN_PCM_16BIT_VALUE
 import ir.khebrati.audiosense.domain.model.SoundPoint
 import ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic.HarmonicGenerator
+import kotlin.time.Duration
 
 class AudiometryPCMGeneratorImpl(private val harmonicGenerator: HarmonicGenerator) :
     AudiometryPCMGenerator {
-    override fun generate(soundPoint: SoundPoint) =
+    override fun generate(duration: Duration, soundPoint: SoundPoint) =
         harmonicGenerator
             .makeHarmonicWave(
                 amplitude =
@@ -17,7 +18,7 @@ class AudiometryPCMGeneratorImpl(private val harmonicGenerator: HarmonicGenerato
                     ),
                 frequency = soundPoint.frequency,
                 sampleRate = 44800,
-                durationSeconds = 5f,
+                durationSeconds = duration.inWholeSeconds.toFloat(),
                 fadeRatio = 0.1f,
             )
             .map { it / (MAX_PCM_16BIT_VALUE + 1) }

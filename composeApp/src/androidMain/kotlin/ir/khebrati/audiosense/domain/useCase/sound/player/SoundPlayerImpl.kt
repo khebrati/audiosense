@@ -5,10 +5,11 @@ import android.media.AudioFormat
 import android.media.AudioTrack
 import kotlinx.coroutines.delay
 import kotlin.math.max
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class SoundPlayerImpl : SoundPlayer {
-    override suspend fun play(samples: FloatArray, sampleRate: Int, channel: AudioChannel) {
+    override suspend fun play(duration: Duration, samples: FloatArray, sampleRate: Int, channel: AudioChannel) {
         val audioAttributes =
             AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
