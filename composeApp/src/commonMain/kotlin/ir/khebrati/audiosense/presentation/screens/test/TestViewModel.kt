@@ -46,7 +46,7 @@ class TestViewModel(
         viewModelScope.launch {
             audiometry.start()
         }
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             audiometry.sounds.collect { soundPoint ->
                 val duration = 1.seconds
                 val pcm = pcmGenerator.generate(duration,soundPoint)

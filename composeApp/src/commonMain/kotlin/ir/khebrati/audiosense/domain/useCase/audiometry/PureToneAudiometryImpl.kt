@@ -34,7 +34,11 @@ class PureToneAudiometryImpl(
             delay(5.seconds)
             _sounds.emit(SoundPoint(freq, 60.dbSpl))
             logger.i { "Played $freq 70f" }
-            _progress.update { it + 1/size }
+            _progress.update {
+                val new = it + 1/size.toFloat()
+                logger.i { "Updating progress to $new" }
+                new
+            }
         }
     }
 
