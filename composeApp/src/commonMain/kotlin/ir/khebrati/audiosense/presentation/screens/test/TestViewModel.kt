@@ -15,7 +15,6 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.presentation.screens.result.toSide
 import ir.khebrati.audiosense.presentation.screens.test.TestUiAction.OnClick
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,7 +46,7 @@ class TestViewModel(
             audiometry.start()
         }
         viewModelScope.launch {
-            audiometry.sounds.collect { soundPoint ->
+            audiometry.soundToPlay.collect { soundPoint ->
                 val duration = 1.seconds
                 val pcm = pcmGenerator.generate(duration,soundPoint)
                 soundPlayer.play(

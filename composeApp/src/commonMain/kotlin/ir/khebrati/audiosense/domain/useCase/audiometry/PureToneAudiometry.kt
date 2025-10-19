@@ -11,7 +11,7 @@ interface PureToneAudiometry {
      */
     val progress : StateFlow<Float>
     val currentSide: StateFlow<Side>
-    val sounds: SharedFlow<SoundPoint>
+    val soundToPlay: SharedFlow<SoundPoint>
     suspend fun start(calibrationCoefficients: Map<Int,Int> = emptyMap())
 
     /**
@@ -22,5 +22,5 @@ interface PureToneAudiometry {
     /**
      * @param action The lambda that is called when test results are ready. It receives left and right AC Maps.
      */
-    fun callbackWhenDone(action: (Map<Int,Int>, Map<Int,Int>) -> Unit)
+    fun setCallbackWhenDone(action: (Map<Int, Int>, Map<Int, Int>) -> Unit)
 }
