@@ -41,6 +41,6 @@ class SoundPlayerImpl : SoundPlayer {
             else -> {}
         }
         track.play()
-        delay(5.seconds)
+        delay(duration)
     }
 }

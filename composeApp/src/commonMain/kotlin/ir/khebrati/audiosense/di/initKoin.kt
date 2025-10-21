@@ -33,7 +33,7 @@ val kermitModule = module {
         Logger(
             loggerConfigInit(
                 platformLogWriter(NoTagFormatter),
-                minSeverity = if(BuildConfig.IS_DEVELOPMENT) Severity.Debug else Severity.Info,
+                minSeverity = if(BuildConfig.IS_DEVELOPMENT) Severity.Verbose else Severity.Info,
             ),
             tag
         )

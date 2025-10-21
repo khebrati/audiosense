@@ -67,7 +67,7 @@ internal fun commonModule(): Module = module {
         TimeTellerImpl()
     }
     factory<PureToneAudiometry>{
-        PureToneAudiometryImpl(get{ parametersOf("PureToneAudiometry") })
+        PureToneAudiometryImpl(logger = get{ parametersOf("PureToneAudiometry") })
     }
 }
 
