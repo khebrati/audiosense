@@ -1,6 +1,8 @@
 package ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice
 
+// import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,14 +19,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Earbuds
-import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,13 +43,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import audiosense.composeapp.generated.resources.AppleAirpodPro
+import audiosense.composeapp.generated.resources.GalaxyBudsFe
+import audiosense.composeapp.generated.resources.Res
+import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
+import ir.khebrati.audiosense.domain.model.isDefaultHeadphone
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
+import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.DeleteHeadphone
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
@@ -50,11 +66,12 @@ fun SelectDeviceScreen(
     selectDeviceRoute: SelectDeviceRoute,
     onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    //TODO commented to build previews
-//    BackHandler { onNavigateBack() }
+    // TODO commented to build previews
+    //    BackHandler { onNavigateBack() }
     AudiosenseScaffold(
         screenTitle = selectDeviceRoute.title,
         canNavigateBack = true,
@@ -64,6 +81,7 @@ fun SelectDeviceScreen(
             uiState = uiState,
             onUiAction = viewModel::handleAction,
             onNavigateTest = onNavigateTest,
+            onNavigateCalibration = onNavigateCalibration,
         )
     }
 }
@@ -74,6 +92,7 @@ fun HeadphonesList(
     headphoneNames: List<String>,
     selectedIndex: Int? = null,
     onSelectedChange: (Int) -> Unit,
+    onDeleteHeadphone: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -90,10 +109,11 @@ fun HeadphonesList(
             }
         }
         itemsIndexed(headphoneNames) { index, name ->
-            HeadphoneItem(
-                modelName = name,
+            ListItem(
+                text = name,
                 onClick = { onSelectedChange(index) },
                 isSelected = selectedIndex == index,
+                onDeleteHeadphone = { onDeleteHeadphone(index) },
             )
         }
     }
@@ -107,16 +127,21 @@ fun SelectDevicePreview() {
             SelectDeviceUiState(
                 headphones =
                     listOf(
-                        HeadphoneUiState(model = "Galaxy buds", id = "0"),
-                        HeadphoneUiState(model = "Sony Headphones", id = "1"),
-                        HeadphoneUiState(model = "Airpods", id = "2"),
+                        HeadphoneUiState(model = GalaxyBudsFE.model, id = "0"),
+                        HeadphoneUiState(model = AppleAirpods.model, id = "2"),
+                        HeadphoneUiState(model = SonyHeadphones.model, id = "1"),
+                        HeadphoneUiState(model = "Random headphone", id = "3"),
+                        HeadphoneUiState(
+                            model = "Very very long headphone name that will probably overflow",
+                            id = "4",
+                        ),
                     )
             )
         )
     }
     AppTheme {
         AudiosenseScaffold(screenTitle = "New Test", canNavigateBack = true, onNavigateBack = {}) {
-            SelectDeviceContent(uiState, {}, {})
+            SelectDeviceContent(uiState, {}, {}, {})
         }
     }
 }
@@ -126,13 +151,27 @@ private fun SelectDeviceContent(
     uiState: SelectDeviceUiState,
     onUiAction: (SelectDeviceUiAction) -> Unit,
     onNavigateTest: (TestRoute) -> Unit,
+    onNavigateCalibration: (CalibrationRoute) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
-        HeadphonesList(
-            uiState.headphones.map { it.model },
-            uiState.selectedHeadphoneIndex,
-            onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
-        )
+        Scaffold(
+            modifier = Modifier.weight(1f),
+            floatingActionButton = {
+                FloatingActionButton(onClick = { onNavigateCalibration(CalibrationRoute) }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add a new headphone",
+                    )
+                }
+            },
+        ) {
+            HeadphonesList(
+                uiState.headphones.map { it.model },
+                uiState.selectedHeadphoneIndex,
+                onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
+                onDeleteHeadphone = { onUiAction(DeleteHeadphone(it)) },
+            )
+        }
         val selectedHeadphoneId =
             remember(uiState) {
                 uiState.run {
@@ -155,10 +194,11 @@ private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier
 }
 
 @Composable
-fun HeadphoneItem(
-    modelName: String,
+fun ListItem(
+    text: String,
     onClick: () -> Unit = {},
     isSelected: Boolean,
+    onDeleteHeadphone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
@@ -177,35 +217,116 @@ fun HeadphoneItem(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
             modifier = modifier.padding(12.dp).fillMaxWidth(),
         ) {
-            Box(
-                modifier =
-                    Modifier.background(
-                            color = MaterialTheme.colorScheme.tertiaryContainer,
-                            shape = MaterialTheme.shapes.medium,
-                        )
-                        .size(50.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                HeadphoneIcon(modelName)
+            HeadphonePicAndName(text, modifier = Modifier.weight(1f))
+            if (!isDefaultHeadphone(text)) {
+                DeleteHeadphoneIcon(onRemoveHeadphone = onDeleteHeadphone)
             }
-            Text(text = modelName, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DeleteHeadphoneIcon(onRemoveHeadphone: () -> Unit, modifier: Modifier = Modifier) {
+    var showDialog by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) {
+        Card(
+            modifier = modifier.size(30.dp).clickable(onClick = { showDialog = true }),
+            colors =
+                CardDefaults.cardColors()
+                    .copy(containerColor = MaterialTheme.colorScheme.errorContainer),
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "Remove headphone",
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = onRemoveHeadphone,
+                    colors =
+                        ButtonDefaults.buttonColors()
+                            .copy(containerColor = MaterialTheme.colorScheme.errorContainer),
+                ) {
+                    Text("Yes", color = MaterialTheme.colorScheme.onErrorContainer)
+                }
+            },
+            dismissButton = { Button(onClick = { showDialog = false }) { Text("No") } },
+            text = {
+                Text(
+                    "Are you sure you want to delete this headphone? All of its data, including calibration, will be permanently removed."
+                )
+            },
+        )
+    }
+}
 
+@Composable
+private fun HeadphonePicAndName(text: String, modifier: Modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(7.dp),
+    ) {
+        when (text) {
+            GalaxyBudsFE.model -> {
+                Image(
+                    painter = painterResource(Res.drawable.GalaxyBudsFe),
+                    contentDescription = "${GalaxyBudsFE.model} image",
+                    modifier = Modifier.size(70.dp),
+                )
+            }
+
+            AppleAirpods.model -> {
+                Image(
+                    painter = painterResource(Res.drawable.AppleAirpodPro),
+                    contentDescription = AppleAirpods.model,
+                    modifier = Modifier.size(70.dp),
+                )
+            }
+
+            else -> {
+                Box(modifier = Modifier.size(70.dp), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier =
+                            Modifier.background(
+                                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                                    shape = MaterialTheme.shapes.medium,
+                                )
+                                .size(50.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        HeadphoneIcon(text)
+                    }
+                }
+            }
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun HeadphoneItemPreview() {
     AppTheme {
-        HeadphoneItem(
-            modelName = "Galaxy Buds",
+        ListItem(
+            text = "Galaxy Buds",
             modifier = Modifier.fillMaxWidth(),
             isSelected = true,
+            onDeleteHeadphone = {},
         )
     }
 }

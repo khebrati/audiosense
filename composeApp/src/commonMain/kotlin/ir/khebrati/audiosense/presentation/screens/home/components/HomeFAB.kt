@@ -20,7 +20,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun HomeFAB(
     modifier: Modifier = Modifier,
-    onNavigateCalibration: () -> Unit,
     onNavigateSelectDevice: () -> Unit,
 ) {
     val items =
@@ -29,11 +28,6 @@ fun HomeFAB(
                 text = { Text("New Test") },
                 icon = { Icon(Icons.Default.Science, contentDescription = null) },
                 onClick = onNavigateSelectDevice,
-            ),
-            M3ExpressiveMenuItem(
-                text = { Text("Calibrate") },
-                icon = { Icon(Icons.Default.Adjust, contentDescription = null) },
-                onClick = onNavigateCalibration
             ),
         )
     M3ExpressiveFAB(items = items, modifier = modifier)

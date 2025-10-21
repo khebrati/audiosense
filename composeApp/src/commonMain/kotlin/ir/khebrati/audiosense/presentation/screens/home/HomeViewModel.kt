@@ -30,7 +30,8 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
 
     private val testRecords = testRepository.observeAll()
 
-    private val _uiState = MutableStateFlow(HomeUiState(currentTimeOfDay.value, emptyList()))
+    private val _uiState =
+        MutableStateFlow(HomeUiState(currentTimeOfDay.value, TestRecords.Loading))
     val uiState = _uiState
 
     init {
@@ -39,12 +40,13 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
 
     private fun combineUiFlows() =
         combine(currentTimeOfDay, testRecords) { currentTime, testRecords ->
-            HomeUiState(currentTime, testRecords.map { it.toUiState() })
+            HomeUiState(currentTime, TestRecords.Ready(testRecords.map { it.toUiState() }))
         }
 }
 
 private fun Test.toUiState() =
     CompactTestRecordUiState(
+        id = id,
         leftAC = leftAC,
         rightAC = rightAC,
         date = toHumanReadableDate(dateTime),
@@ -58,6 +60,7 @@ private fun toHumanReadableDate(instant: Instant): String {
 }
 
 data class CompactTestRecordUiState(
+    val id: String,
     val leftAC: Map<Int, Int>,
     val rightAC: Map<Int, Int>,
     val date: String,
@@ -65,8 +68,10 @@ data class CompactTestRecordUiState(
     val lossDescription: String,
 )
 
-@Immutable
-data class HomeUiState(
-    val currentTimeOfDay: TimeOfDay,
-    val compactTestRecordUiStates: List<CompactTestRecordUiState>,
-)
+@Immutable data class HomeUiState(val currentTimeOfDay: TimeOfDay, val testRecords: TestRecords)
+
+sealed class TestRecords {
+    data object Loading : TestRecords()
+
+    data class Ready(val compactTestRecordUiStates: List<CompactTestRecordUiState>) : TestRecords()
+}
