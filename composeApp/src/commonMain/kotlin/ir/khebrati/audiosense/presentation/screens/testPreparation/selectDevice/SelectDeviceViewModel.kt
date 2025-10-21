@@ -8,6 +8,7 @@ import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -15,14 +16,12 @@ class SelectDeviceViewModel(private val headphoneRepository: HeadphoneRepository
     private val _uiState = MutableStateFlow(SelectDeviceUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        loadHeadphones()
-    }
+    private val headphones = headphoneRepository.observeAll().map { it.map { it.toUiState() } }
 
-    fun loadHeadphones() {
+    init {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(headphones = headphoneRepository.getAll().map { it.toUiState() })
+            headphones.collect { updatedHeadphones ->
+                _uiState.update { SelectDeviceUiState(updatedHeadphones) }
             }
         }
     }
@@ -30,7 +29,15 @@ class SelectDeviceViewModel(private val headphoneRepository: HeadphoneRepository
     fun handleAction(action: SelectDeviceUiAction) =
         when (action) {
             is SetSelectedDevice -> setSelectedDevice(action.index)
+            is DeleteHeadphone -> deleteHeadphone(action.index)
         }
+
+    private fun deleteHeadphone(index: Int) {
+        viewModelScope.launch {
+            val id = _uiState.value.headphones[index].id
+            headphoneRepository.deleteById(id)
+        }
+    }
 
     fun setSelectedDevice(index: Int?) {
         _uiState.update { it.copy(selectedHeadphoneIndex = index) }
@@ -40,6 +47,8 @@ class SelectDeviceViewModel(private val headphoneRepository: HeadphoneRepository
 @Immutable
 sealed interface SelectDeviceUiAction {
     data class SetSelectedDevice(val index: Int?) : SelectDeviceUiAction
+
+    data class DeleteHeadphone(val index: Int) : SelectDeviceUiAction
 }
 
 @Immutable

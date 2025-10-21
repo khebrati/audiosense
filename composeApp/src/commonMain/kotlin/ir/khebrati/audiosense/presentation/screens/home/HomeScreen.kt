@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,16 +27,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
+import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
@@ -48,52 +51,68 @@ import org.koin.compose.viewmodel.koinNavViewModel
 fun HomeScreen(
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
     onNavigateSetting: (SettingRoute) -> Unit,
-    onNavigateCalibration: (CalibrationRoute) -> Unit,
     onNavigateResult: (ResultRoute) -> Unit,
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeScreenContent(uiState, onNavigateCalibration, onNavigateSelectDevice)
+    HomeScreenContent(uiState, onNavigateSelectDevice, onNavigateResult)
 }
 
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
-    onNavigateCalibration: (CalibrationRoute) -> Unit,
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
+    onNavigateResult: (ResultRoute) -> Unit,
 ) {
     AudiosenseScaffold(
         screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
         floatingActionButton = {
-            HomeFAB(
-                onNavigateCalibration = { onNavigateCalibration(CalibrationRoute) },
-                onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) },
-            )
+            HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) })
         },
         onNavigateBack = { /* No back navigation in Home */ },
     ) {
-        FilledOrEmptyRecords(uiState)
+        TestRecordsList(
+            uiState.testRecords,
+            onClickRecord = { onNavigateResult(ResultRoute(it.id)) },
+        )
     }
 }
 
 @Composable
-fun FilledOrEmptyRecords(uiState: HomeUiState) {
-    if (uiState.compactTestRecordUiStates.isEmpty()) {
-        EmptyRecordsList()
-    } else RecordsList(uiState)
+fun TestRecordsList(testRecords: TestRecords, onClickRecord: (CompactTestRecordUiState) -> Unit) {
+    when (testRecords) {
+        is TestRecords.Loading -> LoadingTestRecords()
+        is TestRecords.Ready -> {
+            if (testRecords.compactTestRecordUiStates.isEmpty()) {
+                EmptyRecordsList()
+            } else RecordsList(testRecords, onClickRecord)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun LoadingTestRecords() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularWavyProgressIndicator()
+    }
 }
 
 @Composable
-private fun RecordsList(uiState: HomeUiState) {
+private fun RecordsList(
+    testRecords: TestRecords.Ready,
+    onClickRecord: (CompactTestRecordUiState) -> Unit,
+) {
     LazyColumn {
-        items(uiState.compactTestRecordUiStates) { record ->
+        items(testRecords.compactTestRecordUiStates) { record ->
             SessionRecordCard(
                 record.leftAC,
                 record.rightAC,
                 record.headphoneModel,
                 record.lossDescription,
                 date = record.date,
+                onClick = { onClickRecord(record) },
             )
             Spacer(modifier = Modifier.height(15.dp))
         }
@@ -122,13 +141,14 @@ fun SessionRecordCard(
     headphoneName: String,
     lossDescription: String,
     date: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         colors =
             CardDefaults.cardColors()
                 .copy(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        modifier = modifier.height(200.dp).fillMaxWidth(),
+        modifier = modifier.height(200.dp).fillMaxWidth().clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp)) {
             Row(
@@ -180,14 +200,11 @@ fun NoRecordsIcon() {
 @Composable
 fun EmptyHomeScreenPreview() {
     val emptyUiState =
-        HomeUiState(currentTimeOfDay = TimeOfDay.AFTERNOON, compactTestRecordUiStates = emptyList())
-    AppTheme {
-        HomeScreenContent(
-            uiState = emptyUiState,
-            onNavigateCalibration = {},
-            onNavigateSelectDevice = {},
+        HomeUiState(
+            currentTimeOfDay = TimeOfDay.AFTERNOON,
+            testRecords = TestRecords.Ready(compactTestRecordUiStates = emptyList()),
         )
-    }
+    AppTheme { HomeScreenContent(uiState = emptyUiState, onNavigateSelectDevice = {},{}) }
 }
 
 @Preview
@@ -215,9 +232,10 @@ fun SessionRecordContentPreview() {
                     4000 to 5,
                     8000 to 5,
                 ),
-            headphoneName = "Galaxy buds FE",
+            headphoneName = GalaxyBudsFE.model,
             lossDescription = "Mild Hearing Loss",
             date = "July 22, 2025",
+            onClick = {}
         )
     }
 }
@@ -228,65 +246,63 @@ fun HomeScreenPreview() {
     val uiState =
         HomeUiState(
             currentTimeOfDay = TimeOfDay.AFTERNOON,
-            compactTestRecordUiStates =
-                listOf(
-                    CompactTestRecordUiState(
-                        leftAC =
-                            hashMapOf(
-                                125 to 90,
-                                250 to 50,
-                                500 to 20,
-                                1000 to 20,
-                                2000 to 30,
-                                4000 to 55,
-                                8000 to 35,
-                            ),
-                        rightAC =
-                            hashMapOf(
-                                125 to 30,
-                                250 to 30,
-                                500 to 5,
-                                1000 to 0,
-                                2000 to 0,
-                                4000 to 5,
-                                8000 to 5,
-                            ),
-                        date = "July 22, 2025",
-                        headphoneModel = "Galaxy buds fe",
-                        lossDescription = "Profound loss",
-                    ),
-                    CompactTestRecordUiState(
-                        leftAC =
-                            hashMapOf(
-                                125 to 90,
-                                250 to 50,
-                                500 to 20,
-                                1000 to 20,
-                                2000 to 30,
-                                4000 to 55,
-                                8000 to 35,
-                            ),
-                        rightAC =
-                            hashMapOf(
-                                125 to 30,
-                                250 to 30,
-                                500 to 5,
-                                1000 to 0,
-                                2000 to 0,
-                                4000 to 5,
-                                8000 to 5,
-                            ),
-                        date = "Feb 22, 2025",
-                        headphoneModel = "Apple headphones",
-                        lossDescription = "Normal hearing",
-                    ),
+            testRecords =
+                TestRecords.Ready(
+                    listOf(
+                        CompactTestRecordUiState(
+                            leftAC =
+                                hashMapOf(
+                                    125 to 90,
+                                    250 to 50,
+                                    500 to 20,
+                                    1000 to 20,
+                                    2000 to 30,
+                                    4000 to 55,
+                                    8000 to 35,
+                                ),
+                            rightAC =
+                                hashMapOf(
+                                    125 to 30,
+                                    250 to 30,
+                                    500 to 5,
+                                    1000 to 0,
+                                    2000 to 0,
+                                    4000 to 5,
+                                    8000 to 5,
+                                ),
+                            date = "July 22, 2025",
+                            headphoneModel = GalaxyBudsFE.model,
+                            lossDescription = "Profound loss",
+                            id = "23"
+                        ),
+                        CompactTestRecordUiState(
+                            leftAC =
+                                hashMapOf(
+                                    125 to 90,
+                                    250 to 50,
+                                    500 to 20,
+                                    1000 to 20,
+                                    2000 to 30,
+                                    4000 to 55,
+                                    8000 to 35,
+                                ),
+                            rightAC =
+                                hashMapOf(
+                                    125 to 30,
+                                    250 to 30,
+                                    500 to 5,
+                                    1000 to 0,
+                                    2000 to 0,
+                                    4000 to 5,
+                                    8000 to 5,
+                                ),
+                            date = "Feb 22, 2025",
+                            headphoneModel = "Apple headphones",
+                            lossDescription = "Normal hearing",
+                            id = "232"
+                        ),
+                    )
                 ),
         )
-    AppTheme {
-        HomeScreenContent(
-            uiState = uiState,
-            onNavigateCalibration = {},
-            onNavigateSelectDevice = {},
-        )
-    }
+    AppTheme { HomeScreenContent(uiState = uiState, onNavigateSelectDevice = {},{}) }
 }
