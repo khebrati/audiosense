@@ -78,7 +78,7 @@ private fun TestScreenContent(uiState: TestUiState, onUiAction: (TestUiAction) -
                 onUiAction(TestUiAction.OnClick)
             },
     ) {
-        Text("Left Ear", style = MaterialTheme.typography.titleMedium)
+        Text("${uiState.side} Ear", style = MaterialTheme.typography.titleMedium)
         AnimatedTestVisualizer(modifier = Modifier.fillMaxWidth().height(300.dp))
         Text(
             "Tab anywhere when you hear a tone",
