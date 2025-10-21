@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -26,13 +25,15 @@ import kotlinx.coroutines.flow.update
 class PureToneAudiometryImpl(
     val minDbHl: Int = -10,
     val maxDbHl: Int = 90,
-    val startingDbHl: Int = 50,
+    val startingDbHl: Int = 30,
     val adjustmentsOrder: List<AcousticAdjustment> =
         listOf(
             AcousticAdjustment(20, Direction.UP),
             AcousticAdjustment(10, Direction.DOWN),
             AcousticAdjustment(5, Direction.UP),
         ),
+    val minWaitTimeSeconds: Int = 3,
+    val maxWaitTimeSeconds: Int = 5,
     val frequencies: List<Int> = AcousticConstants.allFrequencyOctaves,
     val logger: Logger,
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
@@ -59,31 +60,21 @@ class PureToneAudiometryImpl(
     private val currentAdjustment
         get() = adjustmentsOrder[currentAdjustmentIndex]
 
-    private val _currentFrequencyIndex = MutableStateFlow(0)
-    private val currentFrequency =
-       _currentFrequencyIndex
-            .map {
-                frequencies[it]
-            }
-            .stateIn(
-                scope = scope,
-                started = SharingStarted.Eagerly,
-                initialValue = frequencies[_currentFrequencyIndex.value],
-            )
+    private val initialFreqIndex = 0
+    private val _currentFrequencyIndex = MutableStateFlow(initialFreqIndex)
+    private val currentFrequency get()=frequencies[_currentFrequencyIndex.value]
 
     override val progress: StateFlow<Float> =
         _currentFrequencyIndex
             .map {
-                val partial = (it.toFloat() / frequencies.size ) / 2
-                if(_currentSide.value == Side.LEFT){
+                val partial = (it.toFloat() / frequencies.size) / 2
+                if (_currentSide.value == Side.LEFT) {
                     partial
-                }else{
+                } else {
                     0.5f + partial
                 }
-            }.
-                onEach {
-                    logger.v { "Progress: $it" }
-                }
+            }
+            .onEach { logger.v { "Progress: $it" } }
             .stateIn(scope = scope, started = SharingStarted.WhileSubscribed(), initialValue = 0f)
     private var done: Boolean = false
 
@@ -93,8 +84,10 @@ class PureToneAudiometryImpl(
             logger.v { "Waiting for heard response" }
             delay(generateRandomDuration())
             changeAdjustmentIfNeeded()
-            incOrDecSoundBasedOnCurrentAdjustment()
-            checkMinMaxLimits()
+            if(!done){
+                incOrDecSoundBasedOnCurrentAdjustment()
+                checkMinMaxLimits()
+            }
         }
     }
 
@@ -118,17 +111,18 @@ class PureToneAudiometryImpl(
                 logger.v { "No more adjustments in the list" }
                 setCurrentDbAsThresh()
                 goNextFrequency()
+            }else{
+                logger.v { "Current adjustment is $currentAdjustment" }
             }
         }
-        logger.v { "Current adjustment is $currentAdjustment" }
     }
 
     private fun setCurrentDbAsThresh() {
         val side = _currentSide.value
         val map = if (side == Side.LEFT) acResults.first else acResults.second
-        map[currentFrequency.value] = currentDb
+        map[currentFrequency] = currentDb
         logger.v {
-            "Set $currentDb as thresh for freq ${currentFrequency.value} on side ${_currentSide.value}"
+            "Set $currentDb as thresh for freq $currentFrequency on side ${_currentSide.value}"
         }
     }
 
@@ -142,20 +136,23 @@ class PureToneAudiometryImpl(
                 logger.v {
                     "Audiometry operation completed. Results: ${acResults.first} ${acResults.second}"
                 }
+                _currentFrequencyIndex.update { newFreqIndex }
                 return
             }
             _currentSide.update { Side.RIGHT }
             logger.v { "Changed side to ${Side.RIGHT}" }
+            _currentFrequencyIndex.update { initialFreqIndex }
+            logger.v { "Reset freq to ${currentFrequency}" }
         }else{
-            currentAdjustmentIndex = 0
-            currentDb = startingDbHl
             _currentFrequencyIndex.update { newFreqIndex }
-            logger.v { "Reset adjustment to $currentAdjustment and current db to $currentDb" }
         }
+        currentAdjustmentIndex = 0
+        currentDb = startingDbHl
+        logger.v { "Reset adjustment to $currentAdjustment and current db to $currentDb" }
     }
 
     private suspend fun setCurrentDbForPlay() {
-        val soundPoint = SoundPoint(frequency = currentFrequency.value, amplitude = currentDb.dbSpl)
+        val soundPoint = SoundPoint(frequency = currentFrequency, amplitude = currentDb.dbSpl)
         lastPlayedSoundHeard = false
         logger.v { "Sending $soundPoint for play" }
         _soundToPlay.emit(soundPoint)
@@ -175,7 +172,7 @@ class PureToneAudiometryImpl(
         logger.v { "Current db: $currentDb" }
     }
 
-    private fun generateRandomDuration() = Random(43).nextLong(2, 3).seconds
+    private fun generateRandomDuration() = Random(43).nextLong(minWaitTimeSeconds.toLong(),maxWaitTimeSeconds.toLong()).seconds
 
     override fun onHeard() {
         lastPlayedSoundHeard = true

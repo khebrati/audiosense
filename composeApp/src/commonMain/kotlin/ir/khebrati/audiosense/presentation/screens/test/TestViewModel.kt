@@ -14,13 +14,15 @@ import ir.khebrati.audiosense.domain.useCase.sound.player.toAudioChannel
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.presentation.screens.result.toSide
+import ir.khebrati.audiosense.presentation.screens.result.toUiState
 import ir.khebrati.audiosense.presentation.screens.test.TestUiAction.OnClick
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 class TestViewModel(
     val handle: SavedStateHandle,
@@ -28,8 +30,7 @@ class TestViewModel(
     val audiometry: PureToneAudiometry,
     val pcmGenerator: AudiometryPCMGenerator,
     val soundPlayer: SoundPlayer,
-) :
-    ViewModel() {
+) : ViewModel() {
     val logger = Logger.withTag("TestViewModel")
     private val headphoneId = handle.toRoute<TestRoute>().selectedHeadphoneId
 
@@ -42,17 +43,15 @@ class TestViewModel(
     }
 
     private fun startAudiometryProcedure() {
-        viewModelScope.launch {
-            audiometry.start()
-        }
+        viewModelScope.launch { audiometry.start() }
         viewModelScope.launch {
             audiometry.soundToPlay.collect { soundPoint ->
                 val duration = 1.seconds
-                val pcm = pcmGenerator.generate(duration,soundPoint)
+                val pcm = pcmGenerator.generate(duration, soundPoint)
                 soundPlayer.play(
                     samples = pcm,
                     duration = duration,
-                    channel = _uiState.value.side.toSide().toAudioChannel()
+                    channel = _uiState.value.side.toSide().toAudioChannel(),
                 )
             }
         }
@@ -60,16 +59,14 @@ class TestViewModel(
 
     private fun keepStatesUpdated() {
         viewModelScope.launch {
-            combineFlows().collect { progress ->
-                logger.d { "Got progress $progress" }
-                _uiState.update {
-                    it.copy(progress = progress)
-                }
-            }
+            combineFlows().collect { newState -> _uiState.update { newState } }
         }
     }
 
-    fun combineFlows() = audiometry.progress
+    fun combineFlows() =
+        combine(audiometry.progress, audiometry.currentSide) { progress, currentSide ->
+            TestUiState(progress, currentSide.toUiState())
+        }
 
     val navigationEvents = MutableSharedFlow<NavigationEvent>()
 
@@ -82,7 +79,6 @@ class TestViewModel(
     fun handleClick() {
         audiometry.onHeard()
     }
-
 }
 
 @Immutable
