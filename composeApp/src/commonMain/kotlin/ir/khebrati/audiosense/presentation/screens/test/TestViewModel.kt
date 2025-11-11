@@ -15,7 +15,9 @@ import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.result.SideUiState
 import ir.khebrati.audiosense.presentation.screens.result.toSide
 import ir.khebrati.audiosense.presentation.screens.result.toUiState
+import ir.khebrati.audiosense.presentation.screens.test.NavigationEvent.*
 import ir.khebrati.audiosense.presentation.screens.test.TestUiAction.OnClick
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +33,7 @@ class TestViewModel(
     val pcmGenerator: AudiometryPCMGenerator,
     val soundPlayer: SoundPlayer,
 ) : ViewModel() {
+    val navigationEvents = MutableSharedFlow<NavigationEvent>()
     val logger = Logger.withTag("TestViewModel")
     private val headphoneId = handle.toRoute<TestRoute>().selectedHeadphoneId
 
@@ -43,6 +46,7 @@ class TestViewModel(
     }
 
     private fun startAudiometryProcedure() {
+        audiometry.performActionWhenFinished { leftAC, rightAC -> save(leftAC, rightAC) }
         viewModelScope.launch { audiometry.start() }
         viewModelScope.launch {
             audiometry.soundToPlay.collect { soundPoint ->
@@ -57,6 +61,20 @@ class TestViewModel(
         }
     }
 
+    private fun save(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
+        viewModelScope.launch {
+            val testId = testRepository.createTest(
+                dateTime = Clock.System.now(),
+                // TODO measure and save noise
+                noiseDuringTest = 0,
+                leftAC = leftAC,
+                rightAC = rightAC,
+                headphoneId = headphoneId,
+            )
+            navigationEvents.emit(NavigateToResult(ResultRoute(testId)))
+        }
+    }
+
     private fun keepStatesUpdated() {
         viewModelScope.launch {
             combineFlows().collect { newState -> _uiState.update { newState } }
@@ -68,7 +86,6 @@ class TestViewModel(
             TestUiState(progress, currentSide.toUiState())
         }
 
-    val navigationEvents = MutableSharedFlow<NavigationEvent>()
 
     fun onUiAction(uiAction: TestUiAction) {
         when (uiAction) {

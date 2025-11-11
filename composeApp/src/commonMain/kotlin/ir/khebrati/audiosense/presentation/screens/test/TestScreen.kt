@@ -54,7 +54,6 @@ fun TestScreen(
         TestScreenContent(
             uiState = uiState,
             onUiAction = {
-                if (uiState.progress >= 1f) onNavigateResult(ResultRoute("dummy-test-id"))
                 viewModel.onUiAction(it)
             },
         )

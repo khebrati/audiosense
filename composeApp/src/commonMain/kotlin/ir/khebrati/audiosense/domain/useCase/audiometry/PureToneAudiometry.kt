@@ -22,5 +22,5 @@ interface PureToneAudiometry {
     /**
      * @param action The lambda that is called when test results are ready. It receives left and right AC Maps.
      */
-    fun setCallbackWhenDone(action: (Map<Int, Int>, Map<Int, Int>) -> Unit)
+    fun performActionWhenFinished(action: (Map<Int, Int>, Map<Int, Int>) -> Unit)
 }

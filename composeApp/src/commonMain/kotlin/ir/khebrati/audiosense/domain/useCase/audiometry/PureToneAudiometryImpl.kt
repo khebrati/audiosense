@@ -178,7 +178,7 @@ class PureToneAudiometryImpl(
         lastPlayedSoundHeard = true
     }
 
-    override fun setCallbackWhenDone(action: (Map<Int, Int>, Map<Int, Int>) -> Unit) {
+    override fun performActionWhenFinished(action: (Map<Int, Int>, Map<Int, Int>) -> Unit) {
         callbackWhenDone = action
     }
 }
