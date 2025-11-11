@@ -7,13 +7,14 @@ import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MAX_DB_SPL
 import ir.khebrati.audiosense.domain.model.AcousticConstants.MIN_DB_SPL
 import ir.khebrati.audiosense.domain.model.Side
+import ir.khebrati.audiosense.domain.model.SoundPoint
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
-import ir.khebrati.audiosense.domain.useCase.sound.maker.test.TestSoundGenerator
+import ir.khebrati.audiosense.domain.useCase.sound.maker.test.AudiometryPCMGenerator
 import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayer
 import ir.khebrati.audiosense.domain.useCase.sound.player.toAudioChannel
-import ir.khebrati.audiosense.domain.useCase.spl.fromDbSpl
+import ir.khebrati.audiosense.domain.useCase.spl.dbSpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.Save
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SaveCalibrationUi
@@ -30,11 +31,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class CalibrationViewModel(
     private val headphoneRepository: HeadphoneRepository,
     private val calibrator: HeadphoneCalibrator,
-    private val testSoundGenerator: TestSoundGenerator,
+    private val audiometryPCMGenerator: AudiometryPCMGenerator,
     private val soundPlayer: SoundPlayer,
 ) : ViewModel() {
     private val frequencyOctaves = AcousticConstants.allFrequencyOctaves
@@ -75,8 +77,12 @@ class CalibrationViewModel(
     }
 
     private fun combineUiFlows() =
-        combine(_selectedFrequency, _selectedSide, currentVolumeToPlay, currentMeasuredVolume) {
-            frequency,
+        combine(
+            _selectedFrequency,
+            _selectedSide,
+            currentVolumeToPlay,
+            currentMeasuredVolume
+        ) { frequency,
             side,
             volumeToPlay,
             measuredVolume ->
@@ -93,8 +99,10 @@ class CalibrationViewModel(
             is SetFrequency -> onSetFrequency(action.frequency)
             is SetVolumeToPlayForCurrentFrequency ->
                 onSetPlayedVolumeForCurrentFrequency(action.playedVolumeDbSpl)
+
             is SetMeasuredVolumeForCurrentFrequency ->
                 onSetMeasuredVolumeForCurrentFrequency(action.measuredVolumeDbSpl)
+
             is Save -> saveCalibration(action.headphoneModel)
             is PlaySound -> playSound()
             is SetSide -> setSide(action.side)
@@ -134,12 +142,22 @@ class CalibrationViewModel(
     }
 
     private fun playSound() {
+        val duration = 5.seconds
         val soundSamples =
-            testSoundGenerator.makeTestSound(
-                frequency = _selectedFrequency.value,
-                amplitude = currentVolumeToPlay.value.fromDbSpl(),
+            audiometryPCMGenerator.generate(
+                duration = duration,
+                SoundPoint(
+                    frequency = _selectedFrequency.value,
+                    amplitude = currentVolumeToPlay.value.dbSpl,
+                )
             )
-        soundPlayer.play(samples = soundSamples, channel = _selectedSide.value.toAudioChannel())
+        viewModelScope.launch {
+            soundPlayer.play(
+                duration = duration,
+                samples = soundSamples,
+                channel = _selectedSide.value.toAudioChannel()
+            )
+        }
     }
 }
 
