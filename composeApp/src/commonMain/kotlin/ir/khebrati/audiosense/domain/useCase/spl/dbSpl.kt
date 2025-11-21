@@ -1,5 +1,7 @@
 package ir.khebrati.audiosense.domain.useCase.spl
 
+import ir.khebrati.audiosense.domain.model.AcousticConstants
+import kotlin.math.absoluteValue
 import kotlin.math.log10
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -13,9 +15,23 @@ fun Number.dbHl(freq: Int): Int {
             ?: throw IllegalArgumentException(
                 "Given freq $freq does not have an equivalent db hl threshold"
             )
-    return (this.dbSpl + diff).roundToInt()
+    val dbHl =  (this.dbSpl - diff)
+    val possibleDbHls = AcousticConstants.allPossibleDbHLs
+    return findClosestInList(dbHl,possibleDbHls)
 }
 
+fun findClosestInList(target: Double,list: List<Int>) : Int{
+    var closestIndex = 0;
+    var leastDiff = Double.MAX_VALUE;
+    list.forEachIndexed { index,value ->
+        val diff = (value - target).absoluteValue
+        if((diff < leastDiff)){
+            leastDiff = diff
+            closestIndex = index
+        }
+    }
+    return list[closestIndex]
+}
 private val normalEarHearingThresholds =
     mapOf(
         125 to 22.1,
