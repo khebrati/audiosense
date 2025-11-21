@@ -37,7 +37,7 @@ class PureToneAudiometryImpl(
             AcousticAdjustment(10, Direction.DOWN),
             AcousticAdjustment(5, Direction.UP),
         ),
-    val minWaitTimeSeconds: Int = 3,
+    val minWaitTimeSeconds: Int = 2,
     val maxWaitTimeSeconds: Int = 5,
     val frequencies: List<Int> = AcousticConstants.allFrequencyOctaves,
     val logger: Logger,
