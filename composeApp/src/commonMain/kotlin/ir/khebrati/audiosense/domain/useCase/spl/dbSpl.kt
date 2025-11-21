@@ -4,18 +4,26 @@ import ir.khebrati.audiosense.domain.model.AcousticConstants
 import kotlin.math.absoluteValue
 import kotlin.math.log10
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
-fun mapToDbHl(audiogramList: Map<Int, Int>) =
-    audiogramList.mapValues { (key, value) -> value.dbHl(key) }
+fun calculateLossBasedOnDbHl(audiogramList: Map<Int, Int>) =
+    audiogramList.mapValues { (freq, value) ->
+        val diff =
+            normalEarHearingThresholds[freq]
+                ?: throw IllegalArgumentException(
+                    "Given freq $freq does not have an equivalent db hl threshold"
+                )
+        val dbHl =  (value - diff)
+        val possibleDbHls = AcousticConstants.allPossibleDbHLs
+        findClosestInList(dbHl,possibleDbHls)
+    }
 
-fun Number.dbHl(freq: Int): Int {
+fun Int.dbHl(freq: Int): Int {
     val diff =
         normalEarHearingThresholds[freq]
             ?: throw IllegalArgumentException(
                 "Given freq $freq does not have an equivalent db hl threshold"
             )
-    val dbHl =  (this.dbSpl - diff)
+    val dbHl =  (this + diff)
     val possibleDbHls = AcousticConstants.allPossibleDbHLs
     return findClosestInList(dbHl,possibleDbHls)
 }

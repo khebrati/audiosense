@@ -1,7 +1,6 @@
 package ir.khebrati.audiosense.unit.domain.useCase.spl
 
 import ir.khebrati.audiosense.domain.model.AcousticConstants
-import ir.khebrati.audiosense.domain.useCase.spl.dbHl
 import ir.khebrati.audiosense.domain.useCase.spl.findClosestInList
 import kotlin.test.Test
 import kotlin.test.assertEquals
