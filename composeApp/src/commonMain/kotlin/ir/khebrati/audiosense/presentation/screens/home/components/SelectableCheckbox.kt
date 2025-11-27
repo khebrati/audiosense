@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,19 +24,17 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SelectableCheckbox() {
-    var selected by remember { mutableStateOf(false) }
-    val size = 50.dp
+fun SelectableCheckbox(modifier: Modifier = Modifier,selected: Boolean, onChange: (Boolean) -> Unit) {
     if (selected) {
         Icon(
-            modifier = Modifier.size(size).clickable { selected = false },
-            imageVector = Icons.Default.CheckBox,
-            contentDescription = "Not Selected",
+            modifier = modifier.clickable { onChange(false) },
+            imageVector = Icons.Default.TaskAlt,
+            contentDescription = "Selected",
         )
     } else
         Icon(
-            modifier = Modifier.size(size).clickable { selected = true },
-            imageVector = Icons.Default.CheckBoxOutlineBlank,
+            modifier = modifier.clickable { onChange(true) },
+            imageVector = Icons.Outlined.Circle,
             contentDescription = "Not Selected",
         )
 }
@@ -40,10 +42,11 @@ fun SelectableCheckbox() {
 @Preview
 @Composable
 fun PreviewSelectableCheckbox(){
+    var selected by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        SelectableCheckbox()
+        SelectableCheckbox(Modifier,selected,{selected = it})
     }
 }

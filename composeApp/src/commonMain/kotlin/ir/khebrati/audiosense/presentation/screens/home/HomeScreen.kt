@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,8 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,18 +31,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
-import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
+import ir.khebrati.audiosense.domain.model.DefaultHeadphones.GalaxyBudsFE
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.components.LoadingScreen
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
+import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.OnClick
+import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.SelectForDelete
 import ir.khebrati.audiosense.presentation.screens.home.components.CompactAudiogram
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
+import ir.khebrati.audiosense.presentation.screens.home.components.SelectableCheckbox
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -56,60 +58,79 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeScreenContent(uiState, onNavigateSelectDevice, onNavigateResult)
+    val intentHandler: (HomeIntent) -> Unit = { intent ->
+        when (intent) {
+            is OnClick -> onNavigateResult(ResultRoute(intent.record.id))
+            else -> viewModel.handleIntent(intent)
+        }
+    }
+    HomeScreenContent(uiState, intentHandler, onNavigateSelectDevice)
 }
 
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
+    onIntent: (HomeIntent) -> Unit,
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
-    onNavigateResult: (ResultRoute) -> Unit,
 ) {
     AudiosenseScaffold(
         screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
+        contentPadding = PaddingValues(end = 25.dp),
         floatingActionButton = {
             HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) })
         },
         onNavigateBack = { /* No back navigation in Home */ },
     ) {
-        TestRecordsList(
-            uiState.testRecords,
-            onClickRecord = { onNavigateResult(ResultRoute(it.id)) },
-        )
+        TestRecordsList(uiState.testHistory, onIntent = onIntent)
     }
 }
 
 @Composable
-fun TestRecordsList(testRecords: TestRecords, onClickRecord: (CompactTestRecordUiState) -> Unit) {
-    when (testRecords) {
-        is TestRecords.Loading -> LoadingScreen()
-        is TestRecords.Ready -> {
-            if (testRecords.compactTestRecordUiStates.isEmpty()) {
+fun TestRecordsList(testHistory: TestHistory, onIntent: (HomeIntent) -> Unit) {
+    when (testHistory) {
+        is TestHistory.Loading -> LoadingScreen()
+        is TestHistory.Ready -> {
+            if (testHistory.compactRecords.isEmpty()) {
                 EmptyRecordsList()
-            } else RecordsList(testRecords, onClickRecord)
+            } else RecordsList(testHistory, onIntent = onIntent)
         }
     }
 }
 
-
 @Composable
-private fun RecordsList(
-    testRecords: TestRecords.Ready,
-    onClickRecord: (CompactTestRecordUiState) -> Unit,
-) {
+private fun RecordsList(testHistory: TestHistory.Ready, onIntent: (HomeIntent) -> Unit) {
     LazyColumn {
-        items(testRecords.compactTestRecordUiStates) { record ->
-            SessionRecordCard(
-                record.leftAC,
-                record.rightAC,
-                record.headphoneModel,
-                record.lossDescription,
-                date = record.date,
-                onClick = { onClickRecord(record) },
-            )
+        items(testHistory.compactRecords) { record ->
+            Row(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                CheckboxArea(
+                    modifier = Modifier.weight(1f),
+                    selected = record.isSelectedForDelete,
+                    onChange = { onIntent(SelectForDelete(record, it)) },
+                )
+                SessionRecordCard(
+                    modifier = Modifier.weight(8f),
+                    rightAC = record.leftAC,
+                    leftAC = record.rightAC,
+                    headphoneName = record.headphoneModel,
+                    lossDescription = record.lossDescription,
+                    date = record.date,
+                    onClick = { OnClick(record) },
+                )
+            }
             Spacer(modifier = Modifier.height(15.dp))
         }
+    }
+}
+
+@Composable
+private fun CheckboxArea(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    onChange: (Boolean) -> Unit,
+) {
+    Box(modifier = modifier.fillMaxHeight(), contentAlignment = Alignment.Center){
+        SelectableCheckbox(Modifier.size(20.dp),selected, onChange)
     }
 }
 
@@ -142,7 +163,7 @@ fun SessionRecordCard(
         colors =
             CardDefaults.cardColors()
                 .copy(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        modifier = modifier.height(200.dp).fillMaxWidth().clickable(onClick = onClick),
+        modifier = modifier.fillMaxHeight().clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp)) {
             Row(
@@ -196,9 +217,11 @@ fun EmptyHomeScreenPreview() {
     val emptyUiState =
         HomeUiState(
             currentTimeOfDay = TimeOfDay.AFTERNOON,
-            testRecords = TestRecords.Ready(compactTestRecordUiStates = emptyList()),
+            testHistory = TestHistory.Ready(compactRecords = emptyList()),
         )
-    AppTheme { HomeScreenContent(uiState = emptyUiState, onNavigateSelectDevice = {},{}) }
+    AppTheme {
+        HomeScreenContent(uiState = emptyUiState, onNavigateSelectDevice = {}, onIntent = {})
+    }
 }
 
 @Preview
@@ -229,7 +252,8 @@ fun SessionRecordContentPreview() {
             headphoneName = GalaxyBudsFE.model,
             lossDescription = "Mild Hearing Loss",
             date = "July 22, 2025",
-            onClick = {}
+            onClick = {},
+            modifier = Modifier.height(200.dp)
         )
     }
 }
@@ -240,10 +264,10 @@ fun HomeScreenPreview() {
     val uiState =
         HomeUiState(
             currentTimeOfDay = TimeOfDay.AFTERNOON,
-            testRecords =
-                TestRecords.Ready(
+            testHistory =
+                TestHistory.Ready(
                     listOf(
-                        CompactTestRecordUiState(
+                        CompactRecord(
                             leftAC =
                                 hashMapOf(
                                     125 to 90,
@@ -267,9 +291,9 @@ fun HomeScreenPreview() {
                             date = "July 22, 2025",
                             headphoneModel = GalaxyBudsFE.model,
                             lossDescription = "Profound loss",
-                            id = "23"
+                            id = "23",
                         ),
-                        CompactTestRecordUiState(
+                        CompactRecord(
                             leftAC =
                                 hashMapOf(
                                     125 to 90,
@@ -293,10 +317,10 @@ fun HomeScreenPreview() {
                             date = "Feb 22, 2025",
                             headphoneModel = "Apple headphones",
                             lossDescription = "Normal hearing",
-                            id = "232"
+                            id = "232",
                         ),
                     )
                 ),
         )
-    AppTheme { HomeScreenContent(uiState = uiState, onNavigateSelectDevice = {},{}) }
+    AppTheme { HomeScreenContent(uiState = uiState, onNavigateSelectDevice = {}, onIntent = {}) }
 }

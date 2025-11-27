@@ -8,6 +8,7 @@ import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.TimeTeller
+import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.*
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +32,7 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
     private val testRecords = testRepository.observeAll()
 
     private val _uiState =
-        MutableStateFlow(HomeUiState(currentTimeOfDay.value, TestRecords.Loading))
+        MutableStateFlow(HomeUiState(currentTimeOfDay.value, TestHistory.Loading))
     val uiState = _uiState
 
     init {
@@ -40,12 +41,39 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
 
     private fun combineUiFlows() =
         combine(currentTimeOfDay, testRecords) { currentTime, testRecords ->
-            HomeUiState(currentTime, TestRecords.Ready(testRecords.map { it.toUiState() }))
+            HomeUiState(currentTime, TestHistory.Ready(testRecords.map { it.toUiState() }))
         }
+
+    fun handleIntent(intent: HomeIntent) {
+        when (intent) {
+            is SelectForDelete -> handleSelectForDelete(intent)
+            is OnClick -> {/*Handled in UI for navigation*/}
+        }
+    }
+
+    private fun handleSelectForDelete(intent: SelectForDelete) {
+        val oldState = _uiState.value
+        val oldTestRecords = oldState.testHistory
+        val newTestRecord = if (oldTestRecords !is TestHistory.Ready) {
+            oldTestRecords
+        } else {
+            val oldCompactTests = oldTestRecords.compactRecords
+            val newCompactTests = oldCompactTests.map {
+                if (it === intent.record) it.copy(isSelectedForDelete = intent.set) else it
+            }
+            oldTestRecords.copy(compactRecords = newCompactTests)
+        }
+        val newState = oldState.copy(
+            testHistory = newTestRecord
+        )
+        _uiState.update {
+            newState
+        }
+    }
 }
 
 private fun Test.toUiState() =
-    CompactTestRecordUiState(
+    CompactRecord(
         id = id,
         leftAC = leftAC,
         rightAC = rightAC,
@@ -59,19 +87,30 @@ private fun toHumanReadableDate(instant: Instant): String {
     return "${localDate.date.month} ${localDate.day}, ${localDate.year}"
 }
 
-data class CompactTestRecordUiState(
+data class CompactRecord(
     val id: String,
     val leftAC: Map<Int, Int>,
     val rightAC: Map<Int, Int>,
     val date: String,
     val headphoneModel: String,
     val lossDescription: String,
+    val isSelectedForDelete: Boolean = false,
 )
 
-@Immutable data class HomeUiState(val currentTimeOfDay: TimeOfDay, val testRecords: TestRecords)
+@Immutable
+data class HomeUiState(val currentTimeOfDay: TimeOfDay, val testHistory: TestHistory)
 
-sealed class TestRecords {
-    data object Loading : TestRecords()
+sealed class TestHistory {
+    data object Loading : TestHistory()
 
-    data class Ready(val compactTestRecordUiStates: List<CompactTestRecordUiState>) : TestRecords()
+    data class Ready(val compactRecords: List<CompactRecord>) :
+        TestHistory() {
+        val isDelete = compactRecords.any { it.isSelectedForDelete }
+    }
+}
+
+@Immutable
+sealed interface HomeIntent {
+    data class SelectForDelete(val record: CompactRecord, val set: Boolean) : HomeIntent
+    data class OnClick(val record: CompactRecord) : HomeIntent
 }
