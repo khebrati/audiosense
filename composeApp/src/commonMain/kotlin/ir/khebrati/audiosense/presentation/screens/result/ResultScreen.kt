@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.result
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
+import ir.khebrati.audiosense.presentation.components.LoadingScreen
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.HomeRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
@@ -43,15 +46,10 @@ fun ResultScreen(
     ) {
         if (uiState is Ready) {
             ReadyResultScreenContent(onNavigateHome, onNavigateDescriptiveResult, uiState)
-        } else LoadingResultScreenContent()
+        } else LoadingScreen()
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun LoadingResultScreenContent() {
-    CircularWavyProgressIndicator()
-}
 
 @Composable
 private fun ReadyResultScreenContent(

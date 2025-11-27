@@ -17,3 +17,4 @@ composeApp/release
 *.jks
 *.gpg
 *yarn.lock
+design
