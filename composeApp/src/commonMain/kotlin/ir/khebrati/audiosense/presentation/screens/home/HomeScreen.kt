@@ -2,6 +2,8 @@ package ir.khebrati.audiosense.presentation.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
+import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.DefaultHeadphones.GalaxyBudsFE
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
@@ -73,16 +77,18 @@ private fun HomeScreenContent(
     onIntent: (HomeIntent) -> Unit,
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
 ) {
+    val testHistory = uiState.testHistory
+    val leftPadding = if(testHistory is TestHistory.Ready && testHistory.isDelete) 0.dp else 25.dp
     AudiosenseScaffold(
         screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
         canNavigateBack = false,
-        contentPadding = PaddingValues(end = 25.dp),
+        contentPadding = PaddingValues(end = 25.dp, start = leftPadding, top = 25.dp, bottom = 25.dp),
         floatingActionButton = {
             HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) })
         },
         onNavigateBack = { /* No back navigation in Home */ },
     ) {
-        TestRecordsList(uiState.testHistory, onIntent = onIntent)
+        TestRecordsList(testHistory, onIntent = onIntent)
     }
 }
 
@@ -102,12 +108,26 @@ fun TestRecordsList(testHistory: TestHistory, onIntent: (HomeIntent) -> Unit) {
 private fun RecordsList(testHistory: TestHistory.Ready, onIntent: (HomeIntent) -> Unit) {
     LazyColumn {
         items(testHistory.compactRecords) { record ->
-            Row(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                CheckboxArea(
-                    modifier = Modifier.weight(1f),
-                    selected = record.isSelectedForDelete,
-                    onChange = { onIntent(SelectForDelete(record, it)) },
-                )
+            Row(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .height(200.dp)
+                        .combinedClickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {
+                                if (testHistory.isDelete) onIntent(SelectForDelete(record))
+                                else onIntent(OnClick(record))
+                            },
+                            onLongClick = { onIntent(SelectForDelete(record)) },
+                        )
+            ) {
+                if (testHistory.isDelete) {
+                    CheckboxArea(
+                        modifier = Modifier.weight(1f),
+                        selected = record.isSelectedForDelete,
+                    )
+                }
                 SessionRecordCard(
                     modifier = Modifier.weight(8f),
                     rightAC = record.leftAC,
@@ -115,7 +135,6 @@ private fun RecordsList(testHistory: TestHistory.Ready, onIntent: (HomeIntent) -
                     headphoneName = record.headphoneModel,
                     lossDescription = record.lossDescription,
                     date = record.date,
-                    onClick = { OnClick(record) },
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
@@ -124,13 +143,9 @@ private fun RecordsList(testHistory: TestHistory.Ready, onIntent: (HomeIntent) -
 }
 
 @Composable
-private fun CheckboxArea(
-    modifier: Modifier = Modifier,
-    selected: Boolean,
-    onChange: (Boolean) -> Unit,
-) {
-    Box(modifier = modifier.fillMaxHeight(), contentAlignment = Alignment.Center){
-        SelectableCheckbox(Modifier.size(20.dp),selected, onChange)
+private fun CheckboxArea(modifier: Modifier = Modifier, selected: Boolean) {
+    Box(modifier = modifier.fillMaxHeight(), contentAlignment = Alignment.Center) {
+        SelectableCheckbox(Modifier.size(20.dp), selected, {})
     }
 }
 
@@ -156,14 +171,13 @@ fun SessionRecordCard(
     headphoneName: String,
     lossDescription: String,
     date: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         colors =
             CardDefaults.cardColors()
                 .copy(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        modifier = modifier.fillMaxHeight().clickable(onClick = onClick),
+        modifier = modifier.fillMaxHeight(),
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp)) {
             Row(
@@ -252,8 +266,7 @@ fun SessionRecordContentPreview() {
             headphoneName = GalaxyBudsFE.model,
             lossDescription = "Mild Hearing Loss",
             date = "July 22, 2025",
-            onClick = {},
-            modifier = Modifier.height(200.dp)
+            modifier = Modifier.height(200.dp),
         )
     }
 }

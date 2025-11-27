@@ -59,7 +59,7 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
         } else {
             val oldCompactTests = oldTestRecords.compactRecords
             val newCompactTests = oldCompactTests.map {
-                if (it === intent.record) it.copy(isSelectedForDelete = intent.set) else it
+                if (it === intent.record) it.copy(isSelectedForDelete = !it.isSelectedForDelete) else it
             }
             oldTestRecords.copy(compactRecords = newCompactTests)
         }
@@ -111,6 +111,6 @@ sealed class TestHistory {
 
 @Immutable
 sealed interface HomeIntent {
-    data class SelectForDelete(val record: CompactRecord, val set: Boolean) : HomeIntent
+    data class SelectForDelete(val record: CompactRecord) : HomeIntent
     data class OnClick(val record: CompactRecord) : HomeIntent
 }
