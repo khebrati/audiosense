@@ -5,6 +5,9 @@ import ir.khebrati.audiosense.domain.model.AcousticConstants
 import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.domain.model.SoundPoint
 import ir.khebrati.audiosense.domain.useCase.spl.dbSpl
+import ir.khebrati.audiosense.domain.useCase.spl.calculateLossBasedOnDbHl
+import ir.khebrati.audiosense.domain.useCase.spl.dbHl
+import kotlin.collections.hashMapOf
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
@@ -22,10 +25,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
+internal typealias AC = Map<Int, Int>
+
 class PureToneAudiometryImpl(
     val minDbHl: Int = -10,
     val maxDbHl: Int = 90,
-    val startingDbHl: Int = 30,
+    startingDbSpl: Int = 30,
     val adjustmentsOrder: List<AcousticAdjustment> =
         listOf(
             AcousticAdjustment(20, Direction.UP),
@@ -39,7 +44,7 @@ class PureToneAudiometryImpl(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
 ) : PureToneAudiometry {
     init {
-        if (startingDbHl < minDbHl || startingDbHl > maxDbHl) {
+        if (startingDbSpl < minDbHl || startingDbSpl > maxDbHl) {
             throw IllegalArgumentException("startingDbHl must be between min/max dbHL values")
         }
     }
@@ -52,7 +57,6 @@ class PureToneAudiometryImpl(
 
     private var callbackWhenDone: ((Map<Int, Int>, Map<Int, Int>) -> Unit)? = null
     private var lastPlayedSoundHeard: Boolean = false
-    private var currentDb: Int = startingDbHl
 
     private val acResults: Pair<HashMap<Int, Int>, HashMap<Int, Int>> =
         Pair(hashMapOf(), hashMapOf())
@@ -62,8 +66,11 @@ class PureToneAudiometryImpl(
 
     private val initialFreqIndex = 0
     private val _currentFrequencyIndex = MutableStateFlow(initialFreqIndex)
-    private val currentFrequency get()=frequencies[_currentFrequencyIndex.value]
+    private val currentFrequency
+        get() = frequencies[_currentFrequencyIndex.value]
 
+    private val startingDbHl = startingDbSpl.dbHl(currentFrequency)
+    private var currentDb: Int = startingDbHl
     override val progress: StateFlow<Float> =
         _currentFrequencyIndex
             .map {
@@ -84,7 +91,7 @@ class PureToneAudiometryImpl(
             logger.v { "Waiting for heard response" }
             delay(generateRandomDuration())
             changeAdjustmentIfNeeded()
-            if(!done){
+            if (!done) {
                 incOrDecSoundBasedOnCurrentAdjustment()
                 checkMinMaxLimits()
             }
@@ -111,7 +118,7 @@ class PureToneAudiometryImpl(
                 logger.v { "No more adjustments in the list" }
                 setCurrentDbAsThresh()
                 goNextFrequency()
-            }else{
+            } else {
                 logger.v { "Current adjustment is $currentAdjustment" }
             }
         }
@@ -131,7 +138,8 @@ class PureToneAudiometryImpl(
         if (newFreqIndex >= frequencies.size) {
             logger.v { "No more frequencies for side ${_currentSide.value}" }
             if (_currentSide.value == Side.RIGHT) {
-                callbackWhenDone?.let { it(acResults.first, acResults.second) }
+                val results = getDbHlResults()
+                callbackWhenDone?.let { it(results.first,results.second) }
                 done = true
                 logger.v {
                     "Audiometry operation completed. Results: ${acResults.first} ${acResults.second}"
@@ -143,13 +151,15 @@ class PureToneAudiometryImpl(
             logger.v { "Changed side to ${Side.RIGHT}" }
             _currentFrequencyIndex.update { initialFreqIndex }
             logger.v { "Reset freq to ${currentFrequency}" }
-        }else{
+        } else {
             _currentFrequencyIndex.update { newFreqIndex }
         }
         currentAdjustmentIndex = 0
         currentDb = startingDbHl
         logger.v { "Reset adjustment to $currentAdjustment and current db to $currentDb" }
     }
+
+    private fun getDbHlResults() = Pair(calculateLossBasedOnDbHl(acResults.first), calculateLossBasedOnDbHl(acResults.second))
 
     private suspend fun setCurrentDbForPlay() {
         val soundPoint = SoundPoint(frequency = currentFrequency, amplitude = currentDb.dbSpl)
@@ -172,7 +182,8 @@ class PureToneAudiometryImpl(
         logger.v { "Current db: $currentDb" }
     }
 
-    private fun generateRandomDuration() = Random(43).nextLong(minWaitTimeSeconds.toLong(),maxWaitTimeSeconds.toLong()).seconds
+    private fun generateRandomDuration() =
+        Random(43).nextLong(minWaitTimeSeconds.toLong(), maxWaitTimeSeconds.toLong()).seconds
 
     override fun onHeard() {
         lastPlayedSoundHeard = true
