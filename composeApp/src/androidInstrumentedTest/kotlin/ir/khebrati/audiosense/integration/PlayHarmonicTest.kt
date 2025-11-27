@@ -3,11 +3,13 @@ package ir.khebrati.audiosense.integration
 import ir.khebrati.audiosense.domain.useCase.sound.maker.harmonic.HarmonicGeneratorImpl
 import ir.khebrati.audiosense.domain.useCase.sound.player.AudioChannel
 import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayerImpl
+import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 
 class PlayHarmonicTest {
     @Test
-    fun harmonicGeneratorSoundPlayer_canPlayHarmonicSounds_validatedByHearing(){
+    fun harmonicGeneratorSoundPlayer_canPlayHarmonicSounds_validatedByHearing() = runBlocking{
         val soundMaker = createHarmonicGenerator()
         val soundPlayer = createSoundPlayer()
 
@@ -32,6 +34,7 @@ class PlayHarmonicTest {
                 it / amplitude
             }.toFloatArray(),
             sampleRate = sampleRate,
+            duration = 2.seconds,
             channel = AudioChannel.RIGHT
         )
     }
