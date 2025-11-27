@@ -50,6 +50,7 @@ import audiosense.composeapp.generated.resources.GalaxyBudsFe
 import audiosense.composeapp.generated.resources.Res
 import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
 import ir.khebrati.audiosense.domain.model.isDefaultHeadphone
+import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
@@ -73,9 +74,13 @@ fun SelectDeviceScreen(
     // TODO commented to build previews
     //    BackHandler { onNavigateBack() }
     AudiosenseScaffold(
-        screenTitle = selectDeviceRoute.title,
-        canNavigateBack = true,
-        onNavigateBack = onNavigateBack,
+        topBar = {
+            AudiosenseAppBar(
+                title = selectDeviceRoute.title,
+                canNavigateBack = true,
+                onNavigateBack = onNavigateBack,
+            )
+        },
     ) {
         SelectDeviceContent(
             uiState = uiState,
@@ -140,7 +145,13 @@ fun SelectDevicePreview() {
         )
     }
     AppTheme {
-        AudiosenseScaffold(screenTitle = "New Test", canNavigateBack = true, onNavigateBack = {}) {
+        AudiosenseScaffold(
+            topBar = {
+                AudiosenseAppBar(
+                    title = "New Test", canNavigateBack = true, onNavigateBack = {}
+                )
+            },
+        ) {
             SelectDeviceContent(uiState, {}, {}, {})
         }
     }

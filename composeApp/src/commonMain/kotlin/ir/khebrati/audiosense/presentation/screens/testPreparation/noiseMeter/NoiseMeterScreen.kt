@@ -3,6 +3,7 @@ package ir.khebrati.audiosense.presentation.screens.testPreparation.noiseMeter
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.NoiseMeterRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
@@ -14,10 +15,13 @@ fun NoiseMeterScreen(
     onNavigateBack: () -> Unit,
 ) {
     AudiosenseScaffold(
-        screenTitle = noiseMeterRoute.title,
-        canNavigateBack = true,
-        onNavigateBack = onNavigateBack
-,
+        topBar = {
+            AudiosenseAppBar(
+                title = noiseMeterRoute.title,
+                canNavigateBack = true,
+                onNavigateBack = onNavigateBack
+            )
+        },
     ) {
         Button(
             onClick = {

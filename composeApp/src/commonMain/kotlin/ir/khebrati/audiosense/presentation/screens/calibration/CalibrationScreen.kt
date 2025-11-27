@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.domain.model.Side
+import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.CalibrationRoute
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.PlaySound
@@ -39,9 +40,11 @@ import org.koin.compose.viewmodel.koinNavViewModel
 fun CalibrationScreenContentPreview() {
     AppTheme {
         AudiosenseScaffold(
-            screenTitle = "calibration",
-            canNavigateBack = true,
-            onNavigateBack = {},
+            topBar = {AudiosenseAppBar(
+                title = "calibration",
+                canNavigateBack = true,
+                onNavigateBack = {}
+            )},
             floatingActionButton = { SaveFAB {  } },
         ) {
             CalibrationScreenContent(
@@ -81,9 +84,11 @@ fun CalibrationScreen(
         }
     }
     AudiosenseScaffold(
-        screenTitle = calibrationRoute.title,
-        canNavigateBack = true,
-        onNavigateBack = onNavigateBack,
+            topBar = {AudiosenseAppBar(
+                title = "calibration",
+                canNavigateBack = true,
+                onNavigateBack = {}
+            )},
         floatingActionButton = { SaveFAB(onClick = ::handleSaveClick) },
     ) {
         CalibrationScreenContent(

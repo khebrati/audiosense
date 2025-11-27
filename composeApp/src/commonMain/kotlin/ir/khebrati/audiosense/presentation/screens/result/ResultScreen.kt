@@ -1,23 +1,21 @@
 package ir.khebrati.audiosense.presentation.screens.result
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.LoadingScreen
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResultRoute
@@ -31,6 +29,7 @@ import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
     resultRoute: ResultRoute,
@@ -40,16 +39,19 @@ fun ResultScreen(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     AudiosenseScaffold(
-        screenTitle = resultRoute.title,
-        canNavigateBack = true,
-        onNavigateBack = { onNavigateHome(HomeRoute) },
+        topBar = {
+            AudiosenseAppBar(
+                title = resultRoute.title,
+                canNavigateBack = true,
+                onNavigateBack = { onNavigateHome(HomeRoute) },
+            )
+        }
     ) {
         if (uiState is Ready) {
             ReadyResultScreenContent(onNavigateHome, onNavigateDescriptiveResult, uiState)
         } else LoadingScreen()
     }
 }
-
 
 @Composable
 private fun ReadyResultScreenContent(
@@ -67,14 +69,14 @@ private fun ReadyResultScreenContent(
                 lossDbHl = uiState.generalRightHearingLoss,
                 side = SideUiState.RIGHT,
                 modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
-                describedLossLevel = uiState.describedLeftHearingLoss
+                describedLossLevel = uiState.describedLeftHearingLoss,
             )
             Spacer(modifier = Modifier.weight(1f))
             HearingLossCard(
                 lossDbHl = uiState.generalLeftHearingLoss,
                 side = SideUiState.LEFT,
                 modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
-                describedLossLevel = uiState.describedRightHearingLoss
+                describedLossLevel = uiState.describedRightHearingLoss,
             )
         }
         Spacer(modifier = Modifier.height(30.dp))
@@ -117,12 +119,16 @@ fun PreviewResultScreen() {
                         8000 to 5,
                     ),
                 describedRightHearingLoss = "Normal",
-                describedLeftHearingLoss = "Profound"
+                describedLeftHearingLoss = "Profound",
             )
         )
     }
     AppTheme {
-        AudiosenseScaffold(screenTitle = "Results", canNavigateBack = true, onNavigateBack = {}) {
+        AudiosenseScaffold(
+            topBar = {
+                AudiosenseAppBar(title = "Results", canNavigateBack = true, onNavigateBack = {})
+            }
+        ) {
             ReadyResultScreenContent({}, {}, uiState)
         }
     }

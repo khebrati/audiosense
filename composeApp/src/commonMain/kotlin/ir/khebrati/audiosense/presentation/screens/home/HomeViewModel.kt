@@ -106,6 +106,7 @@ sealed class TestHistory {
     data class Ready(val compactRecords: List<CompactRecord>) :
         TestHistory() {
         val isDelete = compactRecords.any { it.isSelectedForDelete }
+        val deleteCount = compactRecords.count { it.isSelectedForDelete }
     }
 }
 

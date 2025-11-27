@@ -12,21 +12,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AudiosenseScaffold(
-    screenTitle: String,
-    canNavigateBack: Boolean,
-    onNavigateBack: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(start = 25.dp, end = 25.dp, bottom = 25.dp),
     floatingActionButton : @Composable (() -> Unit) = {},
+    topBar : @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            AudiosenseAppBar(
-                canNavigateBack = canNavigateBack,
-                title = screenTitle,
-                onNavigateBack = onNavigateBack
-            )
-        },
+        topBar = topBar,
         floatingActionButton = floatingActionButton,
     ) { innerPadding ->
         Box(

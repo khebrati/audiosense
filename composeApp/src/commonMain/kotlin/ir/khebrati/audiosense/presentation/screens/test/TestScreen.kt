@@ -26,6 +26,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
@@ -55,9 +56,13 @@ fun TestScreen(
         onClick = {viewModel.onUiAction(TestUiAction.OnClick)}
     ) {
         AudiosenseScaffold(
-            screenTitle = testRoute.title,
-            canNavigateBack = true,
-            onNavigateBack = onNavigateBack,
+            topBar = {
+                AudiosenseAppBar(
+                    title = testRoute.title,
+                    canNavigateBack = true,
+                    onNavigateBack = onNavigateBack,
+                )
+            },
         ) {
             TestScreenContent(
                 uiState = uiState,

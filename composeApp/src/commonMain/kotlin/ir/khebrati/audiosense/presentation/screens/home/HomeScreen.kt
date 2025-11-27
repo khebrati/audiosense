@@ -1,7 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ir.khebrati.audiosense.presentation.screens.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
-import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.DefaultHeadphones.GalaxyBudsFE
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
@@ -48,6 +49,7 @@ import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.OnClick
 import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.SelectForDelete
 import ir.khebrati.audiosense.presentation.screens.home.components.CompactAudiogram
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
+import ir.khebrati.audiosense.presentation.screens.home.components.RemoveTopAppBar
 import ir.khebrati.audiosense.presentation.screens.home.components.SelectableCheckbox
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.vectorResource
@@ -78,15 +80,18 @@ private fun HomeScreenContent(
     onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
 ) {
     val testHistory = uiState.testHistory
-    val leftPadding = if(testHistory is TestHistory.Ready && testHistory.isDelete) 0.dp else 25.dp
+    val isDeleteState = testHistory is TestHistory.Ready && testHistory.isDelete
+    val leftPadding = if (isDeleteState) 0.dp else 25.dp
+    val topBarText =
+        if (isDeleteState) testHistory.deleteCount.toString()
+        else "Good ${uiState.currentTimeOfDay.capitalizedName()}"
     AudiosenseScaffold(
-        screenTitle = "Good ${uiState.currentTimeOfDay.capitalizedName()}",
-        canNavigateBack = false,
-        contentPadding = PaddingValues(end = 25.dp, start = leftPadding, top = 25.dp, bottom = 25.dp),
+        topBar = { RemoveTopAppBar(text = topBarText, onRemove = {}, isDelete = isDeleteState) },
+        contentPadding =
+            PaddingValues(end = 25.dp, start = leftPadding, top = 25.dp, bottom = 25.dp),
         floatingActionButton = {
             HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) })
         },
-        onNavigateBack = { /* No back navigation in Home */ },
     ) {
         TestRecordsList(testHistory, onIntent = onIntent)
     }
