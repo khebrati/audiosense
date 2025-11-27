@@ -36,6 +36,7 @@ import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
+import ir.khebrati.audiosense.presentation.components.LoadingScreen
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
@@ -82,7 +83,7 @@ private fun HomeScreenContent(
 @Composable
 fun TestRecordsList(testRecords: TestRecords, onClickRecord: (CompactTestRecordUiState) -> Unit) {
     when (testRecords) {
-        is TestRecords.Loading -> LoadingTestRecords()
+        is TestRecords.Loading -> LoadingScreen()
         is TestRecords.Ready -> {
             if (testRecords.compactTestRecordUiStates.isEmpty()) {
                 EmptyRecordsList()
@@ -91,13 +92,6 @@ fun TestRecordsList(testRecords: TestRecords, onClickRecord: (CompactTestRecordU
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun LoadingTestRecords() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularWavyProgressIndicator()
-    }
-}
 
 @Composable
 private fun RecordsList(
