@@ -2,8 +2,8 @@
 
 package ir.khebrati.audiosense.presentation.screens.result
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Textsms
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -81,16 +80,10 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
     IconButton(onClick = { showBottomSheet = true }, modifier = Modifier.size(50.dp)) {
         Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
     }
-    if(showBottomSheet){
+    if (showBottomSheet) {
         val padding = 15.dp
-        ModalBottomSheet(
-            onDismissRequest = {
-                showBottomSheet = false
-            }
-        ){
-            TitleRow(
-                modifier = Modifier.padding(padding)
-            )
+        ModalBottomSheet(onDismissRequest = { showBottomSheet = false }) {
+            TitleRow(modifier = Modifier.padding(padding))
             BottomSheetRow(
                 padding = padding,
                 text = "Text",
@@ -98,7 +91,7 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
                     onShare(ShareType.TEXT)
                     showBottomSheet = false
                 },
-                icon = Icons.Outlined.Textsms
+                icon = Icons.Outlined.Textsms,
             )
             BottomSheetRow(
                 padding = padding,
@@ -107,51 +100,42 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
                     onShare(ShareType.IMAGE)
                     showBottomSheet = false
                 },
-                icon = Icons.Outlined.Image
+                icon = Icons.Outlined.Image,
             )
-            CancelButton(
-                modifier = Modifier.padding(padding)
-            ){
-                showBottomSheet = false
-            }
+            CancelButton(modifier = Modifier.padding(padding)) { showBottomSheet = false }
         }
     }
 }
 
 @Composable
-fun CancelButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    
+fun CancelButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+
     FilledTonalButton(modifier = modifier.fillMaxWidth().height(50.dp), onClick = onClick) {
         Text("Cancel")
     }
 }
 
 @Composable
-fun TitleRow(
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
+fun TitleRow(modifier: Modifier = Modifier) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text("Share as", style = MaterialTheme.typography.titleMediumEmphasized)
     }
 }
 
 @Composable
-fun BottomSheetRow(
-    padding: Dp,
-    text: String,
-    onClick: () ->Unit,
-    icon: ImageVector,
-) {
+fun BottomSheetRow(padding: Dp, text: String, onClick: () -> Unit, icon: ImageVector) {
     HorizontalDivider()
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
-        modifier = Modifier.padding(padding).clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.spacedBy(padding)
+        modifier =
+            Modifier.padding(padding)
+                .clickable(
+                    onClick = onClick,
+                    indication = null,
+                    interactionSource = interactionSource,
+                )
+                .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(padding),
     ) {
         Icon(icon, contentDescription = "Share type icon")
         Text(text)
@@ -161,9 +145,7 @@ fun BottomSheetRow(
 @Preview
 @Composable
 fun PreviewShareIcon() {
-    AppTheme {
-        ShareIcon(onShare = {})
-    }
+    AppTheme { ShareIcon(onShare = {}) }
 }
 
 @Composable
