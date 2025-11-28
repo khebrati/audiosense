@@ -26,12 +26,12 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
 import ir.khebrati.audiosense.presentation.screens.test.NavigationEvent.*
 import ir.khebrati.audiosense.presentation.screens.test.components.AnimatedTestVisualizer
-import ir.khebrati.audiosense.presentation.theme.AppTheme
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
@@ -52,13 +52,17 @@ fun TestScreen(
         }
     }
     val uiState = viewModel.uiState.collectAsState().value
-    ClickableRippleEffect(
+    ClickableWithIndication(
         onClick = {viewModel.onUiAction(TestUiAction.OnClick)}
     ) {
         AudiosenseScaffold(
-            screenTitle = testRoute.title,
-            canNavigateBack = true,
-            onNavigateBack = onNavigateBack,
+            topBar = {
+                AudiosenseAppBar(
+                    title = testRoute.title,
+                    canNavigateBack = true,
+                    onNavigateBack = onNavigateBack,
+                )
+            },
         ) {
             TestScreenContent(
                 uiState = uiState,
@@ -68,7 +72,7 @@ fun TestScreen(
 }
 
 @Composable
-private fun ClickableRippleEffect(modifier: Modifier = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
+private fun ClickableWithIndication(modifier: Modifier = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
     val localHaptic = LocalHapticFeedback.current
     Box(
         modifier = modifier.clickable(
