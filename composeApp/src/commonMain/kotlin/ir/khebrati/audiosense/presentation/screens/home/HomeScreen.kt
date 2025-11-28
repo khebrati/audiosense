@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package ir.khebrati.audiosense.presentation.screens.home
 
@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -197,9 +198,9 @@ fun SessionRecordCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
-                    Text(text = lossDescription, style = MaterialTheme.typography.titleMedium)
+                    Text(text = lossDescription, style = MaterialTheme.typography.titleMediumEmphasized)
                     Spacer(modifier = Modifier.height(15.dp))
-                    Text(text = date, style = MaterialTheme.typography.labelMedium)
+                    Text(text = date, style = MaterialTheme.typography.labelMediumEmphasized)
                 }
                 Box(modifier = Modifier.padding(5.dp)) {
                     CompactAudiogram(
@@ -220,7 +221,7 @@ fun SessionRecordCard(
                 ) {
                     HeadphoneIcon(headphoneName, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = headphoneName, style = MaterialTheme.typography.labelSmall)
+                    Text(text = headphoneName, style = MaterialTheme.typography.labelSmallEmphasized)
                 }
             }
         }
