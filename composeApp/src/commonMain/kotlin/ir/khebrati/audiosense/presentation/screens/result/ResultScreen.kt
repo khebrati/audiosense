@@ -2,6 +2,7 @@
 
 package ir.khebrati.audiosense.presentation.screens.result
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,12 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Textsms
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Textsms
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
@@ -82,13 +82,15 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
         Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
     }
     if(showBottomSheet){
+        val padding = 15.dp
         ModalBottomSheet(
             onDismissRequest = {
                 showBottomSheet = false
             }
         ){
-            val padding = 20.dp
-            TitleRow(padding)
+            TitleRow(
+                modifier = Modifier.padding(padding)
+            )
             BottomSheetRow(
                 padding = padding,
                 text = "Text",
@@ -107,16 +109,32 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
                 },
                 icon = Icons.Outlined.Image
             )
+            CancelButton(
+                modifier = Modifier.padding(padding)
+            ){
+                showBottomSheet = false
+            }
         }
     }
 }
 
 @Composable
+fun CancelButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    
+    FilledTonalButton(modifier = modifier.fillMaxWidth().height(50.dp), onClick = onClick) {
+        Text("Cancel")
+    }
+}
+
+@Composable
 fun TitleRow(
-    padding: Dp
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.padding(padding).fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         Text("Share as", style = MaterialTheme.typography.titleMediumEmphasized)
