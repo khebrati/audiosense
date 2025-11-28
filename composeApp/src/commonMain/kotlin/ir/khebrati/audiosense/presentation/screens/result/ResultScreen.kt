@@ -26,6 +26,7 @@ import ir.khebrati.audiosense.presentation.components.LoadingScreen
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.DescriptiveResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.HomeRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
+import ir.khebrati.audiosense.presentation.screens.result.TestResultIntent.*
 import ir.khebrati.audiosense.presentation.screens.result.TestResultUiState.*
 import ir.khebrati.audiosense.presentation.screens.result.components.Audiogram
 import ir.khebrati.audiosense.presentation.screens.result.components.DoneButton
@@ -49,7 +50,9 @@ fun ResultScreen(
                 title = resultRoute.title,
                 canNavigateBack = true,
                 actions = {
-                    IconButton(onClick = {}, modifier = Modifier.size(50.dp)){
+                    IconButton(onClick = {
+                        viewModel.handleIntent(Share)
+                    }, modifier = Modifier.size(50.dp)){
                         Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
                     }
                 },

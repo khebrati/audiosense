@@ -9,9 +9,12 @@ import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.domain.model.Test
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.audiogram.AudiogramSerializer
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.lossLevel.getLossLevel
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
+import ir.khebrati.audiosense.presentation.screens.result.TestResultIntent.*
+import ir.khebrati.audiosense.presentation.screens.result.TestResultUiState.*
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class TestResultViewModel(
     private val handle: SavedStateHandle,
+    private val serializer: AudiogramSerializer,
     private val testRepository: TestRepository,
 ) : ViewModel() {
     private val testId = handle.toRoute<ResultRoute>().testId
@@ -29,12 +33,28 @@ class TestResultViewModel(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = TestResultUiState.Loading,
+                initialValue = Loading,
             )
 
-    init {
-        Logger.withTag("TestResultViewModel").d { "Got test id $testId" }
+    fun handleIntent(intent: TestResultIntent){
+        when(intent){
+            is Share -> handleShare(intent)
+        }
     }
+
+    private fun handleShare(intent: Share) {
+        val state = uiState.value
+        if(state !is Ready){
+            return
+        }
+        val serializedAudiogram = serializer.serialize(
+            leftAC = state.leftAC,
+            rightAC = state.rightAC
+        )
+        Logger.withTag("test").d { serializedAudiogram }
+    }
+
+
 }
 
 @Immutable
@@ -50,9 +70,13 @@ sealed interface TestResultUiState {
         val rightAC: Map<Int, Int>,
     ) : TestResultUiState
 }
+@Immutable
+sealed interface TestResultIntent{
+    data object Share : TestResultIntent
+}
 
 fun Test.toUiState() =
-    TestResultUiState.Ready(
+    Ready(
         leftAC = leftAC,
         rightAC = rightAC,
         generalLeftHearingLoss = getLossLevel(leftAC),
