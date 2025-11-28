@@ -75,7 +75,12 @@ sealed interface TestResultUiState {
 }
 @Immutable
 sealed interface TestResultIntent{
-    data object Share : TestResultIntent
+    data class Share(val type: ShareType) : TestResultIntent
+}
+
+enum class ShareType{
+    TEXT,
+    IMAGE
 }
 
 fun Test.toUiState() =

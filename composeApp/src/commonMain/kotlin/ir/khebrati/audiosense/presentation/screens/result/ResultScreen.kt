@@ -1,23 +1,39 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ir.khebrati.audiosense.presentation.screens.result
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Textsms
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Textsms
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
@@ -35,7 +51,6 @@ import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
     resultRoute: ResultRoute,
@@ -49,13 +64,7 @@ fun ResultScreen(
             AudiosenseAppBar(
                 title = resultRoute.title,
                 canNavigateBack = true,
-                actions = {
-                    IconButton(onClick = {
-                        viewModel.handleIntent(Share)
-                    }, modifier = Modifier.size(50.dp)){
-                        Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
-                    }
-                },
+                actions = { ShareIcon { viewModel.handleIntent(Share(it)) } },
                 onNavigateBack = { onNavigateHome(HomeRoute) },
             )
         }
@@ -63,6 +72,79 @@ fun ResultScreen(
         if (uiState is Ready) {
             ReadyResultScreenContent(onNavigateHome, onNavigateDescriptiveResult, uiState)
         } else LoadingScreen()
+    }
+}
+
+@Composable
+fun ShareIcon(onShare: (ShareType) -> Unit) {
+    var showBottomSheet by remember { mutableStateOf(false) }
+    IconButton(onClick = { showBottomSheet = true }, modifier = Modifier.size(50.dp)) {
+        Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
+    }
+    if(showBottomSheet){
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            }
+        ){
+            val padding = 20.dp
+            TitleRow(padding)
+            BottomSheetRow(
+                padding = padding,
+                text = "Text",
+                onClick = {
+                    onShare(ShareType.TEXT)
+                    showBottomSheet = false
+                },
+                icon = Icons.Outlined.Textsms
+            )
+            BottomSheetRow(
+                padding = padding,
+                text = "Image",
+                onClick = {
+                    onShare(ShareType.IMAGE)
+                    showBottomSheet = false
+                },
+                icon = Icons.Outlined.Image
+            )
+        }
+    }
+}
+
+@Composable
+fun TitleRow(
+    padding: Dp
+) {
+    Row(
+        modifier = Modifier.padding(padding).fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text("Share as", style = MaterialTheme.typography.titleMediumEmphasized)
+    }
+}
+
+@Composable
+fun BottomSheetRow(
+    padding: Dp,
+    text: String,
+    onClick: () ->Unit,
+    icon: ImageVector,
+) {
+    HorizontalDivider()
+    Row(
+        modifier = Modifier.padding(padding).clickable(onClick = onClick),
+        horizontalArrangement = Arrangement.spacedBy(padding)
+    ) {
+        Icon(icon, contentDescription = "Share type icon")
+        Text(text)
+    }
+}
+
+@Preview
+@Composable
+fun PreviewShareIcon() {
+    AppTheme {
+        ShareIcon(onShare = {})
     }
 }
 
