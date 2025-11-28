@@ -12,6 +12,7 @@ import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.audiogram.AudiogramSerializer
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.lossLevel.getLossLevel
+import ir.khebrati.audiosense.domain.useCase.share.ShareService
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.result.TestResultIntent.*
 import ir.khebrati.audiosense.presentation.screens.result.TestResultUiState.*
@@ -24,6 +25,7 @@ class TestResultViewModel(
     private val handle: SavedStateHandle,
     private val serializer: AudiogramSerializer,
     private val testRepository: TestRepository,
+    private val shareService: ShareService,
 ) : ViewModel() {
     private val testId = handle.toRoute<ResultRoute>().testId
     val resultFlow = testRepository.observe(testId)
@@ -51,6 +53,7 @@ class TestResultViewModel(
             leftAC = state.leftAC,
             rightAC = state.rightAC
         )
+        shareService.shareText(serializedAudiogram)
         Logger.withTag("test").d { serializedAudiogram }
     }
 

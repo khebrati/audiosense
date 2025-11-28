@@ -3,7 +3,6 @@ package ir.khebrati.audiosense.domain.useCase.audiogram
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonTransformingSerializer
 
 class AudiogramSerializerImpl : AudiogramSerializer {
     override fun serialize(
