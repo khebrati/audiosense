@@ -6,8 +6,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +48,11 @@ fun ResultScreen(
             AudiosenseAppBar(
                 title = resultRoute.title,
                 canNavigateBack = true,
+                actions = {
+                    IconButton(onClick = {}, modifier = Modifier.size(50.dp)){
+                        Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
+                    }
+                },
                 onNavigateBack = { onNavigateHome(HomeRoute) },
             )
         }

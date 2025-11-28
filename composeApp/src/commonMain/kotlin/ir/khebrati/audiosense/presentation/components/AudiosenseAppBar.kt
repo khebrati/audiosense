@@ -1,5 +1,6 @@
 package ir.khebrati.audiosense.presentation.components
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +19,7 @@ fun AudiosenseAppBar(
     title: String,
     canNavigateBack: Boolean,
     onNavigateBack: () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -27,6 +29,7 @@ fun AudiosenseAppBar(
                 style = MaterialTheme.typography.titleLargeEmphasized
             )
         },
+        actions = actions,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = onNavigateBack) {
