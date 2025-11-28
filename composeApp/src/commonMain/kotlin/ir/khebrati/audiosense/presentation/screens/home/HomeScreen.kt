@@ -90,7 +90,9 @@ private fun HomeScreenContent(
             RemoveTopAppBar(
                 text = topBarText,
                 isDeleteState = isDeleteState,
-                onDelete = {},
+                onDelete = {
+                    onIntent(Delete)
+                },
                 onDeleteCancel = { onIntent(CancelDelete) },
             )
         },

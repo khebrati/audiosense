@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) : ViewModel() {
+class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestRepository) : ViewModel() {
     private val currentTimeOfDay =
         timeTeller
             .observeTimeOfDay()
@@ -52,6 +52,19 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
                 /*Handled in UI for navigation*/
             }
             is CancelDelete -> handleCancelDelete(intent)
+            is Delete -> handleDelete(intent)
+        }
+    }
+
+    private fun handleDelete(intent: Delete) {
+        val testHistory = _uiState.value.testHistory
+        if(testHistory !is TestHistory.Ready){
+            return
+        }
+        viewModelScope.launch {
+            testHistory.compactRecords.filter { it.isSelectedForDelete }.forEach {
+                testRepository.deleteById(it.id)
+            }
         }
     }
 
@@ -131,4 +144,6 @@ sealed interface HomeIntent {
     data class OnClick(val record: CompactRecord) : HomeIntent
 
     data object CancelDelete : HomeIntent
+
+    data object Delete : HomeIntent
 }
