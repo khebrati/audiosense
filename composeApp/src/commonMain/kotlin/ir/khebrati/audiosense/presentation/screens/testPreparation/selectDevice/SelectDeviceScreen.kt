@@ -1,6 +1,5 @@
 package ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice
 
-// import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import audiosense.composeapp.generated.resources.AppleAirpodPro
@@ -52,6 +52,7 @@ import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
 import ir.khebrati.audiosense.domain.model.isDefaultHeadphone
 import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
+import ir.khebrati.audiosense.presentation.components.DeleteDialog
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.DeleteHeadphone
@@ -71,8 +72,7 @@ fun SelectDeviceScreen(
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    // TODO commented to build previews
-    //    BackHandler { onNavigateBack() }
+    BackHandler { onNavigateBack() }
     AudiosenseScaffold(
         topBar = {
             AudiosenseAppBar(
@@ -80,7 +80,7 @@ fun SelectDeviceScreen(
                 canNavigateBack = true,
                 onNavigateBack = onNavigateBack,
             )
-        },
+        }
     ) {
         SelectDeviceContent(
             uiState = uiState,
@@ -147,10 +147,8 @@ fun SelectDevicePreview() {
     AppTheme {
         AudiosenseScaffold(
             topBar = {
-                AudiosenseAppBar(
-                    title = "New Test", canNavigateBack = true, onNavigateBack = {}
-                )
-            },
+                AudiosenseAppBar(title = "New Test", canNavigateBack = true, onNavigateBack = {})
+            }
         ) {
             SelectDeviceContent(uiState, {}, {}, {})
         }
@@ -259,27 +257,15 @@ private fun DeleteHeadphoneIcon(onRemoveHeadphone: () -> Unit, modifier: Modifie
         }
     }
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                Button(
-                    onClick = onRemoveHeadphone,
-                    colors =
-                        ButtonDefaults.buttonColors()
-                            .copy(containerColor = MaterialTheme.colorScheme.errorContainer),
-                ) {
-                    Text("Yes", color = MaterialTheme.colorScheme.onErrorContainer)
-                }
-            },
-            dismissButton = { Button(onClick = { showDialog = false }) { Text("No") } },
-            text = {
-                Text(
-                    "Are you sure you want to delete this headphone? All of its data, including calibration, will be permanently removed."
-                )
-            },
+        DeleteDialog(
+            text =
+                "Are you sure you want to delete this headphone? All of its data, including calibration, will be permanently removed.",
+            onRemove = onRemoveHeadphone,
+            onDismiss = {showDialog = false}
         )
     }
 }
+
 
 @Composable
 private fun HeadphonePicAndName(text: String, modifier: Modifier) {

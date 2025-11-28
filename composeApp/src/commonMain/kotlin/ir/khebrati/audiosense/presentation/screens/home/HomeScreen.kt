@@ -29,9 +29,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +45,7 @@ import ir.khebrati.audiosense.domain.model.DefaultHeadphones.GalaxyBudsFE
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
+import ir.khebrati.audiosense.presentation.components.DeleteDialog
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.components.LoadingScreen
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
@@ -73,6 +78,7 @@ fun HomeScreen(
     HomeScreenContent(uiState, intentHandler, onNavigateSelectDevice)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
@@ -85,13 +91,22 @@ private fun HomeScreenContent(
     val topBarText =
         if (isDeleteState) testHistory.deleteCount.toString()
         else "Good ${uiState.currentTimeOfDay.capitalizedName()}"
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if(showDeleteDialog){
+        DeleteDialog(
+            text = "Do you want to remove the selected test? This action is permanent.",
+            onDismiss = {showDeleteDialog = false},
+            onRemove = {onIntent(Delete)}
+        )
+    }
+    if (isDeleteState) BackHandler { onIntent(CancelDelete) }
     AudiosenseScaffold(
         topBar = {
             RemoveTopAppBar(
                 text = topBarText,
                 isDeleteState = isDeleteState,
                 onDelete = {
-                    onIntent(Delete)
+                    showDeleteDialog = true
                 },
                 onDeleteCancel = { onIntent(CancelDelete) },
             )
@@ -105,7 +120,6 @@ private fun HomeScreenContent(
         TestRecordsList(testHistory, onIntent = onIntent)
     }
 }
-
 @Composable
 fun TestRecordsList(testHistory: TestHistory, onIntent: (HomeIntent) -> Unit) {
     when (testHistory) {
@@ -200,7 +214,10 @@ fun SessionRecordCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
-                    Text(text = lossDescription, style = MaterialTheme.typography.titleMediumEmphasized)
+                    Text(
+                        text = lossDescription,
+                        style = MaterialTheme.typography.titleMediumEmphasized,
+                    )
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(text = date, style = MaterialTheme.typography.labelMediumEmphasized)
                 }
@@ -223,7 +240,10 @@ fun SessionRecordCard(
                 ) {
                     HeadphoneIcon(headphoneName, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = headphoneName, style = MaterialTheme.typography.labelSmallEmphasized)
+                    Text(
+                        text = headphoneName,
+                        style = MaterialTheme.typography.labelSmallEmphasized,
+                    )
                 }
             }
         }
