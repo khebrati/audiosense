@@ -1,9 +1,9 @@
 package ir.khebrati.audiosense.presentation.screens.home.components
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,28 +22,37 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun RemoveTopAppBar(
     modifier: Modifier = Modifier,
     text: String,
-    onRemove: () -> Unit,
-    isDelete: Boolean,
+    isDeleteState: Boolean,
+    onDelete: () -> Unit,
+    onDeleteCancel: () -> Unit,
 ) {
-    Row(
-        modifier = modifier.padding(start = 25.dp, end = 25.dp)
-    ) {
-        TopAppBar(
-            title = { Text(text = text, style = MaterialTheme.typography.titleLarge) },
-            actions = {
-                if (isDelete)
-                    IconButton(onClick = onRemove) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete tests")
-                    }
-            },
-        )
-    }
+    TopAppBar(
+        modifier = modifier,
+        navigationIcon = {
+            if(isDeleteState) IconButton(onClick = onDeleteCancel){
+                Icon(imageVector = Icons.Default.Close, contentDescription = "Cancel deleting")
+            }
+        },
+        title = { Text(text = text, style = MaterialTheme.typography.titleLarge) },
+        actions = {
+            if (isDeleteState)
+                IconButton(onClick = onDelete, modifier = Modifier.size(50.dp)) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete tests")
+                }
+        },
+    )
 }
 
 @Preview
 @Composable
 fun PreviewRemoveTopAppBar() {
     AppTheme {
-        RemoveTopAppBar(modifier = Modifier.width(1000.dp), text = 4.toString(), onRemove = {}, isDelete = true)
+        RemoveTopAppBar(
+            modifier = Modifier.width(1000.dp),
+            text = 4.toString(),
+            onDelete = {},
+            isDeleteState = true,
+            onDeleteCancel = {}
+        )
     }
 }

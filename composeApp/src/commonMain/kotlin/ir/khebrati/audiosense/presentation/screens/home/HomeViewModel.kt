@@ -13,6 +13,7 @@ import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -47,28 +48,43 @@ class HomeViewModel(val timeTeller: TimeTeller, testRepository: TestRepository) 
     fun handleIntent(intent: HomeIntent) {
         when (intent) {
             is SelectForDelete -> handleSelectForDelete(intent)
-            is OnClick -> {/*Handled in UI for navigation*/}
+            is OnClick -> {
+                /*Handled in UI for navigation*/
+            }
+            is CancelDelete -> handleCancelDelete(intent)
+        }
+    }
+
+    private fun handleCancelDelete(intent: CancelDelete) {
+        val oldTestHistory = _uiState.value.testHistory
+        if (oldTestHistory !is TestHistory.Ready) {
+            return
+        }
+        val newCompactRecords =
+            oldTestHistory.compactRecords.map { it.copy(isSelectedForDelete = false) }
+        _uiState.update {
+            it.copy(testHistory = oldTestHistory.copy(compactRecords = newCompactRecords))
         }
     }
 
     private fun handleSelectForDelete(intent: SelectForDelete) {
         val oldState = _uiState.value
         val oldTestRecords = oldState.testHistory
-        val newTestRecord = if (oldTestRecords !is TestHistory.Ready) {
-            oldTestRecords
-        } else {
-            val oldCompactTests = oldTestRecords.compactRecords
-            val newCompactTests = oldCompactTests.map {
-                if (it === intent.record) it.copy(isSelectedForDelete = !it.isSelectedForDelete) else it
+        val newTestRecord =
+            if (oldTestRecords !is TestHistory.Ready) {
+                oldTestRecords
+            } else {
+                val oldCompactTests = oldTestRecords.compactRecords
+                val newCompactTests =
+                    oldCompactTests.map {
+                        if (it === intent.record)
+                            it.copy(isSelectedForDelete = !it.isSelectedForDelete)
+                        else it
+                    }
+                oldTestRecords.copy(compactRecords = newCompactTests)
             }
-            oldTestRecords.copy(compactRecords = newCompactTests)
-        }
-        val newState = oldState.copy(
-            testHistory = newTestRecord
-        )
-        _uiState.update {
-            newState
-        }
+        val newState = oldState.copy(testHistory = newTestRecord)
+        _uiState.update { newState }
     }
 }
 
@@ -97,14 +113,12 @@ data class CompactRecord(
     val isSelectedForDelete: Boolean = false,
 )
 
-@Immutable
-data class HomeUiState(val currentTimeOfDay: TimeOfDay, val testHistory: TestHistory)
+@Immutable data class HomeUiState(val currentTimeOfDay: TimeOfDay, val testHistory: TestHistory)
 
 sealed class TestHistory {
     data object Loading : TestHistory()
 
-    data class Ready(val compactRecords: List<CompactRecord>) :
-        TestHistory() {
+    data class Ready(val compactRecords: List<CompactRecord>) : TestHistory() {
         val isDelete = compactRecords.any { it.isSelectedForDelete }
         val deleteCount = compactRecords.count { it.isSelectedForDelete }
     }
@@ -113,5 +127,8 @@ sealed class TestHistory {
 @Immutable
 sealed interface HomeIntent {
     data class SelectForDelete(val record: CompactRecord) : HomeIntent
+
     data class OnClick(val record: CompactRecord) : HomeIntent
+
+    data object CancelDelete : HomeIntent
 }

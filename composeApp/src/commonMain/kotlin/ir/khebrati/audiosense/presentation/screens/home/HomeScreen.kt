@@ -45,8 +45,7 @@ import ir.khebrati.audiosense.presentation.components.LoadingScreen
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
-import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.OnClick
-import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.SelectForDelete
+import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.*
 import ir.khebrati.audiosense.presentation.screens.home.components.CompactAudiogram
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
 import ir.khebrati.audiosense.presentation.screens.home.components.RemoveTopAppBar
@@ -86,7 +85,14 @@ private fun HomeScreenContent(
         if (isDeleteState) testHistory.deleteCount.toString()
         else "Good ${uiState.currentTimeOfDay.capitalizedName()}"
     AudiosenseScaffold(
-        topBar = { RemoveTopAppBar(text = topBarText, onRemove = {}, isDelete = isDeleteState) },
+        topBar = {
+            RemoveTopAppBar(
+                text = topBarText,
+                isDeleteState = isDeleteState,
+                onDelete = {},
+                onDeleteCancel = { onIntent(CancelDelete) },
+            )
+        },
         contentPadding =
             PaddingValues(end = 25.dp, start = leftPadding, top = 25.dp, bottom = 25.dp),
         floatingActionButton = {
@@ -150,7 +156,7 @@ private fun RecordsList(testHistory: TestHistory.Ready, onIntent: (HomeIntent) -
 @Composable
 private fun CheckboxArea(modifier: Modifier = Modifier, selected: Boolean) {
     Box(modifier = modifier.fillMaxHeight(), contentAlignment = Alignment.Center) {
-        SelectableCheckbox(Modifier.size(20.dp), selected, {})
+        SelectableCheckbox(Modifier.size(25.dp), selected, {})
     }
 }
 
@@ -286,6 +292,7 @@ fun HomeScreenPreview() {
                 TestHistory.Ready(
                     listOf(
                         CompactRecord(
+                            isSelectedForDelete = true,
                             leftAC =
                                 hashMapOf(
                                     125 to 90,
