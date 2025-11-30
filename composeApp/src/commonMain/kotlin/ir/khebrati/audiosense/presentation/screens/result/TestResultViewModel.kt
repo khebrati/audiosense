@@ -47,7 +47,7 @@ class TestResultViewModel(
     }
 
     private fun handleShareImage(intent: ShareImage) {
-        Logger.withTag("test").d { intent.bitmap.toString() }
+        shareService.shareImage(intent.bitmap)
     }
 
     private fun handleShareText(intent: ShareText) {

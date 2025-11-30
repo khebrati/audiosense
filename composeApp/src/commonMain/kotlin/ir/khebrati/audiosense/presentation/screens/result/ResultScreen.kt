@@ -3,6 +3,7 @@
 package ir.khebrati.audiosense.presentation.screens.result
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,6 +59,7 @@ import ir.khebrati.audiosense.presentation.screens.result.components.Audiogram
 import ir.khebrati.audiosense.presentation.screens.result.components.DoneButton
 import ir.khebrati.audiosense.presentation.screens.result.components.HearingLossCard
 import ir.khebrati.audiosense.presentation.theme.AppTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
@@ -73,24 +76,7 @@ fun ResultScreen(
     val scope = rememberCoroutineScope()
     AudiosenseScaffold(
         contentPadding = PaddingValues(),
-        topBar = {
-            AudiosenseAppBar(
-                title = resultRoute.title,
-                canNavigateBack = true,
-                actions = {
-                    ShareIcon(
-                        onShareText = { viewModel.handleIntent(ShareText) },
-                        onShareImage = {
-                            scope.launch {
-                                val bitmap = graphicsLayer.toImageBitmap()
-                                viewModel.handleIntent(ShareImage(bitmap))
-                            }
-                        },
-                    )
-                },
-                onNavigateBack = { onNavigateHome(HomeRoute) },
-            )
-        },
+        topBar = { AppBarWithShare(resultRoute, viewModel, scope, graphicsLayer, onNavigateHome) },
     ) {
         if (uiState is Ready) {
             ReadyResultScreenContent(
@@ -101,6 +87,32 @@ fun ResultScreen(
             )
         } else LoadingScreen()
     }
+}
+
+@Composable
+private fun AppBarWithShare(
+    resultRoute: ResultRoute,
+    viewModel: TestResultViewModel,
+    scope: CoroutineScope,
+    graphicsLayer: GraphicsLayer,
+    onNavigateHome: (HomeRoute) -> Unit,
+) {
+    AudiosenseAppBar(
+        title = resultRoute.title,
+        canNavigateBack = true,
+        actions = {
+            ShareIcon(
+                onShareText = { viewModel.handleIntent(ShareText) },
+                onShareImage = {
+                    scope.launch {
+                        val bitmap = graphicsLayer.toImageBitmap()
+                        viewModel.handleIntent(ShareImage(bitmap))
+                    }
+                },
+            )
+        },
+        onNavigateBack = { onNavigateHome(HomeRoute) },
+    )
 }
 
 @Composable
@@ -228,17 +240,17 @@ fun ScreenShotContainer(
     graphicsLayer: GraphicsLayer,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        modifier =
-            modifier
-                .drawWithContent {
-                    graphicsLayer.record { this@drawWithContent.drawContent() }
-                    drawLayer(graphicsLayer)
-                }
-                .padding(paddingValues)
-    ) {
-        content()
-    }
+        Column(
+            modifier =
+                modifier
+                    .drawWithContent {
+                        graphicsLayer.record { this@drawWithContent.drawContent() }
+                        drawLayer(graphicsLayer)
+                    }
+                    .background(MaterialTheme.colorScheme.surface).padding(paddingValues)
+        ) {
+            content()
+        }
 }
 
 @Preview
