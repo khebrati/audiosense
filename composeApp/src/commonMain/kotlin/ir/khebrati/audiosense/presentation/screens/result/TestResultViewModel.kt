@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.result
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,9 +10,13 @@ import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.Side
 import ir.khebrati.audiosense.domain.model.Test
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.audiogram.AudiogramSerializer
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.lossLevel.getLossLevel
+import ir.khebrati.audiosense.domain.useCase.share.ShareService
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
+import ir.khebrati.audiosense.presentation.screens.result.TestResultIntent.*
+import ir.khebrati.audiosense.presentation.screens.result.TestResultUiState.*
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,7 +24,9 @@ import kotlinx.coroutines.flow.stateIn
 
 class TestResultViewModel(
     private val handle: SavedStateHandle,
+    private val serializer: AudiogramSerializer,
     private val testRepository: TestRepository,
+    private val shareService: ShareService,
 ) : ViewModel() {
     private val testId = handle.toRoute<ResultRoute>().testId
     val resultFlow = testRepository.observe(testId)
@@ -29,12 +36,33 @@ class TestResultViewModel(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = TestResultUiState.Loading,
+                initialValue = Loading,
             )
 
-    init {
-        Logger.withTag("TestResultViewModel").d { "Got test id $testId" }
+    fun handleIntent(intent: TestResultIntent){
+        when(intent){
+            is ShareText -> handleShareText(intent)
+            is ShareImage -> handleShareImage(intent)
+        }
     }
+
+    private fun handleShareImage(intent: ShareImage) {
+        shareService.shareImage(intent.bitmap)
+    }
+
+    private fun handleShareText(intent: ShareText) {
+        val state = uiState.value
+        if(state !is Ready){
+            return
+        }
+        val serializedAudiogram = serializer.serialize(
+            leftAC = state.leftAC,
+            rightAC = state.rightAC
+        )
+        shareService.shareText(serializedAudiogram)
+    }
+
+
 }
 
 @Immutable
@@ -50,9 +78,15 @@ sealed interface TestResultUiState {
         val rightAC: Map<Int, Int>,
     ) : TestResultUiState
 }
+@Immutable
+sealed interface TestResultIntent{
+    data object ShareText : TestResultIntent
+    data class ShareImage(val bitmap: ImageBitmap) : TestResultIntent
+}
+
 
 fun Test.toUiState() =
-    TestResultUiState.Ready(
+    Ready(
         leftAC = leftAC,
         rightAC = rightAC,
         generalLeftHearingLoss = getLossLevel(leftAC),

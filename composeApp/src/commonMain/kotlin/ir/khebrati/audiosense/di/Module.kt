@@ -11,6 +11,8 @@ import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.getRoomDatabase
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.audiogram.AudiogramSerializer
+import ir.khebrati.audiosense.domain.useCase.audiogram.AudiogramSerializerImpl
 import ir.khebrati.audiosense.domain.useCase.audiometry.PureToneAudiometry
 import ir.khebrati.audiosense.domain.useCase.audiometry.PureToneAudiometryImpl
 import ir.khebrati.audiosense.domain.useCase.calibrator.HeadphoneCalibrator
@@ -68,6 +70,9 @@ internal fun commonModule(): Module = module {
     }
     factory<PureToneAudiometry>{
         PureToneAudiometryImpl(logger = get{ parametersOf("PureToneAudiometry") })
+    }
+    factory<AudiogramSerializer>{
+        AudiogramSerializerImpl()
     }
 }
 

@@ -20,6 +20,8 @@ kotlin {
     }
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
+        optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+        optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
     }
     jvmToolchain(21)
 
@@ -60,7 +62,6 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.kotlinx.serialization.json)
-            //TODO uncomment
             implementation(libs.back.handler)
         }
 
