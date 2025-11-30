@@ -2,12 +2,16 @@
 
 package ir.khebrati.audiosense.presentation.screens.result
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,8 +33,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -47,6 +57,7 @@ import ir.khebrati.audiosense.presentation.screens.result.components.Audiogram
 import ir.khebrati.audiosense.presentation.screens.result.components.DoneButton
 import ir.khebrati.audiosense.presentation.screens.result.components.HearingLossCard
 import ir.khebrati.audiosense.presentation.theme.AppTheme
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
@@ -58,24 +69,42 @@ fun ResultScreen(
     viewModel: TestResultViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val graphicsLayer = rememberGraphicsLayer()
+    val scope = rememberCoroutineScope()
     AudiosenseScaffold(
+        contentPadding = PaddingValues(),
         topBar = {
             AudiosenseAppBar(
                 title = resultRoute.title,
                 canNavigateBack = true,
-                actions = { ShareIcon { viewModel.handleIntent(Share(it)) } },
+                actions = {
+                    ShareIcon(
+                        onShareText = { viewModel.handleIntent(ShareText) },
+                        onShareImage = {
+                            scope.launch {
+                                val bitmap = graphicsLayer.toImageBitmap()
+                                viewModel.handleIntent(ShareImage(bitmap))
+                            }
+                        },
+                    )
+                },
                 onNavigateBack = { onNavigateHome(HomeRoute) },
             )
-        }
+        },
     ) {
         if (uiState is Ready) {
-            ReadyResultScreenContent(onNavigateHome, onNavigateDescriptiveResult, uiState)
+            ReadyResultScreenContent(
+                onNavigateHome,
+                onNavigateDescriptiveResult,
+                uiState,
+                graphicsLayer,
+            )
         } else LoadingScreen()
     }
 }
 
 @Composable
-fun ShareIcon(onShare: (ShareType) -> Unit) {
+fun ShareIcon(onShareText: () -> Unit, onShareImage: () -> Unit) {
     var showBottomSheet by remember { mutableStateOf(false) }
     IconButton(onClick = { showBottomSheet = true }, modifier = Modifier.size(50.dp)) {
         Icon(imageVector = Icons.Default.Share, contentDescription = "Share test results")
@@ -88,7 +117,7 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
                 padding = padding,
                 text = "Text",
                 onClick = {
-                    onShare(ShareType.TEXT)
+                    onShareText()
                     showBottomSheet = false
                 },
                 icon = Icons.Outlined.Textsms,
@@ -97,7 +126,7 @@ fun ShareIcon(onShare: (ShareType) -> Unit) {
                 padding = padding,
                 text = "Image",
                 onClick = {
-                    onShare(ShareType.IMAGE)
+                    onShareImage()
                     showBottomSheet = false
                 },
                 icon = Icons.Outlined.Image,
@@ -145,7 +174,7 @@ fun BottomSheetRow(padding: Dp, text: String, onClick: () -> Unit, icon: ImageVe
 @Preview
 @Composable
 fun PreviewShareIcon() {
-    AppTheme { ShareIcon(onShare = {}) }
+    AppTheme { ShareIcon(onShareText = {}, onShareImage = {}) }
 }
 
 @Composable
@@ -153,35 +182,62 @@ private fun ReadyResultScreenContent(
     onNavigateHome: (HomeRoute) -> Unit,
     onNavigateDescriptiveResult: (DescriptiveResultRoute) -> Unit,
     uiState: Ready,
+    graphicsLayer: GraphicsLayer,
+    modifier: Modifier = Modifier,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxSize()) {
         val maxCardSize = 175.dp
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth().height(maxCardSize),
-        ) {
-            HearingLossCard(
-                lossDbHl = uiState.generalRightHearingLoss,
-                side = SideUiState.RIGHT,
-                modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
-                describedLossLevel = uiState.describedLeftHearingLoss,
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            HearingLossCard(
-                lossDbHl = uiState.generalLeftHearingLoss,
-                side = SideUiState.LEFT,
-                modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
-                describedLossLevel = uiState.describedRightHearingLoss,
+        val padding = 25.dp
+        ScreenShotContainer(graphicsLayer = graphicsLayer, paddingValues = PaddingValues(padding)) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth().height(maxCardSize),
+            ) {
+                HearingLossCard(
+                    lossDbHl = uiState.generalRightHearingLoss,
+                    side = SideUiState.RIGHT,
+                    modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
+                    describedLossLevel = uiState.describedLeftHearingLoss,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                HearingLossCard(
+                    lossDbHl = uiState.generalLeftHearingLoss,
+                    side = SideUiState.LEFT,
+                    modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
+                    describedLossLevel = uiState.describedRightHearingLoss,
+                )
+            }
+            Spacer(modifier = Modifier.height(30.dp))
+            Audiogram(
+                leftAC = uiState.leftAC,
+                rightAC = uiState.rightAC,
+                modifier = Modifier.fillMaxWidth().height(300.dp),
             )
         }
-        Spacer(modifier = Modifier.height(30.dp))
-        Audiogram(
-            leftAC = uiState.leftAC,
-            rightAC = uiState.rightAC,
-            modifier = Modifier.fillMaxWidth().height(300.dp),
+        DoneButton(
+            modifier = Modifier.align(Alignment.BottomCenter).padding(padding),
+            onClick = { onNavigateHome(HomeRoute) },
         )
-        Spacer(modifier = Modifier.weight(1f))
-        DoneButton(onClick = { onNavigateHome(HomeRoute) })
+    }
+}
+
+@Composable
+fun ScreenShotContainer(
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
+    graphicsLayer: GraphicsLayer,
+    content: @Composable () -> Unit,
+) {
+    Column(
+        modifier =
+            modifier
+                .drawWithContent {
+                    graphicsLayer.record { this@drawWithContent.drawContent() }
+                    drawLayer(graphicsLayer)
+                }
+                .padding(paddingValues)
+    ) {
+        content()
     }
 }
 
@@ -220,11 +276,13 @@ fun PreviewResultScreen() {
     }
     AppTheme {
         AudiosenseScaffold(
+            contentPadding = PaddingValues(),
             topBar = {
                 AudiosenseAppBar(title = "Results", canNavigateBack = true, onNavigateBack = {})
-            }
+            },
         ) {
-            ReadyResultScreenContent({}, {}, uiState)
+            val graphicsLayer = rememberGraphicsLayer()
+            ReadyResultScreenContent({}, {}, uiState, graphicsLayer = graphicsLayer)
         }
     }
 }

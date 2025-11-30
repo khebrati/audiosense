@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.result
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,11 +41,16 @@ class TestResultViewModel(
 
     fun handleIntent(intent: TestResultIntent){
         when(intent){
-            is Share -> handleShare(intent)
+            is ShareText -> handleShareText(intent)
+            is ShareImage -> handleShareImage(intent)
         }
     }
 
-    private fun handleShare(intent: Share) {
+    private fun handleShareImage(intent: ShareImage) {
+        Logger.withTag("test").d { intent.bitmap.toString() }
+    }
+
+    private fun handleShareText(intent: ShareText) {
         val state = uiState.value
         if(state !is Ready){
             return
@@ -54,7 +60,6 @@ class TestResultViewModel(
             rightAC = state.rightAC
         )
         shareService.shareText(serializedAudiogram)
-        Logger.withTag("test").d { serializedAudiogram }
     }
 
 
@@ -75,13 +80,10 @@ sealed interface TestResultUiState {
 }
 @Immutable
 sealed interface TestResultIntent{
-    data class Share(val type: ShareType) : TestResultIntent
+    data object ShareText : TestResultIntent
+    data class ShareImage(val bitmap: ImageBitmap) : TestResultIntent
 }
 
-enum class ShareType{
-    TEXT,
-    IMAGE
-}
 
 fun Test.toUiState() =
     Ready(
