@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -74,6 +75,9 @@ fun ResultScreen(
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val graphicsLayer = rememberGraphicsLayer()
     val scope = rememberCoroutineScope()
+    BackHandler {
+        onNavigateHome(HomeRoute)
+    }
     AudiosenseScaffold(
         contentPadding = PaddingValues(),
         topBar = { AppBarWithShare(resultRoute, viewModel, scope, graphicsLayer, onNavigateHome) },
