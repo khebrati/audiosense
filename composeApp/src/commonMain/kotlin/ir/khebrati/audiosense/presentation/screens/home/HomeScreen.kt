@@ -48,9 +48,8 @@ import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.DeleteDialog
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.components.LoadingScreen
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.ResultRoute
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SelectDeviceRoute
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.SettingRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.*
 import ir.khebrati.audiosense.presentation.screens.home.components.CompactAudiogram
 import ir.khebrati.audiosense.presentation.screens.home.components.HomeFAB
@@ -63,7 +62,7 @@ import org.koin.compose.viewmodel.koinNavViewModel
 
 @Composable
 fun HomeScreen(
-    onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
+    onNavigateStartTest: (PersonalInfoRoute) -> Unit,
     onNavigateSetting: (SettingRoute) -> Unit,
     onNavigateResult: (ResultRoute) -> Unit,
     viewModel: HomeViewModel = koinNavViewModel(),
@@ -75,7 +74,7 @@ fun HomeScreen(
             else -> viewModel.handleIntent(intent)
         }
     }
-    HomeScreenContent(uiState, intentHandler, onNavigateSelectDevice)
+    HomeScreenContent(uiState, intentHandler, onNavigateStartTest)
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -83,7 +82,7 @@ fun HomeScreen(
 private fun HomeScreenContent(
     uiState: HomeUiState,
     onIntent: (HomeIntent) -> Unit,
-    onNavigateSelectDevice: (SelectDeviceRoute) -> Unit,
+    onNavigateSelectDevice: (PersonalInfoRoute) -> Unit,
 ) {
     val testHistory = uiState.testHistory
     val isDeleteState = testHistory is TestHistory.Ready && testHistory.isDelete
@@ -114,7 +113,7 @@ private fun HomeScreenContent(
         contentPadding =
             PaddingValues(end = 25.dp, start = leftPadding, top = 25.dp, bottom = 25.dp),
         floatingActionButton = {
-            HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(SelectDeviceRoute) })
+            HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(PersonalInfoRoute) })
         },
     ) {
         TestRecordsList(testHistory, onIntent = onIntent)
