@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ fun NextButton(
     onClick: () -> Unit
 ){
     Button(
+        modifier = modifier,
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(12.dp),
@@ -35,10 +37,10 @@ fun NextButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ){
-            Text(text = if(isDone) "Start Test" else "Next")
+            Text(text = if(isDone) "Start" else "Next", style = MaterialTheme.typography.bodyLargeEmphasized)
             val imageVector = if(!isDone) Icons.AutoMirrored.Filled.ArrowForward else Icons.Default.PlayArrow
             Icon(
-                modifier = Modifier.size(15.dp),
+                modifier = Modifier.size(25.dp),
                 imageVector = imageVector,
                 contentDescription = "Next button"
             )

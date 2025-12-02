@@ -3,7 +3,9 @@ package ir.khebrati.audiosense.presentation.screens.testPreparation.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.HorizontalDivider
@@ -30,17 +32,18 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Indicator(
-            totalWidth = 50.dp,
-            activeLineWidth = 30.dp,
+            totalWidth = 100.dp,
+            activeLineWidth = 75.dp,
             circleSpacing = 3.dp,
-            width = 10.dp,
-            height = 10.dp,
+            width = 25.dp,
+            height = 25.dp,
             pagerState = pagerState,
-            radius = CornerRadius(x = 20f, y = 20f),
+            radius = CornerRadius(x = 40f, y = 40f),
             color = MaterialTheme.colorScheme.primary,
         )
         val scope = rememberCoroutineScope()
         NextButton(
+            modifier = Modifier.height(60.dp).width(120.dp),
             enabled = true,
             isDone = pagerState.currentPage == count - 1,
             onClick = {
@@ -48,7 +51,6 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
                 val nextPage = currentPage + 1
                 if (nextPage <= count) {
                     scope.launch {
-                        println("scrolling the page: $nextPage")
                         pagerState.animateScrollToPage(nextPage)
                     }
                 }
@@ -61,5 +63,5 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
 @Preview(widthDp = 400)
 @Composable
 fun TestSetupBottomBarPreview() {
-    TestSetupBottomBar(count = 3, modifier = Modifier.fillMaxWidth(), onClick = {})
+    TestSetupBottomBar(count = 3, modifier = Modifier.height(150.dp).fillMaxWidth(), onClick = {})
 }

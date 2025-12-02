@@ -29,7 +29,7 @@ fun PersonalInfoScreen(
         },
         bottomBar = {
             TestSetupBottomBar(
-                modifier = Modifier.height(100.dp).fillMaxWidth(),
+                modifier = Modifier.height(150.dp).fillMaxWidth(),
                 onClick = {},
                 count = 3
             )
