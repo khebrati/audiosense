@@ -15,10 +15,12 @@ fun AudiosenseScaffold(
     contentPadding: PaddingValues = PaddingValues(start = 25.dp, end = 25.dp, bottom = 25.dp),
     floatingActionButton : @Composable (() -> Unit) = {},
     topBar : @Composable () -> Unit,
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = topBar,
+        bottomBar = bottomBar,
         floatingActionButton = floatingActionButton,
     ) { innerPadding ->
         Box(
