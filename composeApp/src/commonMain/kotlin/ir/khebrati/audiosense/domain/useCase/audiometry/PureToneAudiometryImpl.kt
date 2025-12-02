@@ -37,8 +37,8 @@ class PureToneAudiometryImpl(
             AcousticAdjustment(10, Direction.DOWN),
             AcousticAdjustment(5, Direction.UP),
         ),
-    val minWaitTimeSeconds: Int = 3,
-    val maxWaitTimeSeconds: Int = 5,
+    val minWaitTimeSeconds: Int = 2,
+    val maxWaitTimeSeconds: Int = 4,
     val frequencies: List<Int> = AcousticConstants.allFrequencyOctaves,
     val logger: Logger,
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
@@ -86,6 +86,7 @@ class PureToneAudiometryImpl(
     private var done: Boolean = false
 
     override suspend fun start(calibrationCoefficients: Map<Int, Int>) {
+        delay(5.seconds)
         while (!done) {
             setCurrentDbForPlay()
             logger.v { "Waiting for heard response" }
