@@ -3,6 +3,7 @@ package ir.khebrati.audiosense.presentation.screens.testPreparation.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.unit.dp
+import ir.khebrati.audiosense.presentation.theme.AppTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -29,7 +31,7 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
     val pagerState = rememberPagerState(initialPage = 0) { count }
     HorizontalPager(pagerState){}
     Row(
-        modifier = modifier.padding(horizontal = 10.dp),
+        modifier = modifier.padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -43,6 +45,8 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
             radius = CornerRadius(x = 40f, y = 40f),
             color = MaterialTheme.colorScheme.primary,
         )
+        Spacer(modifier = Modifier.weight(1f))
+        SkipButton()
         val scope = rememberCoroutineScope()
         NextButton(
             modifier = Modifier.height(60.dp).width(120.dp),
@@ -65,9 +69,11 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
 @Preview(widthDp = 600)
 @Composable
 fun TestSetupBottomBarPreview() {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ){
-        TestSetupBottomBar(count = 4, modifier = Modifier.height(120.dp).fillMaxWidth().align(Alignment.BottomEnd), onClick = {})
+    AppTheme {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            TestSetupBottomBar(count = 4, modifier = Modifier.height(100.dp).fillMaxWidth().align(Alignment.BottomEnd), onClick = {})
+        }
     }
 }

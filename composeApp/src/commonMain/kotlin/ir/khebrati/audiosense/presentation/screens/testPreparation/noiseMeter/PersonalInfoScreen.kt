@@ -12,6 +12,7 @@ import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.PersonalInfoRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
 import ir.khebrati.audiosense.presentation.screens.testPreparation.components.TestSetupBottomBar
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PersonalInfoScreen(
@@ -31,7 +32,7 @@ fun PersonalInfoScreen(
             TestSetupBottomBar(
                 modifier = Modifier.height(120.dp).fillMaxWidth(),
                 onClick = {},
-                count = 3
+                count = 4
             )
         }
     ){}

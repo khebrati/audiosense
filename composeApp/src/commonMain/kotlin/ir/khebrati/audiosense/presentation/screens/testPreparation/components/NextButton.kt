@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -37,10 +38,10 @@ fun NextButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ){
-            Text(text = if(isDone) "Start" else "Next", style = MaterialTheme.typography.bodyLargeEmphasized)
+            Text(text = if(isDone) "Start" else "Next", style = MaterialTheme.typography.bodyLargeEmphasized, fontWeight = FontWeight.SemiBold)
             val imageVector = if(!isDone) Icons.AutoMirrored.Filled.ArrowForward else Icons.Default.PlayArrow
             Icon(
-                modifier = Modifier.size(25.dp),
+                modifier = Modifier.size(28.dp),
                 imageVector = imageVector,
                 contentDescription = "Next button"
             )
