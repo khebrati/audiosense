@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -36,8 +38,11 @@ fun TestSetupLayout(
     title: String,
     illustrationName: String,
     onNavigateBack: () -> Unit,
+    onClickNext: () -> Unit,
+    onClickSkip: () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    val pagerState = rememberPagerState { 4 }
     var loading by remember { mutableStateOf(true) }
     val painter =
         rememberAsyncImagePainter(
@@ -51,7 +56,16 @@ fun TestSetupLayout(
     if (loading) {
         LoadingScreen()
     } else {
-        TestSetupReady(modifier, title, onNavigateBack, painter, content)
+        TestSetupReady(
+            modifier = modifier,
+            title = title,
+            onNavigateBack = onNavigateBack,
+            painter = painter,
+            onClickNext = onClickNext,
+            onClickSkip =onClickSkip,
+            pagerState = pagerState,
+            content = content
+        )
     }
 }
 
@@ -59,8 +73,11 @@ fun TestSetupLayout(
 private fun TestSetupReady(
     modifier: Modifier = Modifier,
     title: String,
-    onNavigateBack: () -> Unit,
     painter: AsyncImagePainter,
+    pagerState: PagerState,
+    onNavigateBack: () -> Unit,
+    onClickNext: () -> Unit,
+    onClickSkip: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     AudiosenseScaffold(
@@ -71,8 +88,9 @@ private fun TestSetupReady(
         bottomBar = {
             TestSetupBottomBar(
                 modifier = Modifier.height(120.dp).fillMaxWidth(),
-                onClick = {},
-                count = 4,
+                onClickNext = onClickNext,
+                onClickSkip = onClickSkip,
+                pagerState = pagerState
             )
         },
     ) {
@@ -103,6 +121,8 @@ fun TestSetupLayoutPreview() {
                 title = "Ready for test",
                 onNavigateBack = {},
                 illustrationName = "Question",
+                onClickSkip = {},
+                onClickNext = {},
             ) {}
         }
     }

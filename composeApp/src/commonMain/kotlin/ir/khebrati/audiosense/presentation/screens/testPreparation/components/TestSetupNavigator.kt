@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -24,9 +24,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () -> Unit) {
+fun TestSetupBottomBar(modifier: Modifier = Modifier, pagerState: PagerState, onClickNext: () -> Unit,onClickSkip: () -> Unit) {
+    val pageCount = pagerState.pageCount
     HorizontalDivider(modifier = modifier)
-    val pagerState = rememberPagerState(initialPage = 0) { count }
     HorizontalPager(pagerState){}
     Row(
         modifier = modifier.padding(horizontal = 14.dp),
@@ -45,21 +45,23 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
             notActiveLineColor = MaterialTheme.colorScheme.surfaceDim
         )
         Spacer(modifier = Modifier.weight(1f))
-        SkipButton()
+        SkipButton(
+            onClick = onClickSkip
+        )
         val scope = rememberCoroutineScope()
         NextButton(
             modifier = Modifier.height(60.dp).width(120.dp),
             enabled = true,
-            isDone = pagerState.currentPage == count - 1,
+            isDone = pagerState.currentPage == pageCount - 1,
             onClick = {
                 val currentPage = pagerState.currentPage
                 val nextPage = currentPage + 1
-                if (nextPage <= count) {
+                if (nextPage <= pageCount) {
                     scope.launch {
                         pagerState.animateScrollToPage(nextPage)
                     }
                 }
-                onClick()
+                onClickNext()
             },
         )
     }
@@ -72,7 +74,7 @@ fun TestSetupBottomBarPreview() {
         Box(
             modifier = Modifier.fillMaxSize()
         ){
-            TestSetupBottomBar(count = 4, modifier = Modifier.height(100.dp).fillMaxWidth().align(Alignment.BottomEnd), onClick = {})
+//            TestSetupBottomBar(pagerState = 4, modifier = Modifier.height(100.dp).fillMaxWidth().align(Alignment.BottomEnd), onClickNext = {}, onClickSkip = {})
         }
     }
 }
