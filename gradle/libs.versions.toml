@@ -1,7 +1,7 @@
 [versions]
 
 kotlin = "2.1.21"
-compose = "1.9.0-beta01"
+compose = "1.9.3"
 material3 = "1.9.0-alpha04"
 agp = "8.10.0"
 androidx-activityCompose = "1.10.1"
@@ -13,7 +13,6 @@ androidx-navigation = "2.9.0-beta03"
 androidx-graphics-shapes = "1.0.1"
 kotlinx-datetime = "0.7.1"
 buildConfig = "5.6.5"
-materialKolor = "3.0.0"
 room = "2.7.2"
 sqlite = "2.5.0-alpha01"
 koin-bom = "4.0.3"
@@ -22,8 +21,7 @@ runner = "1.6.2"
 kotlinx-serialization = "1.7.3"
 turbine = "1.2.1"
 juint = "4.13.2"
-lottie =  "0.0.3"
-
+coil = "3.3.0"
 [libraries]
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -51,10 +49,10 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 turbine = {module = "app.cash.turbine:turbine",version.ref = "turbine"}
 junit = { module = "junit:junit", version.ref = "juint" }
 back-handler = {module = "org.jetbrains.compose.ui:ui-backhandler" }
-
+coil = {module = "io.coil-kt.coil3:coil-compose",version.ref="coil"}
+coil-svg = {module = "io.coil-kt.coil3:coil-svg",version.ref="coil"}
 # Theme
-materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 [plugins]

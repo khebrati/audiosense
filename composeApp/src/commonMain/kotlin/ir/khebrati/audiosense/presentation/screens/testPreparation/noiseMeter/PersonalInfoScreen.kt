@@ -11,7 +11,9 @@ import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.PersonalInfoRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.TestRoute
+import ir.khebrati.audiosense.presentation.screens.testPreparation.components.IllustrationLoader
 import ir.khebrati.audiosense.presentation.screens.testPreparation.components.TestSetupBottomBar
+import ir.khebrati.audiosense.presentation.screens.testPreparation.components.TestSetupLayout
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -20,20 +22,5 @@ fun PersonalInfoScreen(
     onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    AudiosenseScaffold(
-        topBar = {
-            AudiosenseAppBar(
-                title = noiseMeterRoute.title,
-                canNavigateBack = true,
-                onNavigateBack = onNavigateBack
-            )
-        },
-        bottomBar = {
-            TestSetupBottomBar(
-                modifier = Modifier.height(120.dp).fillMaxWidth(),
-                onClick = {},
-                count = 4
-            )
-        }
-    ){}
+    TestSetupLayout(title = "About you", onNavigateBack = onNavigateBack){}
 }

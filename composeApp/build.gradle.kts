@@ -43,8 +43,8 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.components.resources)
+            implementation(libs.material3)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.materialIconsExtended)
             implementation(libs.kermit)
@@ -55,7 +55,6 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.androidx.graphics.shapes)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.materialKolor)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -65,6 +64,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.back.handler)
+            implementation(libs.coil)
+            implementation(libs.coil.svg)
         }
 
         commonTest.dependencies {
