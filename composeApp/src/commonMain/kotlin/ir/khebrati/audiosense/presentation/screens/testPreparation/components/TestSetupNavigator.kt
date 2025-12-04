@@ -14,9 +14,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -43,7 +41,8 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
             height = 12.dp,
             pagerState= pagerState,
             radius = CornerRadius(x = 40f, y = 40f),
-            color = MaterialTheme.colorScheme.primary,
+            activeLineColor = MaterialTheme.colorScheme.primary,
+            notActiveLineColor = MaterialTheme.colorScheme.surfaceDim
         )
         Spacer(modifier = Modifier.weight(1f))
         SkipButton()

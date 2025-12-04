@@ -8,14 +8,14 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.theme.AppTheme
@@ -48,7 +48,8 @@ fun Indicator(
     height: Dp,
     pagerState: PagerState,
     radius: CornerRadius,
-    color: Color,
+    activeLineColor: Color,
+    notActiveLineColor: Color,
 ) {
     Canvas(modifier = Modifier.width(width = totalWidth).height(height + 6.dp).padding(3.dp)) {
         val spacing = circleSpacing.toPx()
@@ -73,6 +74,7 @@ fun Indicator(
                     else -> dotWidth
                 }
 
+            val color = if(i == current) activeLineColor else notActiveLineColor
             drawIndicator(x, y, calculatedWidth, dotHeight, radius, color)
             x += calculatedWidth + spacing
         }
@@ -92,7 +94,8 @@ fun PreviewIndicator() {
             height = 5.dp,
             pagerState = pagerState,
             radius = CornerRadius(100),
-            color = MaterialTheme.colorScheme.primary,
+            activeLineColor = MaterialTheme.colorScheme.primary,
+            notActiveLineColor = MaterialTheme.colorScheme.surfaceDim
         )
     }
 }
