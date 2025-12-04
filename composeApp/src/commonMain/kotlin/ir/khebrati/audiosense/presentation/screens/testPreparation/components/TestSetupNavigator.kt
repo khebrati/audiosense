@@ -1,7 +1,9 @@
 package ir.khebrati.audiosense.presentation.screens.testPreparation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,11 +35,11 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
     ) {
         Indicator(
             totalWidth = 100.dp,
-            activeLineWidth = 75.dp,
-            circleSpacing = 3.dp,
-            width = 25.dp,
-            height = 25.dp,
-            pagerState = pagerState,
+            activeLineWidth = 36.dp,
+            circleSpacing = 8.dp,
+            width = 12.dp,
+            height = 12.dp,
+            pagerState= pagerState,
             radius = CornerRadius(x = 40f, y = 40f),
             color = MaterialTheme.colorScheme.primary,
         )
@@ -60,8 +62,12 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, count: Int, onClick: () ->
     }
 }
 
-@Preview(widthDp = 400)
+@Preview(widthDp = 600)
 @Composable
 fun TestSetupBottomBarPreview() {
-    TestSetupBottomBar(count = 3, modifier = Modifier.height(150.dp).fillMaxWidth(), onClick = {})
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        TestSetupBottomBar(count = 4, modifier = Modifier.height(120.dp).fillMaxWidth().align(Alignment.BottomEnd), onClick = {})
+    }
 }
