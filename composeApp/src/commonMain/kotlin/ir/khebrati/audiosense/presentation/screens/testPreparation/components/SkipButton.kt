@@ -20,7 +20,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun SkipButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ){
     TextButton(
         onClick = onClick,
@@ -36,7 +36,8 @@ fun SkipButtonPreview(){
         color = MaterialTheme.colorScheme.secondaryContainer
     ){
         SkipButton(
-            modifier = Modifier.height(50.dp)
+            modifier = Modifier.height(50.dp),
+            onClick = {}
         )
     }
 }
