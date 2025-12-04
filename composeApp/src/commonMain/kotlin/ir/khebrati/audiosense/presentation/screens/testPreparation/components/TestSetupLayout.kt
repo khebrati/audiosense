@@ -3,13 +3,11 @@ package ir.khebrati.audiosense.presentation.screens.testPreparation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import audiosense.composeapp.generated.resources.Res
@@ -77,15 +76,18 @@ private fun TestSetupReady(
             )
         },
     ) {
-        Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Box(
                 modifier =
-                    Modifier.background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 70.dp)
+                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(horizontal = 70.dp)
+                        .fillMaxWidth(),
+                contentAlignment = Alignment.Center,
             ) {
-                IllustrationLoader(
-                    modifier = Modifier.fillMaxWidth(),
-                    painter = painter
-                )
+                IllustrationLoader(modifier = Modifier.width(300.dp), painter = painter)
             }
             content()
         }
