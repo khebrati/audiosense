@@ -22,5 +22,5 @@ fun PersonalInfoScreen(
     onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    TestSetupLayout(title = "About you", onNavigateBack = onNavigateBack){}
+    TestSetupLayout(title = "About you", onNavigateBack = onNavigateBack, illustrationName = "Question"){}
 }

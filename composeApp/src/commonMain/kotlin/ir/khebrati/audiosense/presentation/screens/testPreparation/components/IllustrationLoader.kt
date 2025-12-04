@@ -33,32 +33,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun IllustrationLoader(
     modifier: Modifier = Modifier,
-    illustrationFileName: String,
-    onLoaded: () -> Unit,
-    onLoading: () -> Unit,
     painter: AsyncImagePainter
 ){
     Image(
         painter = painter,
-        contentDescription = "something",
+        contentDescription = "Test setup illustration",
         modifier = modifier
     )
-//    AsyncImage(
-//        modifier = modifier,
-//        model = Res.getUri("drawable/${illustrationFileName}.svg"),
-//        contentDescription = "Beautiful illustration",
-//        onLoading = {
-//
-//        }
-//    )
-//    SubcomposeAsyncImage(
-//        modifier = modifier,
-//        model = Res.getUri("drawable/${illustrationFileName}.svg"),
-//        contentDescription = "Beautiful illustration",
-//        loading = {
-//            LoadingScreen()
-//        }
-//    )
 }
 
 @OptIn(ExperimentalCoilApi::class)
