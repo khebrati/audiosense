@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,10 +23,16 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TestSetupBottomBar(modifier: Modifier = Modifier, pagerState: PagerState, onClickNext: () -> Unit,onClickSkip: () -> Unit) {
+fun TestSetupBottomBar(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    nextButtonEnabled: Boolean,
+    onClickNext: () -> Unit,
+    onClickSkip: () -> Unit,
+) {
     val pageCount = pagerState.pageCount
     HorizontalDivider(modifier = modifier)
-    HorizontalPager(pagerState){}
+    HorizontalPager(pagerState) {}
     Row(
         modifier = modifier.padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -39,27 +44,23 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, pagerState: PagerState, on
             circleSpacing = 8.dp,
             width = 12.dp,
             height = 12.dp,
-            pagerState= pagerState,
+            pagerState = pagerState,
             radius = CornerRadius(x = 40f, y = 40f),
             activeLineColor = MaterialTheme.colorScheme.primary,
-            notActiveLineColor = MaterialTheme.colorScheme.surfaceDim
+            notActiveLineColor = MaterialTheme.colorScheme.surfaceDim,
         )
         Spacer(modifier = Modifier.weight(1f))
-        SkipButton(
-            onClick = onClickSkip
-        )
+        SkipButton(onClick = onClickSkip)
         val scope = rememberCoroutineScope()
         NextButton(
             modifier = Modifier.height(60.dp).width(120.dp),
-            enabled = true,
+            enabled = nextButtonEnabled,
             isDone = pagerState.currentPage == pageCount - 1,
             onClick = {
                 val currentPage = pagerState.currentPage
                 val nextPage = currentPage + 1
                 if (nextPage <= pageCount) {
-                    scope.launch {
-                        pagerState.animateScrollToPage(nextPage)
-                    }
+                    scope.launch { pagerState.animateScrollToPage(nextPage) }
                 }
                 onClickNext()
             },
@@ -71,10 +72,10 @@ fun TestSetupBottomBar(modifier: Modifier = Modifier, pagerState: PagerState, on
 @Composable
 fun TestSetupBottomBarPreview() {
     AppTheme {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ){
-//            TestSetupBottomBar(pagerState = 4, modifier = Modifier.height(100.dp).fillMaxWidth().align(Alignment.BottomEnd), onClickNext = {}, onClickSkip = {})
+        Box(modifier = Modifier.fillMaxSize()) {
+            //            TestSetupBottomBar(pagerState = 4, modifier =
+            // Modifier.height(100.dp).fillMaxWidth().align(Alignment.BottomEnd), onClickNext = {},
+            // onClickSkip = {})
         }
     }
 }
