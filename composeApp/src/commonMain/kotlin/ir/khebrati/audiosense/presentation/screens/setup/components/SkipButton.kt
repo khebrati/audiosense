@@ -1,4 +1,4 @@
-package ir.khebrati.audiosense.presentation.screens.testPreparation.components
+package ir.khebrati.audiosense.presentation.screens.setup.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size

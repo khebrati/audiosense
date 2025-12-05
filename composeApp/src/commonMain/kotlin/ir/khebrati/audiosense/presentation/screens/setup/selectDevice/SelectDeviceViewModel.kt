@@ -1,11 +1,11 @@
-package ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice
+package ir.khebrati.audiosense.presentation.screens.setup.selectDevice
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ir.khebrati.audiosense.domain.model.Headphone
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
-import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.*
+import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceUiAction.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map

@@ -1,4 +1,4 @@
-package ir.khebrati.audiosense.presentation.screens.testPreparation.components
+package ir.khebrati.audiosense.presentation.screens.setup.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,12 +37,12 @@ fun TestSetupLayout(
     modifier: Modifier = Modifier,
     title: String,
     illustrationName: String,
+    pagerState: PagerState,
     onNavigateBack: () -> Unit,
     onClickNext: () -> Unit,
     onClickSkip: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val pagerState = rememberPagerState { 4 }
     var loading by remember { mutableStateOf(true) }
     val painter =
         rememberAsyncImagePainter(
@@ -62,9 +62,9 @@ fun TestSetupLayout(
             onNavigateBack = onNavigateBack,
             painter = painter,
             onClickNext = onClickNext,
-            onClickSkip =onClickSkip,
+            onClickSkip = onClickSkip,
             pagerState = pagerState,
-            content = content
+            content = content,
         )
     }
 }
@@ -90,7 +90,7 @@ private fun TestSetupReady(
                 modifier = Modifier.height(120.dp).fillMaxWidth(),
                 onClickNext = onClickNext,
                 onClickSkip = onClickSkip,
-                pagerState = pagerState
+                pagerState = pagerState,
             )
         },
     ) {
@@ -115,6 +115,7 @@ private fun TestSetupReady(
 @Preview(widthDp = 400, heightDp = 800)
 @Composable
 fun TestSetupLayoutPreview() {
+    val pagerState = rememberPagerState{4}
     AppTheme {
         Surface {
             TestSetupLayout(
@@ -123,6 +124,7 @@ fun TestSetupLayoutPreview() {
                 illustrationName = "Question",
                 onClickSkip = {},
                 onClickNext = {},
+                pagerState = pagerState
             ) {}
         }
     }
