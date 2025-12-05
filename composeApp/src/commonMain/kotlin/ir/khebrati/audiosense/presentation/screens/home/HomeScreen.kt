@@ -62,7 +62,7 @@ import org.koin.compose.viewmodel.koinNavViewModel
 
 @Composable
 fun HomeScreen(
-    onNavigateStartTest: (PersonalInfoRoute) -> Unit,
+    onNavigateStartTest: (TestSetupRoute) -> Unit,
     onNavigateSetting: (SettingRoute) -> Unit,
     onNavigateResult: (ResultRoute) -> Unit,
     viewModel: HomeViewModel = koinNavViewModel(),
@@ -82,7 +82,7 @@ fun HomeScreen(
 private fun HomeScreenContent(
     uiState: HomeUiState,
     onIntent: (HomeIntent) -> Unit,
-    onNavigateSelectDevice: (PersonalInfoRoute) -> Unit,
+    onNavigateSelectDevice: (TestSetupRoute) -> Unit,
 ) {
     val testHistory = uiState.testHistory
     val isDeleteState = testHistory is TestHistory.Ready && testHistory.isDelete
@@ -113,7 +113,7 @@ private fun HomeScreenContent(
         contentPadding =
             PaddingValues(end = 25.dp, start = leftPadding, top = 25.dp, bottom = 25.dp),
         floatingActionButton = {
-            HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(PersonalInfoRoute) })
+            HomeFAB(onNavigateSelectDevice = { onNavigateSelectDevice(TestSetupRoute) })
         },
     ) {
         TestRecordsList(testHistory, onIntent = onIntent)

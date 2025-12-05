@@ -7,7 +7,7 @@ class AudiosenseRouteSerializationTest {
     @Test
     fun testSerializableRoutes_whenSerialized_throwNoExceptions(){
         val routes = listOf(
-            AudiosenseRoute.PersonalInfoRoute,
+            AudiosenseRoute.TestSetupRoute,
             AudiosenseRoute.SettingRoute,
             AudiosenseRoute.DescriptiveResultRoute,
             AudiosenseRoute.TestRoute,

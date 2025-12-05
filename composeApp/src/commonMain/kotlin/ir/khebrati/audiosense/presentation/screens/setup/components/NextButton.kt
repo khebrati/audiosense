@@ -1,4 +1,4 @@
-package ir.khebrati.audiosense.presentation.screens.testPreparation.components
+package ir.khebrati.audiosense.presentation.screens.setup.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

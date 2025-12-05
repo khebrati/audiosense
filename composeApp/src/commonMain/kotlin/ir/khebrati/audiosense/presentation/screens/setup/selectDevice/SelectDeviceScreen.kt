@@ -1,4 +1,4 @@
-package ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice
+package ir.khebrati.audiosense.presentation.screens.setup.selectDevice
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -55,8 +55,10 @@ import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.DeleteDialog
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
-import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.DeleteHeadphone
-import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceUiAction.SetSelectedDevice
+import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute
+import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute.*
+import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceUiAction.DeleteHeadphone
+import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceUiAction.SetSelectedDevice
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

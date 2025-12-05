@@ -27,7 +27,7 @@ import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationViewMo
 import ir.khebrati.audiosense.presentation.screens.home.HomeViewModel
 import ir.khebrati.audiosense.presentation.screens.result.TestResultViewModel
 import ir.khebrati.audiosense.presentation.screens.test.TestViewModel
-import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceViewModel
+import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module

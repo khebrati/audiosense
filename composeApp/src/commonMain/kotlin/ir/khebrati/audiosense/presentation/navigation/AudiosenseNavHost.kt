@@ -11,11 +11,9 @@ import ir.khebrati.audiosense.presentation.screens.descriptiveResult.Descriptive
 import ir.khebrati.audiosense.presentation.screens.home.HomeScreen
 import ir.khebrati.audiosense.presentation.screens.result.ResultScreen
 import ir.khebrati.audiosense.presentation.screens.setting.SettingScreen
+import ir.khebrati.audiosense.presentation.screens.setup.TestSetupScreen
+import ir.khebrati.audiosense.presentation.screens.setup.components.TestSetupLayout
 import ir.khebrati.audiosense.presentation.screens.test.TestScreen
-import ir.khebrati.audiosense.presentation.screens.testPreparation.personal.PersonalInfoScreen
-import ir.khebrati.audiosense.presentation.screens.testPreparation.selectDevice.SelectDeviceScreen
-import ir.khebrati.audiosense.presentation.screens.testPreparation.tap.TapScreen
-import ir.khebrati.audiosense.presentation.screens.testPreparation.volume.VolumeSettingScreen
 
 @Composable
 fun AudiosenseNavHost(navController: NavHostController) {
@@ -27,37 +25,13 @@ fun AudiosenseNavHost(navController: NavHostController) {
                 onNavigateResult = { navController.navigate(it) },
             )
         }
-        composable<SelectDeviceRoute> { backStackEntry ->
-            val selectDeviceRoute: SelectDeviceRoute = backStackEntry.toRoute()
-            SelectDeviceScreen(
-                selectDeviceRoute = selectDeviceRoute,
-                onNavigateTest = { navController.navigate(it) },
-                onNavigateBack = { navController.popBackStack() },
+        composable<TestSetupRoute>{backStackEntry ->
+            val setupRoute: TestSetupRoute = backStackEntry.toRoute()
+            TestSetupScreen(
+                route = setupRoute,
+                onNavigateHome = {navController.navigate(it)},
+                onNavigateTest = {navController.navigate(it)},
                 onNavigateCalibration = {navController.navigate(it)}
-            )
-        }
-        composable<PersonalInfoRoute> { backStackEntry ->
-            val noiseMeterRoute: PersonalInfoRoute = backStackEntry.toRoute()
-            PersonalInfoScreen(
-                personalInfoRoute = noiseMeterRoute,
-                onNavigateVolume = { navController.navigate(it) },
-                onNavigateBack = { navController.popBackStack() },
-            )
-        }
-        composable<VolumeRoute> { backStackEntry ->
-            val volumeRoute: VolumeRoute = backStackEntry.toRoute()
-            VolumeSettingScreen(
-                volumeRoute = volumeRoute,
-                onNavigateTap = {navController.navigate(it)},
-                onNavigateBack = {navController.popBackStack()}
-            )
-        }
-        composable<TapRoute> { backStackEntry ->
-            val tapRoute: TapRoute = backStackEntry.toRoute()
-            TapScreen(
-                tapRoute = tapRoute,
-                onNavigateSelectDevice = {navController.navigate(it)},
-                onNavigateBack = {navController.popBackStack()}
             )
         }
         composable<TestRoute> { backStackEntry ->
