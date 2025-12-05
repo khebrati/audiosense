@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -94,15 +95,20 @@ private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
     Row(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Do you use hearing aids?", style = MaterialTheme.typography.labelMediumEmphasized)
+            Spacer(modifier = Modifier.height(5.dp))
             val choices = listOf("No", "Yes")
             var selectedIndex by remember { mutableStateOf(0) }
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth(), space = 25.dp) {
                 choices.forEachIndexed { index, label ->
                     SegmentedButton(
+                        modifier = Modifier.height(50.dp),
                         selected = index == selectedIndex,
                         onClick = { selectedIndex = index },
                         label = { Text(label) },
                         shape = MaterialTheme.shapes.medium,
+                        colors = SegmentedButtonDefaults.colors(
+                            activeContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        )
                     )
                 }
             }
