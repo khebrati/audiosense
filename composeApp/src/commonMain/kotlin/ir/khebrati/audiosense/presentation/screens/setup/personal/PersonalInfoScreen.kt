@@ -46,17 +46,12 @@ fun PersonalInfoScreen(
                 text.isNotBlank() && text.all { it.isDigit() }
             }
             .value
-    var isAgeFieldError by remember { mutableStateOf(false) }
     TestSetupLayout(
         title = personalInfoRoute.title,
         onNavigateBack = onNavigateBack,
         illustrationName = "Question",
         onClickNext = {
-            if (ageTextFieldState.text.all { it.isDigit() }) {
-                onNavigateVolume(VolumeRoute)
-            } else {
-                isAgeFieldError = true
-            }
+            onNavigateVolume(VolumeRoute)
         },
         onClickSkip = onClickSkip,
         pagerState = pagerState,
@@ -65,7 +60,6 @@ fun PersonalInfoScreen(
         PersonalInfo(
             ageTextFieldState = ageTextFieldState,
             nameTextFieldState = nameTextFieldState,
-            isAgeFieldError = isAgeFieldError,
         )
     }
 }
@@ -74,7 +68,6 @@ fun PersonalInfoScreen(
 fun PersonalInfo(
     modifier: Modifier = Modifier,
     ageTextFieldState: TextFieldState,
-    isAgeFieldError: Boolean,
     nameTextFieldState: TextFieldState,
 ) {
     Column(
@@ -90,9 +83,8 @@ fun PersonalInfo(
         InfoTextField(
             placeHolder = "Age (Required)",
             state = ageTextFieldState,
-            isError = isAgeFieldError,
         )
-        InfoTextField(placeHolder = "Name (Optional)", state = nameTextFieldState, isError = false)
+        InfoTextField(placeHolder = "Name (Optional)", state = nameTextFieldState)
         HearingAidsSegmentedButtons()
     }
 }
@@ -123,11 +115,9 @@ private fun InfoTextField(
     modifier: Modifier = Modifier,
     placeHolder: String,
     state: TextFieldState,
-    isError: Boolean,
 ) {
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
-        isError = isError,
         state = state,
         placeholder = { Text(placeHolder) },
     )
