@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -18,6 +19,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,20 +38,45 @@ fun PersonalInfoScreen(
     onNavigateBack: () -> Unit,
     onClickSkip: () -> Unit,
 ) {
+    val ageTextFieldState = rememberTextFieldState()
+    val nameTextFieldState = rememberTextFieldState()
+    val nextButtonEnabled =
+        derivedStateOf {
+                val text = ageTextFieldState.text
+                text.isNotBlank() && text.all { it.isDigit() }
+            }
+            .value
+    var isAgeFieldError by remember { mutableStateOf(false) }
     TestSetupLayout(
         title = personalInfoRoute.title,
         onNavigateBack = onNavigateBack,
         illustrationName = "Question",
-        onClickNext = { onNavigateVolume(VolumeRoute) },
+        onClickNext = {
+            if (ageTextFieldState.text.all { it.isDigit() }) {
+                onNavigateVolume(VolumeRoute)
+            } else {
+                isAgeFieldError = true
+            }
+        },
         onClickSkip = onClickSkip,
         pagerState = pagerState,
+        nextButtonEnabled = nextButtonEnabled,
     ) {
-        PersonalInfo()
+        PersonalInfo(
+            ageTextFieldState = ageTextFieldState,
+            nameTextFieldState = nameTextFieldState,
+            isAgeFieldError = isAgeFieldError,
+        )
     }
 }
 
 @Composable
-fun PersonalInfo(modifier: Modifier = Modifier) {
+fun PersonalInfo(
+    modifier: Modifier = Modifier,
+    ageTextFieldState: TextFieldState,
+    isAgeFieldError: Boolean,
+    nameTextFieldState: TextFieldState,
+) {
     Column(
         modifier =
             modifier
@@ -60,8 +87,12 @@ fun PersonalInfo(modifier: Modifier = Modifier) {
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         Text("Tell us about you", style = MaterialTheme.typography.titleLargeEmphasized)
-        InfoTextField(placeHolder = "Age (Required)")
-        InfoTextField(placeHolder = "Name (Optional)")
+        InfoTextField(
+            placeHolder = "Age (Required)",
+            state = ageTextFieldState,
+            isError = isAgeFieldError,
+        )
+        InfoTextField(placeHolder = "Name (Optional)", state = nameTextFieldState, isError = false)
         HearingAidsSegmentedButtons()
     }
 }
@@ -88,11 +119,16 @@ private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun InfoTextField(modifier: Modifier = Modifier, placeHolder: String) {
-    val ageTextFieldState = rememberTextFieldState()
+private fun InfoTextField(
+    modifier: Modifier = Modifier,
+    placeHolder: String,
+    state: TextFieldState,
+    isError: Boolean,
+) {
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
-        state = ageTextFieldState,
+        isError = isError,
+        state = state,
         placeholder = { Text(placeHolder) },
     )
 }

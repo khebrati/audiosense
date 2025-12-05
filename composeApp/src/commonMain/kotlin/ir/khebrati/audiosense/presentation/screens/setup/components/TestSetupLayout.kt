@@ -38,6 +38,7 @@ fun TestSetupLayout(
     title: String,
     illustrationName: String,
     pagerState: PagerState,
+    nextButtonEnabled: Boolean = true,
     onNavigateBack: () -> Unit,
     onClickNext: () -> Unit,
     onClickSkip: () -> Unit,
@@ -65,6 +66,7 @@ fun TestSetupLayout(
             onClickSkip = onClickSkip,
             pagerState = pagerState,
             content = content,
+            nextButtonEnabled = nextButtonEnabled
         )
     }
 }
@@ -75,6 +77,7 @@ private fun TestSetupReady(
     title: String,
     painter: AsyncImagePainter,
     pagerState: PagerState,
+    nextButtonEnabled: Boolean,
     onNavigateBack: () -> Unit,
     onClickNext: () -> Unit,
     onClickSkip: () -> Unit,
@@ -91,6 +94,7 @@ private fun TestSetupReady(
                 onClickNext = onClickNext,
                 onClickSkip = onClickSkip,
                 pagerState = pagerState,
+                nextButtonEnabled = nextButtonEnabled
             )
         },
     ) {
@@ -124,7 +128,8 @@ fun TestSetupLayoutPreview() {
                 illustrationName = "Question",
                 onClickSkip = {},
                 onClickNext = {},
-                pagerState = pagerState
+                pagerState = pagerState,
+                nextButtonEnabled = true
             ) {}
         }
     }
