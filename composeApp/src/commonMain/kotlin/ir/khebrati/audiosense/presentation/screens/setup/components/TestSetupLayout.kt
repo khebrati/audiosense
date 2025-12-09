@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import audiosense.composeapp.generated.resources.Res
 import coil3.compose.AsyncImagePainter
@@ -104,7 +106,9 @@ private fun TestSetupReady(
         ) {
             Box(
                 modifier =
-                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                    Modifier
+                        .clip(RoundedCornerShape(15))
+                        .background(MaterialTheme.colorScheme.surfaceContainer)
                         .padding(horizontal = 70.dp)
                         .fillMaxWidth(),
                 contentAlignment = Alignment.Center,

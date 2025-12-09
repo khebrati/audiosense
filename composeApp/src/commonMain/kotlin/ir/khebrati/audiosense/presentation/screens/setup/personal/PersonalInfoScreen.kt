@@ -50,7 +50,7 @@ fun PersonalInfoScreen(
     TestSetupLayout(
         title = personalInfoRoute.title,
         onNavigateBack = onNavigateBack,
-        illustrationName = "Question",
+        illustrationName = "QuestionPrimary",
         onClickNext = {
             onNavigateVolume(VolumeRoute)
         },
@@ -107,7 +107,7 @@ private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
                         label = { Text(label) },
                         shape = MaterialTheme.shapes.medium,
                         colors = SegmentedButtonDefaults.colors(
-                            activeContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+                            activeContainerColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     )
                 }

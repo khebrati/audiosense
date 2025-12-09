@@ -298,7 +298,7 @@ private fun HeadphonePicAndName(text: String, modifier: Modifier) {
                     Box(
                         modifier =
                             Modifier.background(
-                                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                                    color = MaterialTheme.colorScheme.secondaryContainer,
                                     shape = MaterialTheme.shapes.medium,
                                 )
                                 .size(50.dp),
