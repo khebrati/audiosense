@@ -31,7 +31,6 @@ fun TapScreen(
     TestSetupLayout(
         title = tapRoute.title,
         onNavigateBack = onNavigateBack,
-        //        illustrationName = "Tap",
         pagerState = pagerState,
         onClickNext = { onNavigateSelectDevice(SelectDeviceRoute) },
         onClickSkip = {},
