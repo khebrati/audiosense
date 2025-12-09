@@ -17,12 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -55,7 +54,7 @@ import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.DeleteDialog
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
-import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute
+import ir.khebrati.audiosense.presentation.screens.setup.components.TestSetupLayout
 import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute.*
 import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceUiAction.DeleteHeadphone
 import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceUiAction.SetSelectedDevice
@@ -71,26 +70,20 @@ fun SelectDeviceScreen(
     onNavigateTest: (TestRoute) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateCalibration: (CalibrationRoute) -> Unit,
+    pagerState: PagerState,
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     BackHandler { onNavigateBack() }
-    AudiosenseScaffold(
-        topBar = {
-            AudiosenseAppBar(
-                title = selectDeviceRoute.title,
-                canNavigateBack = true,
-                onNavigateBack = onNavigateBack,
-            )
-        }
-    ) {
-        SelectDeviceContent(
-            uiState = uiState,
-            onUiAction = viewModel::handleAction,
-            onNavigateTest = onNavigateTest,
-            onNavigateCalibration = onNavigateCalibration,
-        )
-    }
+    SelectDeviceContent(
+        uiState = uiState,
+        pagerState = pagerState,
+        onNavigateBack = onNavigateBack,
+        onUiAction = viewModel::handleAction,
+        onNavigateTest = onNavigateTest,
+        title = selectDeviceRoute.title,
+        onNavigateCalibration = onNavigateCalibration,
+    )
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -152,7 +145,7 @@ fun SelectDevicePreview() {
                 AudiosenseAppBar(title = "New Test", canNavigateBack = true, onNavigateBack = {})
             }
         ) {
-            SelectDeviceContent(uiState, {}, {}, {})
+//            SelectDeviceContent(uiState, {}, {}, {})
         }
     }
 }
@@ -160,49 +153,49 @@ fun SelectDevicePreview() {
 @Composable
 private fun SelectDeviceContent(
     uiState: SelectDeviceUiState,
+    pagerState: PagerState,
+    title: String,
+    onNavigateBack: () -> Unit,
     onUiAction: (SelectDeviceUiAction) -> Unit,
     onNavigateTest: (TestRoute) -> Unit,
     onNavigateCalibration: (CalibrationRoute) -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
-        Scaffold(
-            modifier = Modifier.weight(1f),
-            floatingActionButton = {
-                FloatingActionButton(onClick = { onNavigateCalibration(CalibrationRoute) }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add a new headphone",
-                    )
-                }
-            },
-        ) {
-            HeadphonesList(
-                uiState.headphones.map { it.model },
-                uiState.selectedHeadphoneIndex,
-                onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
-                onDeleteHeadphone = { onUiAction(DeleteHeadphone(it)) },
-            )
-        }
-        val selectedHeadphoneId =
-            remember(uiState) {
-                uiState.run {
-                    if (selectedHeadphoneIndex == null) null
-                    else headphones[selectedHeadphoneIndex].id
-                }
+    val selectedHeadphoneId =
+        remember(uiState) {
+            uiState.run {
+                if (selectedHeadphoneIndex == null) null
+                else headphones[selectedHeadphoneIndex].id
             }
-        NextButton(
-            enabled = selectedHeadphoneId != null,
-            onClick = { onNavigateTest(TestRoute(selectedHeadphoneId!!)) },
-        )
+        }
+    TestSetupLayout(
+        title = title,
+        onNavigateBack = onNavigateBack,
+        pagerState = pagerState,
+        nextButtonEnabled = selectedHeadphoneId != null,
+        onClickNext = { onNavigateTest(TestRoute(selectedHeadphoneId!!)) },
+        onClickSkip = {},
+    ) {
+            Scaffold(
+                modifier = Modifier.weight(1f),
+                floatingActionButton = {
+                    FloatingActionButton(onClick = { onNavigateCalibration(CalibrationRoute) }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add a new headphone",
+                        )
+                    }
+                },
+            ) {
+                HeadphonesList(
+                    uiState.headphones.map { it.model },
+                    uiState.selectedHeadphoneIndex,
+                    onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
+                    onDeleteHeadphone = { onUiAction(DeleteHeadphone(it)) },
+                )
+            }
     }
 }
 
-@Composable
-private fun NextButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) {
-    Button(modifier = modifier.fillMaxWidth().height(60.dp), onClick = onClick, enabled = enabled) {
-        Text("Next")
-    }
-}
 
 @Composable
 fun ListItem(
@@ -263,11 +256,10 @@ private fun DeleteHeadphoneIcon(onRemoveHeadphone: () -> Unit, modifier: Modifie
             text =
                 "Are you sure you want to delete this headphone? All of its data, including calibration, will be permanently removed.",
             onRemove = onRemoveHeadphone,
-            onDismiss = {showDialog = false}
+            onDismiss = { showDialog = false },
         )
     }
 }
-
 
 @Composable
 private fun HeadphonePicAndName(text: String, modifier: Modifier) {

@@ -70,7 +70,8 @@ fun TestSetupScreen(
                 selectDeviceRoute = selectDeviceRoute,
                 onNavigateTest = onNavigateTest,
                 onNavigateBack = {navigateBack()},
-                onNavigateCalibration = onNavigateCalibration
+                onNavigateCalibration = onNavigateCalibration,
+                pagerState = pagerState
             )
         }
     }
