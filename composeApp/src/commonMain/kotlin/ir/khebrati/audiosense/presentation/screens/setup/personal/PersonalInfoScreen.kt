@@ -96,7 +96,7 @@ private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Do you use hearing aids?", style = MaterialTheme.typography.labelMediumEmphasized)
             Spacer(modifier = Modifier.height(5.dp))
-            val choices = listOf("No", "Yes")
+            val choices = remember{ listOf("No", "Yes")}
             var selectedIndex by remember { mutableStateOf(0) }
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth(), space = 25.dp) {
                 choices.forEachIndexed { index, label ->
