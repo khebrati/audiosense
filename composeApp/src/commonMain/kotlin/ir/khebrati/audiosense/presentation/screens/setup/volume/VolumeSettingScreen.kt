@@ -1,24 +1,26 @@
 package ir.khebrati.audiosense.presentation.screens.setup.volume
 
+import androidx.compose.foundation.gestures.Orientation.Vertical
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
+import ir.khebrati.audiosense.presentation.screens.setup.components.IllustrationLoader
 import ir.khebrati.audiosense.presentation.screens.setup.components.TestSetupLayout
 import ir.khebrati.audiosense.presentation.screens.setup.components.TipCard
-import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute
 import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute.*
 
 @Composable
@@ -31,16 +33,17 @@ fun VolumeSettingScreen(
     TestSetupLayout(
         title = volumeRoute.title,
         onNavigateBack = onNavigateBack,
-        illustrationName = "Setting",
         pagerState = pagerState,
         onClickNext = { onNavigateTap(TapRoute) },
         onClickSkip = {},
     ) {
-        Row {
+        IllustrationLoader(modifier = Modifier.width(300.dp), illustrationName = "Settings") {
+            Spacer(modifier = Modifier.height(14.dp))
             Column(
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+                modifier = Modifier.scrollable(rememberScrollState(), orientation = Vertical)
             ) {
-                Spacer(modifier = Modifier.height(14.dp))
                 TipCard(
                     modifier = Modifier.fillMaxWidth(),
                     icon = Icons.AutoMirrored.Outlined.VolumeUp,
@@ -53,7 +56,8 @@ fun VolumeSettingScreen(
                     icon = Icons.Default.GraphicEq,
                     iconDescription = "Find silence",
                     title = "Find Silence",
-                    body = "Background noise will effect your score. Please move to a very quiet room.",
+                    body =
+                        "Background noise will effect your score. Please move to a very quiet room.",
                 )
             }
         }
