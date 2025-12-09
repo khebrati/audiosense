@@ -60,11 +60,11 @@ fun TipCard(
                             modifier = Modifier.size(20.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(7.dp))
-                    Text(title, style = MaterialTheme.typography.titleSmallEmphasized)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(title, style = MaterialTheme.typography.titleMediumEmphasized)
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(body, style = MaterialTheme.typography.bodySmallEmphasized)
+                    Text(body, style = MaterialTheme.typography.bodyMediumEmphasized)
                 }
             }
         }

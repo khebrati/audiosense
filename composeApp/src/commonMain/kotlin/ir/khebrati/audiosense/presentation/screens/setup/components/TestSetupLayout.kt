@@ -3,6 +3,7 @@ package ir.khebrati.audiosense.presentation.screens.setup.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,7 +45,7 @@ fun TestSetupLayout(
     onNavigateBack: () -> Unit,
     onClickNext: () -> Unit,
     onClickSkip: () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     var loading by remember { mutableStateOf(true) }
     val painter =
@@ -83,7 +84,7 @@ private fun TestSetupReady(
     onNavigateBack: () -> Unit,
     onClickNext: () -> Unit,
     onClickSkip: () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     AudiosenseScaffold(
         contentPadding = PaddingValues(),
@@ -101,7 +102,7 @@ private fun TestSetupReady(
         },
     ) {
         Column(
-            modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize(),
+            modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
