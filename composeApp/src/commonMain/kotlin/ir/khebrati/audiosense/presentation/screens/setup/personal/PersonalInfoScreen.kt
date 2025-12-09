@@ -1,6 +1,7 @@
 package ir.khebrati.audiosense.presentation.screens.setup.personal
 
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.Orientation.*
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ir.khebrati.audiosense.presentation.screens.setup.components.IllustrationLoader
 import ir.khebrati.audiosense.presentation.screens.setup.components.TestSetupLayout
 import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute.*
 
@@ -50,18 +52,22 @@ fun PersonalInfoScreen(
     TestSetupLayout(
         title = personalInfoRoute.title,
         onNavigateBack = onNavigateBack,
-        illustrationName = "QuestionPrimary",
-        onClickNext = {
-            onNavigateVolume(VolumeRoute)
-        },
+        onClickNext = { onNavigateVolume(VolumeRoute) },
         onClickSkip = onClickSkip,
         pagerState = pagerState,
         nextButtonEnabled = nextButtonEnabled,
     ) {
-        PersonalInfo(
-            ageTextFieldState = ageTextFieldState,
-            nameTextFieldState = nameTextFieldState,
-        )
+        IllustrationLoader(modifier = Modifier.width(300.dp), illustrationName = "Question") {
+            Column(
+                modifier = Modifier.fillMaxWidth().scrollable(rememberScrollState(), orientation = Vertical),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                PersonalInfo(
+                    ageTextFieldState = ageTextFieldState,
+                    nameTextFieldState = nameTextFieldState,
+                )
+            }
+        }
     }
 }
 
@@ -75,16 +81,13 @@ fun PersonalInfo(
         modifier =
             modifier
                 .width(300.dp)
-                .scrollable(state = rememberScrollState(), orientation = Orientation.Vertical),
+                .scrollable(state = rememberScrollState(), orientation = Vertical),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         Text("Tell us about you", style = MaterialTheme.typography.titleLargeEmphasized)
-        InfoTextField(
-            placeHolder = "Age (Required)",
-            state = ageTextFieldState,
-        )
+        InfoTextField(placeHolder = "Age (Required)", state = ageTextFieldState)
         InfoTextField(placeHolder = "Name (Optional)", state = nameTextFieldState)
         HearingAidsSegmentedButtons()
     }
@@ -96,7 +99,7 @@ private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Do you use hearing aids?", style = MaterialTheme.typography.labelMediumEmphasized)
             Spacer(modifier = Modifier.height(5.dp))
-            val choices = remember{ listOf("No", "Yes")}
+            val choices = remember { listOf("No", "Yes") }
             var selectedIndex by remember { mutableStateOf(0) }
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth(), space = 25.dp) {
                 choices.forEachIndexed { index, label ->
@@ -106,9 +109,10 @@ private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
                         onClick = { selectedIndex = index },
                         label = { Text(label) },
                         shape = MaterialTheme.shapes.medium,
-                        colors = SegmentedButtonDefaults.colors(
-                            activeContainerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
+                        colors =
+                            SegmentedButtonDefaults.colors(
+                                activeContainerColor = MaterialTheme.colorScheme.secondaryContainer
+                            ),
                     )
                 }
             }

@@ -39,48 +39,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TestSetupLayout(
     modifier: Modifier = Modifier,
     title: String,
-    illustrationName: String,
     pagerState: PagerState,
     nextButtonEnabled: Boolean = true,
-    onNavigateBack: () -> Unit,
-    onClickNext: () -> Unit,
-    onClickSkip: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    var loading by remember { mutableStateOf(true) }
-    val painter =
-        rememberAsyncImagePainter(
-            model = Res.getUri("drawable/$illustrationName.png"),
-            onState = { state ->
-                if (state is AsyncImagePainter.State.Success) {
-                    loading = false
-                }
-            },
-        )
-    if (loading) {
-        LoadingScreen()
-    } else {
-        TestSetupReady(
-            modifier = modifier,
-            title = title,
-            onNavigateBack = onNavigateBack,
-            painter = painter,
-            onClickNext = onClickNext,
-            onClickSkip = onClickSkip,
-            pagerState = pagerState,
-            content = content,
-            nextButtonEnabled = nextButtonEnabled
-        )
-    }
-}
-
-@Composable
-private fun TestSetupReady(
-    modifier: Modifier = Modifier,
-    title: String,
-    painter: AsyncImagePainter,
-    pagerState: PagerState,
-    nextButtonEnabled: Boolean,
     onNavigateBack: () -> Unit,
     onClickNext: () -> Unit,
     onClickSkip: () -> Unit,
@@ -102,24 +62,14 @@ private fun TestSetupReady(
         },
     ) {
         Column(
-            modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(14.dp),
+            modifier = modifier.fillMaxSize().padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(
-                modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(15))
-                        .background(MaterialTheme.colorScheme.surfaceContainer)
-                        .padding(horizontal = 70.dp)
-                        .fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                IllustrationLoader(modifier = Modifier.width(300.dp), painter = painter)
-            }
             content()
         }
     }
 }
+
 
 @Preview(widthDp = 400, heightDp = 800)
 @Composable
@@ -130,7 +80,6 @@ fun TestSetupLayoutPreview() {
             TestSetupLayout(
                 title = "Ready for test",
                 onNavigateBack = {},
-                illustrationName = "Question",
                 onClickSkip = {},
                 onClickNext = {},
                 pagerState = pagerState,
