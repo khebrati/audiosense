@@ -22,6 +22,7 @@ kotlinx-serialization = "1.7.3"
 turbine = "1.2.1"
 juint = "4.13.2"
 coil = "3.3.0"
+ktor = "3.3.3"
 [libraries]
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -51,6 +52,8 @@ junit = { module = "junit:junit", version.ref = "juint" }
 back-handler = {module = "org.jetbrains.compose.ui:ui-backhandler" }
 coil = {module = "io.coil-kt.coil3:coil-compose",version.ref="coil"}
 coil-svg = {module = "io.coil-kt.coil3:coil-svg",version.ref="coil"}
+ktor-core = {module = "io.ktor:ktor-client-core",version.ref="ktor"}
+ktor-cio = {module = "io.ktor:ktor-client-cio",version.ref="ktor"}
 # Theme
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }

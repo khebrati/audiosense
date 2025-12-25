@@ -9,6 +9,8 @@ import ir.khebrati.audiosense.data.source.local.dao.HeadphoneDao
 import ir.khebrati.audiosense.data.source.local.dao.TestDao
 import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.getRoomDatabase
+import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcher
+import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcherImpl
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.audiogram.AudiogramSerializer
@@ -56,6 +58,9 @@ internal fun commonModule(): Module = module {
     viewModelOf(::SelectDeviceViewModel)
     viewModelOf(::TestResultViewModel)
     //UseCase
+    factory<HeadphoneFetcher>{
+        HeadphoneFetcherImpl()
+    }
     factory<HeadphoneCalibrator>{
         HeadphoneCalibratorImpl()
     }
