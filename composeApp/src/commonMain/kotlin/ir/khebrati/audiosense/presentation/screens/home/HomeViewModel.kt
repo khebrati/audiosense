@@ -22,7 +22,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestRepository,val headphoneFetcher: HeadphoneFetcher) : ViewModel() {
+class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestRepository) : ViewModel() {
     private val currentTimeOfDay =
         timeTeller
             .observeTimeOfDay()
@@ -39,9 +39,6 @@ class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestReposito
     val uiState = _uiState
 
     init {
-        runBlocking {
-            headphoneFetcher.fetchAllFromServer()
-        }
         viewModelScope.launch { combineUiFlows().collect { state -> _uiState.update { state } } }
     }
 
