@@ -82,6 +82,9 @@ fun SelectDeviceScreen(
         onUiAction = viewModel::handleAction,
         onNavigateTest = onNavigateTest,
         title = selectDeviceRoute.title,
+        personName = selectDeviceRoute.personName,
+        personAge = selectDeviceRoute.personAge,
+        hasHearingAidExperience = selectDeviceRoute.hasHearingAidExperience,
         onNavigateCalibration = onNavigateCalibration,
     )
 }
@@ -155,6 +158,9 @@ private fun SelectDeviceContent(
     uiState: SelectDeviceUiState,
     pagerState: PagerState,
     title: String,
+    personName: String?,
+    personAge: Int,
+    hasHearingAidExperience: Boolean,
     onNavigateBack: () -> Unit,
     onUiAction: (SelectDeviceUiAction) -> Unit,
     onNavigateTest: (TestRoute) -> Unit,
@@ -172,7 +178,14 @@ private fun SelectDeviceContent(
         onNavigateBack = onNavigateBack,
         pagerState = pagerState,
         nextButtonEnabled = selectedHeadphoneId != null,
-        onClickNext = { onNavigateTest(TestRoute(selectedHeadphoneId!!)) },
+        onClickNext = {
+            onNavigateTest(TestRoute(
+                selectedHeadphoneId = selectedHeadphoneId!!,
+                personName = personName,
+                personAge = personAge,
+                hasHearingAidExperience = hasHearingAidExperience
+            ))
+        },
         onClickSkip = {},
     ) {
             Scaffold(

@@ -8,5 +8,8 @@ data class Test(
     val noiseDuringTest: Int,
     val leftAC: Map<Int, Int>,
     val rightAC: Map<Int, Int>,
-    val headphone : Headphone
+    val headphone: Headphone,
+    val personName: String?,
+    val personAge: Int,
+    val hasHearingAidExperience: Boolean
 )

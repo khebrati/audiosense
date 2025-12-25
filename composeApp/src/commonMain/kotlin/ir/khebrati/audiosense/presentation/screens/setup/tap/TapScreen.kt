@@ -32,7 +32,13 @@ fun TapScreen(
         title = tapRoute.title,
         onNavigateBack = onNavigateBack,
         pagerState = pagerState,
-        onClickNext = { onNavigateSelectDevice(SelectDeviceRoute) },
+        onClickNext = {
+            onNavigateSelectDevice(SelectDeviceRoute(
+                personName = tapRoute.personName,
+                personAge = tapRoute.personAge,
+                hasHearingAidExperience = tapRoute.hasHearingAidExperience
+            ))
+        },
         onClickSkip = {},
     ) {
         IllustrationLoader(modifier = Modifier.width(300.dp), illustrationName = "Tap") {

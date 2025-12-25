@@ -35,7 +35,11 @@ class TestViewModel(
 ) : ViewModel() {
     val navigationEvents = MutableSharedFlow<NavigationEvent>()
     val logger = Logger.withTag("TestViewModel")
-    private val headphoneId = handle.toRoute<TestRoute>().selectedHeadphoneId
+    private val testRoute = handle.toRoute<TestRoute>()
+    private val headphoneId = testRoute.selectedHeadphoneId
+    private val personName = testRoute.personName
+    private val personAge = testRoute.personAge
+    private val hasHearingAidExperience = testRoute.hasHearingAidExperience
 
     private val _uiState = MutableStateFlow(TestUiState())
     val uiState = _uiState.asStateFlow()
@@ -70,6 +74,9 @@ class TestViewModel(
                 leftAC = leftAC,
                 rightAC = rightAC,
                 headphoneId = headphoneId,
+                personName = personName,
+                personAge = personAge,
+                hasHearingAidExperience = hasHearingAidExperience,
             )
             navigationEvents.emit(NavigateToResult(ResultRoute(testId)))
         }

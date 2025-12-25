@@ -8,11 +8,23 @@ sealed class SetupInternalRoute(val title : String = "Get Ready") {
     object PersonalInfoRoute : SetupInternalRoute()
 
     @Serializable
-    object VolumeRoute : SetupInternalRoute()
+    data class VolumeRoute(
+        val personName: String?,
+        val personAge: Int,
+        val hasHearingAidExperience: Boolean
+    ) : SetupInternalRoute()
 
     @Serializable
-    object TapRoute : SetupInternalRoute()
+    data class TapRoute(
+        val personName: String?,
+        val personAge: Int,
+        val hasHearingAidExperience: Boolean
+    ) : SetupInternalRoute()
 
     @Serializable
-    object SelectDeviceRoute : SetupInternalRoute()
+    data class SelectDeviceRoute(
+        val personName: String?,
+        val personAge: Int,
+        val hasHearingAidExperience: Boolean
+    ) : SetupInternalRoute()
 }

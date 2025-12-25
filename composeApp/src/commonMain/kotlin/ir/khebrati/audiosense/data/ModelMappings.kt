@@ -15,6 +15,9 @@ fun LocalTest.toExternal(usedHeadphone: Headphone) =
         leftAC = leftAC,
         rightAC = rightAC,
         headphone = usedHeadphone,
+        personName = personName,
+        personAge = personAge,
+        hasHearingAidExperience = hasHearingAidExperience,
     )
 
 fun Map<LocalHeadphone, List<LocalTest>>.toExternal(): List<Test> {
@@ -28,6 +31,9 @@ fun Test.toLocal() =
         id = id,
         headphoneId = headphone.id,
         dateTime = dateTime,
+        personName = personName,
+        personAge = personAge,
+        hasHearingAidExperience = hasHearingAidExperience,
         noiseDuringTest = noiseDuringTest,
         leftAC = leftAC,
         rightAC = rightAC,

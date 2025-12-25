@@ -10,7 +10,10 @@ interface TestRepository {
         noiseDuringTest: Int,
         leftAC: Map<Int, Int>,
         rightAC: Map<Int, Int>,
-        headphoneId: String
+        headphoneId: String,
+        personName: String?,
+        personAge: Int,
+        hasHearingAidExperience: Boolean
     ) : String
 
     suspend fun getAll(): List<Test>
