@@ -20,30 +20,24 @@ import kotlinx.serialization.json.Json
 
 private const val BASE_URL = "http://188.121.121.80:3000/api"
 
-@Serializable
-data class LoginRequest(
-    val username: String,
-    val password: String
-)
+@Serializable data class LoginRequest(val username: String, val password: String)
 
 @Serializable
 data class LoginResponse(
     val success: Boolean,
     val token: String? = null,
     val expiresIn: String? = null,
-    val error: String? = null
+    val error: String? = null,
 )
 
 @Serializable
 data class HeadphonesResponse(
     val success: Boolean,
     val headphones: List<RemoteHeadphone> = emptyList(),
-    val error: String? = null
+    val error: String? = null,
 )
 
-class HeadphoneFetcherImpl(
-    private val tokenManager: TokenManager
-) : HeadphoneFetcher {
+class HeadphoneFetcherImpl(private val tokenManager: TokenManager) : HeadphoneFetcher {
 
     private val client = HttpClient(CIO)
     private val json = Json { ignoreUnknownKeys = true }
@@ -57,77 +51,69 @@ class HeadphoneFetcherImpl(
 
     private suspend fun getValidToken(): String? {
         // Return existing valid token
-        tokenManager.getToken()?.let { return it }
+        tokenManager.getToken()?.let {
+            return it
+        }
 
         // Need to login
         return login()
     }
 
-    private suspend fun login(): String? {
-        return try {
-            val response: HttpResponse = client.post("$BASE_URL/login") {
+    private suspend fun login(): String {
+        val response: HttpResponse =
+            client.post("$BASE_URL/login") {
                 contentType(ContentType.Application.Json)
-                val body = LoginRequest(
-                    username = BuildConfig.API_USERNAME,
-                    password = BuildConfig.API_PASSWORD
-                )
+                val body =
+                    LoginRequest(
+                        username = BuildConfig.API_USERNAME,
+                        password = BuildConfig.API_PASSWORD,
+                    )
                 setBody(json.encodeToString(LoginRequest.serializer(), body))
             }
 
-            val responseText = response.bodyAsText()
-            Logger.d { "Login response: $responseText" }
+        val responseText = response.bodyAsText()
+        Logger.d { "Login response: $responseText" }
 
-            val loginResponse = json.decodeFromString<LoginResponse>(responseText)
+        val loginResponse = json.decodeFromString<LoginResponse>(responseText)
 
-            if (loginResponse.success && loginResponse.token != null) {
-                // Parse expiresIn (e.g., "24h") and store token
-                val hours = parseExpiresIn(loginResponse.expiresIn)
-                tokenManager.setToken(loginResponse.token, hours)
-                loginResponse.token
-            } else {
-                Logger.e { "Login failed: ${loginResponse.error}" }
-                null
-            }
-        } catch (e: Exception) {
-            Logger.e(e) { "Login error" }
-            null
+        if (loginResponse.success && loginResponse.token != null) {
+            // Parse expiresIn (e.g., "24h") and store token
+            val hours = parseExpiresIn(loginResponse.expiresIn)
+            tokenManager.setToken(loginResponse.token, hours)
+            return loginResponse.token
+        } else {
+            throw Exception("Login failed")
         }
     }
 
     private suspend fun fetchHeadphones(token: String): List<RemoteHeadphone> {
-        return try {
-            val response: HttpResponse = client.get("$BASE_URL/headphones") {
+        val response: HttpResponse =
+            client.get("$BASE_URL/headphones") {
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
 
-            val responseText = response.bodyAsText()
-            Logger.d { "Headphones response: $responseText" }
+        val responseText = response.bodyAsText()
+        Logger.d { "Headphones response: $responseText" }
 
-            // Check if token is invalid
-            if (!response.status.isSuccess()) {
-                val errorResponse = try {
-                    json.decodeFromString<LoginResponse>(responseText)
-                } catch (e: Exception) { null }
+        // Check if token is invalid
+        if (!response.status.isSuccess()) {
+            val errorResponse = json.decodeFromString<LoginResponse>(responseText)
 
-                if (errorResponse?.error == "Invalid credentials") {
-                    // Token expired, clear it and retry login
-                    tokenManager.clearToken()
-                    val newToken = login() ?: return emptyList()
-                    return fetchHeadphones(newToken)
-                }
-                return emptyList()
+            if (errorResponse.error == "Invalid credentials") {
+                // Token expired, clear it and retry login
+                tokenManager.clearToken()
+                val newToken = login()
+                return fetchHeadphones(newToken)
             }
+            errorResponse.error?.let { Logger.e { it } }
+            return emptyList()
+        }
 
-            val headphonesResponse = json.decodeFromString<HeadphonesResponse>(responseText)
-            if (headphonesResponse.success) {
-                headphonesResponse.headphones
-            } else {
-                Logger.e { "Failed to fetch headphones: ${headphonesResponse.error}" }
-                emptyList()
-            }
-        } catch (e: Exception) {
-            Logger.e(e) { "Fetch headphones error" }
-            emptyList()
+        val headphonesResponse = json.decodeFromString<HeadphonesResponse>(responseText)
+        if (headphonesResponse.success) {
+            return headphonesResponse.headphones
+        } else {
+            throw Exception("Failed to fetch headphones: ${headphonesResponse.error}")
         }
     }
 
