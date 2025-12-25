@@ -66,7 +66,7 @@ fun Map<Int, VolumeRecordPerFrequency>.toLocal(): Map<Int, Pair<Int, Int>> {
 
 // Remote to Local mappings
 fun RemoteHeadphone.toLocal() = LocalHeadphone(
-    id = id,
+    id = _id,
     model = name,
     calibrationCoefficients = calibrationCoefficients,
 )

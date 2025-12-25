@@ -19,6 +19,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 private const val BASE_URL = "http://188.121.121.80:3000/api"
+//private const val BASE_URL = "http://127.0.0.1:3000/api"
 
 @Serializable data class LoginRequest(val username: String, val password: String)
 
