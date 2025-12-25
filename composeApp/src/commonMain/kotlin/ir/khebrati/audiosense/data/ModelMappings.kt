@@ -2,6 +2,7 @@ package ir.khebrati.audiosense.data
 
 import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
 import ir.khebrati.audiosense.data.source.local.entity.LocalTest
+import ir.khebrati.audiosense.data.source.remote.entity.RemoteHeadphone
 import ir.khebrati.audiosense.domain.model.Headphone
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.domain.model.Test
@@ -56,3 +57,13 @@ fun Headphone.toLocal() =
 fun Map<Int, VolumeRecordPerFrequency>.toLocal(): Map<Int, Pair<Int, Int>> {
     return this.mapValues { Pair(it.value.playedVolumeDbSpl, it.value.measuredVolumeDbSpl) }
 }
+
+// Remote to Local mappings
+fun RemoteHeadphone.toLocal() = LocalHeadphone(
+    id = id,
+    model = name,
+    calibrationCoefficients = calibrationCoefficients,
+)
+
+fun List<RemoteHeadphone>.toLocal(): List<LocalHeadphone> = map { it.toLocal() }
+
