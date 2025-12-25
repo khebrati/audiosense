@@ -28,6 +28,9 @@ class TestRepositoryImpl(
         leftAC: Map<Int, Int>,
         rightAC: Map<Int, Int>,
         headphoneId: String,
+        personName: String?,
+        personAge: Int,
+        hasHearingAidExperience: Boolean,
     ): String {
         return withContext(dispatcher) {
             val uuid = withContext(dispatcher) { Uuid.random().toString() }
@@ -39,6 +42,9 @@ class TestRepositoryImpl(
                     leftAC = leftAC,
                     rightAC = rightAC,
                     headphoneId = headphoneId,
+                    personName = personName,
+                    personAge = personAge,
+                    hasHearingAidExperience = hasHearingAidExperience,
                 )
             testDao.add(localTest)
             uuid

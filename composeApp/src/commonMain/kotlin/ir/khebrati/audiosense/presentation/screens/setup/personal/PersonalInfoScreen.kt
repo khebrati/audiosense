@@ -43,6 +43,7 @@ fun PersonalInfoScreen(
 ) {
     val ageTextFieldState = rememberTextFieldState()
     val nameTextFieldState = rememberTextFieldState()
+    var hasHearingAidExperience by remember { mutableStateOf(false) }
     val nextButtonEnabled =
         derivedStateOf {
                 val text = ageTextFieldState.text
@@ -52,7 +53,15 @@ fun PersonalInfoScreen(
     TestSetupLayout(
         title = personalInfoRoute.title,
         onNavigateBack = onNavigateBack,
-        onClickNext = { onNavigateVolume(VolumeRoute) },
+        onClickNext = {
+            val age = ageTextFieldState.text.toString().toIntOrNull() ?: 0
+            val name = nameTextFieldState.text.toString().takeIf { it.isNotBlank() }
+            onNavigateVolume(VolumeRoute(
+                personName = name,
+                personAge = age,
+                hasHearingAidExperience = hasHearingAidExperience
+            ))
+        },
         onClickSkip = onClickSkip,
         pagerState = pagerState,
         nextButtonEnabled = nextButtonEnabled,
@@ -65,6 +74,8 @@ fun PersonalInfoScreen(
                 PersonalInfo(
                     ageTextFieldState = ageTextFieldState,
                     nameTextFieldState = nameTextFieldState,
+                    hasHearingAidExperience = hasHearingAidExperience,
+                    onHearingAidExperienceChanged = { hasHearingAidExperience = it }
                 )
             }
         }
@@ -76,6 +87,8 @@ fun PersonalInfo(
     modifier: Modifier = Modifier,
     ageTextFieldState: TextFieldState,
     nameTextFieldState: TextFieldState,
+    hasHearingAidExperience: Boolean,
+    onHearingAidExperienceChanged: (Boolean) -> Unit,
 ) {
     Column(
         modifier =
@@ -89,24 +102,31 @@ fun PersonalInfo(
         Text("Tell us about you", style = MaterialTheme.typography.titleLargeEmphasized)
         InfoTextField(placeHolder = "Age (Required)", state = ageTextFieldState)
         InfoTextField(placeHolder = "Name (Optional)", state = nameTextFieldState)
-        HearingAidsSegmentedButtons()
+        HearingAidsSegmentedButtons(
+            hasHearingAidExperience = hasHearingAidExperience,
+            onHearingAidExperienceChanged = onHearingAidExperienceChanged
+        )
     }
 }
 
 @Composable
-private fun HearingAidsSegmentedButtons(modifier: Modifier = Modifier) {
+private fun HearingAidsSegmentedButtons(
+    modifier: Modifier = Modifier,
+    hasHearingAidExperience: Boolean,
+    onHearingAidExperienceChanged: (Boolean) -> Unit,
+) {
     Row(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Do you use hearing aids?", style = MaterialTheme.typography.labelMediumEmphasized)
             Spacer(modifier = Modifier.height(5.dp))
             val choices = remember { listOf("No", "Yes") }
-            var selectedIndex by remember { mutableStateOf(0) }
+            val selectedIndex = if (hasHearingAidExperience) 1 else 0
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth(), space = 25.dp) {
                 choices.forEachIndexed { index, label ->
                     SegmentedButton(
                         modifier = Modifier.height(50.dp),
                         selected = index == selectedIndex,
-                        onClick = { selectedIndex = index },
+                        onClick = { onHearingAidExperienceChanged(index == 1) },
                         label = { Text(label) },
                         shape = MaterialTheme.shapes.medium,
                         colors =

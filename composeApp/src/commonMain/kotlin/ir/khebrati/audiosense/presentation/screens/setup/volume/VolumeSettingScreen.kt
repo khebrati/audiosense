@@ -34,7 +34,13 @@ fun VolumeSettingScreen(
         title = volumeRoute.title,
         onNavigateBack = onNavigateBack,
         pagerState = pagerState,
-        onClickNext = { onNavigateTap(TapRoute) },
+        onClickNext = {
+            onNavigateTap(TapRoute(
+                personName = volumeRoute.personName,
+                personAge = volumeRoute.personAge,
+                hasHearingAidExperience = volumeRoute.hasHearingAidExperience
+            ))
+        },
         onClickSkip = {},
     ) {
         IllustrationLoader(modifier = Modifier.width(300.dp), illustrationName = "Settings") {

@@ -23,5 +23,8 @@ data class LocalTest(
     val noiseDuringTest: Int,
     val leftAC: Map<Int, Int>,
     val rightAC: Map<Int, Int>,
-    val headphoneId: String
+    val headphoneId: String,
+    val personName: String?,
+    val personAge: Int,
+    val hasHearingAidExperience: Boolean
 )
