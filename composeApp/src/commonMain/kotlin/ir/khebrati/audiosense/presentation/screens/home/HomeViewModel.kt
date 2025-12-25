@@ -3,6 +3,7 @@ package ir.khebrati.audiosense.presentation.screens.home
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcher
 import ir.khebrati.audiosense.domain.model.Test
 import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
@@ -17,10 +18,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestRepository) : ViewModel() {
+class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestRepository,val headphoneFetcher: HeadphoneFetcher) : ViewModel() {
     private val currentTimeOfDay =
         timeTeller
             .observeTimeOfDay()
@@ -37,6 +39,9 @@ class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestReposito
     val uiState = _uiState
 
     init {
+        runBlocking {
+            headphoneFetcher.fetchAllFromServer()
+        }
         viewModelScope.launch { combineUiFlows().collect { state -> _uiState.update { state } } }
     }
 

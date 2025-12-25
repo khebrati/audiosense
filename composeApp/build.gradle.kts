@@ -1,7 +1,17 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import java.util.Properties
 
 val IS_DEVELOPMENT = true
+
+// Load local.properties for secrets
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
+
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose.compiler)
@@ -66,6 +76,8 @@ kotlin {
             implementation(libs.back.handler)
             implementation(libs.coil)
             implementation(libs.coil.svg)
+            implementation(libs.ktor.core)
+            implementation(libs.ktor.cio)
         }
 
         commonTest.dependencies {
@@ -118,6 +130,8 @@ compose.resources{
 
 buildConfig {
     buildConfigField("IS_DEVELOPMENT",IS_DEVELOPMENT)
+    buildConfigField("API_USERNAME", localProperties.getProperty("API_USERNAME", ""))
+    buildConfigField("API_PASSWORD", localProperties.getProperty("API_PASSWORD", ""))
 }
 
 
