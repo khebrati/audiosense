@@ -9,8 +9,11 @@ import ir.khebrati.audiosense.data.source.local.dao.HeadphoneDao
 import ir.khebrati.audiosense.data.source.local.dao.TestDao
 import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.getRoomDatabase
+import ir.khebrati.audiosense.data.source.remote.AudiogramPoster
+import ir.khebrati.audiosense.data.source.remote.AudiogramPosterImpl
 import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcher
 import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcherImpl
+import ir.khebrati.audiosense.data.source.remote.RemoteAuthHandler
 import ir.khebrati.audiosense.data.source.remote.TokenManager
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
@@ -54,7 +57,12 @@ internal fun commonModule(): Module = module {
         )
     }
     single<TestRepository> {
-        TestRepositoryImpl(testDao = get(), testHeadphoneDao = get(), dispatcher = Dispatchers.IO)
+        TestRepositoryImpl(
+            testDao = get(),
+            testHeadphoneDao = get(),
+            audiogramPoster = get(),
+            dispatcher = Dispatchers.IO
+        )
     }
     // View Model
     viewModelOf(::CalibrationViewModel)
@@ -64,8 +72,12 @@ internal fun commonModule(): Module = module {
     viewModelOf(::TestResultViewModel)
     //UseCase
     single<TokenManager> { TokenManager() }
+    single<RemoteAuthHandler> { RemoteAuthHandler(tokenManager = get()) }
     single<HeadphoneFetcher> {
-        HeadphoneFetcherImpl(tokenManager = get())
+        HeadphoneFetcherImpl(authHandler = get())
+    }
+    single<AudiogramPoster> {
+        AudiogramPosterImpl(authHandler = get())
     }
     factory<HeadphoneCalibrator>{
         HeadphoneCalibratorImpl()

@@ -5,6 +5,7 @@ package ir.khebrati.audiosense.data.repository
 import ir.khebrati.audiosense.data.source.local.dao.TestDao
 import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
 import ir.khebrati.audiosense.data.source.local.entity.LocalTest
+import ir.khebrati.audiosense.data.source.remote.AudiogramPoster
 import ir.khebrati.audiosense.data.toExternal
 import ir.khebrati.audiosense.domain.model.Test
 import ir.khebrati.audiosense.domain.repository.TestRepository
@@ -20,6 +21,7 @@ import kotlinx.coroutines.withContext
 class TestRepositoryImpl(
     private val testDao: TestDao,
     private val testHeadphoneDao: TestHeadphoneDao,
+    private val audiogramPoster: AudiogramPoster,
     private val dispatcher: CoroutineDispatcher,
 ) : TestRepository {
     override suspend fun createTest(
@@ -47,6 +49,10 @@ class TestRepositoryImpl(
                     hasHearingAidExperience = hasHearingAidExperience,
                 )
             testDao.add(localTest)
+
+            // Post audiogram to server after saving to local DB
+            audiogramPoster.postAudiogram(localTest)
+
             uuid
         }
     }
