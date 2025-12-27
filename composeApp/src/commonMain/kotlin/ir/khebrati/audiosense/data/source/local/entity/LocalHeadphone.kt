@@ -9,4 +9,5 @@ data class LocalHeadphone(
     val id : String,
     val model: String,
     val calibrationCoefficients: Map<Int,Pair<Int,Int>>,
+    val isAuthenticated: Boolean = false,
 )

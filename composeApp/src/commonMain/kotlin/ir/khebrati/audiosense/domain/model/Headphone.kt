@@ -4,4 +4,5 @@ data class Headphone(
     val id : String,
     val model: String,
     val calibrationCoefficients: Map<Int, VolumeRecordPerFrequency>,
+    val isAuthenticated: Boolean = false,
 )

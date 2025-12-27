@@ -48,6 +48,7 @@ fun LocalHeadphone.toExternal() =
         id = id,
         model = model,
         calibrationCoefficients = calibrationCoefficients.toExternal(),
+        isAuthenticated = isAuthenticated
     )
 
 private fun Map<Int, Pair<Int, Int>>.toExternal() =
@@ -69,6 +70,7 @@ fun RemoteHeadphone.toLocal() = LocalHeadphone(
     id = _id,
     model = name,
     calibrationCoefficients = calibrationCoefficients,
+    isAuthenticated = true,
 )
 
 fun List<RemoteHeadphone>.toLocal(): List<LocalHeadphone> = map { it.toLocal() }

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5a2a95f672513a11b05fdc14130e2d35",
+    "identityHash": "bab43a155d04c863a50a60c60c33c779",
     "entities": [
       {
         "tableName": "LocalHeadphone",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `model` TEXT NOT NULL, `calibrationCoefficients` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `model` TEXT NOT NULL, `calibrationCoefficients` TEXT NOT NULL, `isAuthenticated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -24,6 +24,12 @@
             "fieldPath": "calibrationCoefficients",
             "columnName": "calibrationCoefficients",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAuthenticated",
+            "columnName": "isAuthenticated",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -115,7 +121,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5a2a95f672513a11b05fdc14130e2d35')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bab43a155d04c863a50a60c60c33c779')"
     ]
   }
 }

@@ -57,6 +57,6 @@ data class SelectDeviceUiState(
     val selectedHeadphoneIndex: Int? = null,
 )
 
-data class HeadphoneUiState(val model: String, val id: String)
+data class HeadphoneUiState(val model: String, val id: String, val isAuthenticated: Boolean)
 
-fun Headphone.toUiState() = HeadphoneUiState(model, id)
+fun Headphone.toUiState() = HeadphoneUiState(model, id, isAuthenticated)

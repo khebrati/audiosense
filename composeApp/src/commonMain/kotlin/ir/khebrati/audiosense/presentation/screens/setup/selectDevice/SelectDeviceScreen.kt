@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.dp
 import audiosense.composeapp.generated.resources.AppleAirpodPro
 import audiosense.composeapp.generated.resources.GalaxyBudsFe
 import audiosense.composeapp.generated.resources.Res
+import co.touchlab.kermit.Logger
 import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
-import ir.khebrati.audiosense.domain.model.isDefaultHeadphone
 import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.DeleteDialog
@@ -92,7 +92,7 @@ fun SelectDeviceScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HeadphonesList(
-    headphoneNames: List<String>,
+    headphones: List<HeadphoneUiState>,
     selectedIndex: Int? = null,
     onSelectedChange: (Int) -> Unit,
     onDeleteHeadphone: (Int) -> Unit,
@@ -111,12 +111,13 @@ fun HeadphonesList(
                 )
             }
         }
-        itemsIndexed(headphoneNames) { index, name ->
+        itemsIndexed(headphones) { index, headphone ->
             ListItem(
-                text = name,
+                text = headphone.model,
                 onClick = { onSelectedChange(index) },
                 isSelected = selectedIndex == index,
                 onDeleteHeadphone = { onDeleteHeadphone(index) },
+                canDelete = !headphone.isAuthenticated,
             )
         }
     }
@@ -130,13 +131,14 @@ fun SelectDevicePreview() {
             SelectDeviceUiState(
                 headphones =
                     listOf(
-                        HeadphoneUiState(model = GalaxyBudsFE.model, id = "0"),
-                        HeadphoneUiState(model = AppleAirpods.model, id = "2"),
-                        HeadphoneUiState(model = SonyHeadphones.model, id = "1"),
-                        HeadphoneUiState(model = "Random headphone", id = "3"),
+                        HeadphoneUiState(model = GalaxyBudsFE.model, id = "0", isAuthenticated = true),
+                        HeadphoneUiState(model = AppleAirpods.model, id = "2", isAuthenticated = true),
+                        HeadphoneUiState(model = SonyHeadphones.model, id = "1", isAuthenticated = true),
+                        HeadphoneUiState(model = "Random headphone", id = "3", isAuthenticated = false),
                         HeadphoneUiState(
                             model = "Very very long headphone name that will probably overflow",
                             id = "4",
+                            isAuthenticated = false,
                         ),
                     )
             )
@@ -199,8 +201,9 @@ private fun SelectDeviceContent(
                     }
                 },
             ) {
+                Logger.d { "Ui state headphones: ${uiState.headphones}" }
                 HeadphonesList(
-                    uiState.headphones.map { it.model },
+                    uiState.headphones,
                     uiState.selectedHeadphoneIndex,
                     onSelectedChange = { onUiAction(SetSelectedDevice(it)) },
                     onDeleteHeadphone = { onUiAction(DeleteHeadphone(it)) },
@@ -216,6 +219,7 @@ fun ListItem(
     onClick: () -> Unit = {},
     isSelected: Boolean,
     onDeleteHeadphone: () -> Unit,
+    canDelete: Boolean,
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
@@ -237,7 +241,7 @@ fun ListItem(
             modifier = modifier.padding(12.dp).fillMaxWidth(),
         ) {
             HeadphonePicAndName(text, modifier = Modifier.weight(1f))
-            if (!isDefaultHeadphone(text)) {
+            if (canDelete) {
                 DeleteHeadphoneIcon(onRemoveHeadphone = onDeleteHeadphone)
             }
         }
@@ -331,6 +335,7 @@ fun HeadphoneItemPreview() {
             modifier = Modifier.fillMaxWidth(),
             isSelected = true,
             onDeleteHeadphone = {},
+            canDelete = true,
         )
     }
 }

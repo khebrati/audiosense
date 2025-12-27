@@ -36,7 +36,8 @@ class HeadphoneRepositoryImpl(
             val localHeadphone = LocalHeadphone(
                 id = uuid,
                 model = model,
-                calibrationCoefficients = calibrationCoefficients.toLocal()
+                calibrationCoefficients = calibrationCoefficients.toLocal(),
+                isAuthenticated = false,
             )
             headphoneDao.add(localHeadphone)
             uuid
@@ -44,7 +45,9 @@ class HeadphoneRepositoryImpl(
     }
 
     override suspend fun getAll() = withContext(dispatcher) {
-        headphoneDao.getAll().toExternal()
+        headphoneDao.getAll().toExternal().also {
+            Logger.d { "Getting all headphones mapped to external: $it" }
+        }
     }
 
     override fun observeAll() = headphoneDao.observeAll()

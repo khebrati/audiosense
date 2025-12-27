@@ -36,14 +36,11 @@ fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase {
 private fun prepopulateDb(connection: SQLiteConnection) {
     val headphones =
         listOf(
-            Pair("a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc", DefaultHeadphones.GalaxyBudsFE.model),
-            Pair("04cad680-777e-41a1-8770-f6bb5ed50ea8", DefaultHeadphones.AppleAirpods.model),
-            Pair("9165f20d-1ce6-4eb6-b2a8-0955dd8f6407", DefaultHeadphones.SonyHeadphones.model),
             Pair("1c7b54aa-61cd-487d-ac2f-7a41537a84e8", DefaultHeadphones.Uncalibrated.model),
         )
     headphones.forEach {
         connection.execSQL(
-            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('${it.first}', '${it.second}', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}');"
+            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\", \"isAuthenticated\") VALUES ('${it.first}', '${it.second}', '{\"125\":{\"first\":50,\"second\":50},\"250\":{\"first\":50,\"second\":50},\"500\":{\"first\":50,\"second\":50},\"1000\":{\"first\":50,\"second\":50},\"2000\":{\"first\":50,\"second\":50},\"4000\":{\"first\":50,\"second\":50},\"8000\":{\"first\":50,\"second\":50}}', 1);"
         )
     }
 }
