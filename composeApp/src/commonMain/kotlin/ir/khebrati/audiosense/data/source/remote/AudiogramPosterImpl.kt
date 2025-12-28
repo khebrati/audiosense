@@ -6,12 +6,6 @@ import ir.khebrati.audiosense.data.source.remote.entity.RemoteTest
 import ir.khebrati.audiosense.data.toRemote
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class AudiogramResponse(
-    val success: Boolean,
-    val message: String? = null,
-    val error: String? = null,
-)
 
 class AudiogramPosterImpl(private val authHandler: RemoteAuthHandler) : AudiogramPoster {
 
@@ -22,9 +16,8 @@ class AudiogramPosterImpl(private val authHandler: RemoteAuthHandler) : Audiogra
         return authHandler.authenticatedPost(
             endpoint = "/audiogram",
             body = body,
-            onSuccess = { responseText ->
-                val audiogramResponse = authHandler.json.decodeFromString<AudiogramResponse>(responseText)
-                audiogramResponse.success
+            onSuccess = {
+                true
             },
             onInvalidCredentials = {
                 false

@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 private const val BASE_URL = "http://188.121.121.80:3000/api"
+//private const val BASE_URL = "http://127.0.0.1:3000/api"
 
 @Serializable
 data class LoginRequest(val username: String, val password: String)
@@ -28,6 +29,13 @@ data class LoginResponse(
     val token: String? = null,
     val expiresIn: String? = null,
     val error: String? = null,
+)
+
+@Serializable
+data class ApiErrorResponse(
+    val error: Boolean = false,
+    val message: String? = null,
+    val status: Int? = null,
 )
 
 class RemoteAuthHandler(private val tokenManager: TokenManager) {
@@ -94,6 +102,22 @@ class RemoteAuthHandler(private val tokenManager: TokenManager) {
         Logger.d { "GET $endpoint response: $responseText" }
 
         if (!response.status.isSuccess()) {
+            return handleGetErrorResponse(responseText, endpoint, token, onSuccess, onInvalidCredentials, onError)
+        }
+
+        return onSuccess(responseText)
+    }
+
+    private suspend fun <T> handleGetErrorResponse(
+        responseText: String,
+        endpoint: String,
+        token: String,
+        onSuccess: suspend (String) -> T,
+        onInvalidCredentials: suspend () -> T,
+        onError: suspend (String?) -> T,
+    ): T {
+        // Try parsing as LoginResponse (error is string)
+        try {
             val errorResponse = json.decodeFromString<LoginResponse>(responseText)
             if (errorResponse.error == "Invalid credentials") {
                 tokenManager.clearToken()
@@ -101,9 +125,15 @@ class RemoteAuthHandler(private val tokenManager: TokenManager) {
                 return executeAuthenticatedGet(endpoint, newToken, onSuccess, onInvalidCredentials, onError)
             }
             return onError(errorResponse.error)
+        } catch (_: Exception) {
+            // Try parsing as ApiErrorResponse (error is boolean)
+            try {
+                val apiError = json.decodeFromString<ApiErrorResponse>(responseText)
+                return onError(apiError.message ?: "Unknown error")
+            } catch (_: Exception) {
+                return onError("Failed to parse error response: $responseText")
+            }
         }
-
-        return onSuccess(responseText)
     }
 
     suspend fun <T> authenticatedPost(
@@ -136,6 +166,35 @@ class RemoteAuthHandler(private val tokenManager: TokenManager) {
         Logger.d { "POST $endpoint response: $responseText" }
 
         if (!response.status.isSuccess()) {
+            return handleErrorResponse(responseText, endpoint, body, token, onSuccess, onInvalidCredentials, onError)
+        }
+
+        // Check if the response body contains an error (server returns 200 but with error in body)
+        if (responseText.isNotBlank()) {
+            try {
+                val apiError = json.decodeFromString<ApiErrorResponse>(responseText)
+                if (apiError.error) {
+                    return onError(apiError.message ?: "Unknown error")
+                }
+            } catch (_: Exception) {
+                // Not an error response format, continue
+            }
+        }
+
+        return onSuccess(responseText)
+    }
+
+    private suspend fun <T> handleErrorResponse(
+        responseText: String,
+        endpoint: String,
+        body: String,
+        token: String,
+        onSuccess: suspend (String) -> T,
+        onInvalidCredentials: suspend () -> T,
+        onError: suspend (String?) -> T,
+    ): T {
+        // Try parsing as LoginResponse (error is string)
+        try {
             val errorResponse = json.decodeFromString<LoginResponse>(responseText)
             if (errorResponse.error == "Invalid credentials") {
                 tokenManager.clearToken()
@@ -143,9 +202,15 @@ class RemoteAuthHandler(private val tokenManager: TokenManager) {
                 return executeAuthenticatedPost(endpoint, body, newToken, onSuccess, onInvalidCredentials, onError)
             }
             return onError(errorResponse.error)
+        } catch (_: Exception) {
+            // Try parsing as ApiErrorResponse (error is boolean)
+            try {
+                val apiError = json.decodeFromString<ApiErrorResponse>(responseText)
+                return onError(apiError.message ?: "Unknown error")
+            } catch (_: Exception) {
+                return onError("Failed to parse error response: $responseText")
+            }
         }
-
-        return onSuccess(responseText)
     }
 
     private fun parseExpiresIn(expiresIn: String?): Int {

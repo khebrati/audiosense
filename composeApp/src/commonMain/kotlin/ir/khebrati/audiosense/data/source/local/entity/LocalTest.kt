@@ -28,29 +28,3 @@ data class LocalTest(
     val personAge: Int,
     val hasHearingAidExperience: Boolean
 )
-/**
- * {
- *   "age": 30,
- *   "hearingAidExperience": true,
- *   "date": true,
- *   "leftAC": {
- *     "125": 10,
- *     "250": 15,
- *     "500": 20,
- *     "1000": 25,
- *     "2000": 30,
- *     "4000": 40,
- *     "8000": 50
- *   },
- *   "rightAC": {
- *     "125": 10,
- *     "250": 10,
- *     "500": 15,
- *     "1000": 20,
- *     "2000": 25,
- *     "4000": 35,
- *     "8000": 45
- *   },
- *   "headphoneModel": "64f1a2b3c4d5e6f7a8b9c0d1"
- * }
- */
