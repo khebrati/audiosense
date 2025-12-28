@@ -1,0 +1,102 @@
+%% AudioSense Use Case Diagram
+%% A hearing test (audiometry) application
+
+flowchart TB
+    subgraph Actors
+        User((👤 User))
+        Server[(🖥️ Server)]
+    end
+
+    subgraph AudioSense["🎧 AudioSense Application"]
+
+        subgraph HomeUseCases["📱 Home"]
+            UC1[View Test History]
+            UC2[Delete Test]
+            UC3[View Test Details]
+        end
+
+        subgraph TestUseCases["🔊 Hearing Test"]
+            UC4[Start New Test]
+            UC5[Enter Personal Details]
+            UC6[Select Headphone]
+            UC7[Perform Pure Tone Audiometry]
+            UC8[Respond to Sound]
+            UC9[View Test Progress]
+            UC10[Complete Test]
+        end
+
+        subgraph ResultUseCases["📊 Results"]
+            UC11[View Audiogram]
+            UC12[View Hearing Loss Analysis]
+            UC13[Share Results]
+        end
+
+        subgraph CalibrationUseCases["⚙️ Calibration"]
+            UC14[Calibrate Headphone]
+            UC15[Add New Headphone]
+            UC16[View Calibration Coefficients]
+        end
+
+        subgraph DeviceUseCases["🎧 Device Management"]
+            UC17[View Available Headphones]
+            UC18[Select Authenticated Headphone]
+            UC19[Delete Headphone]
+        end
+
+        subgraph SyncUseCases["☁️ Data Sync"]
+            UC20[Sync Headphones from Server]
+            UC21[Upload Test Results]
+            UC22[Authenticate with Server]
+        end
+
+    end
+
+    %% User interactions
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    User --> UC7
+    User --> UC8
+    User --> UC9
+    User --> UC10
+    User --> UC11
+    User --> UC12
+    User --> UC13
+    User --> UC14
+    User --> UC15
+    User --> UC16
+    User --> UC17
+    User --> UC18
+    User --> UC19
+
+    %% Server interactions
+    UC20 <--> Server
+    UC21 --> Server
+    UC22 <--> Server
+
+    %% Include relationships (dashed lines)
+    UC4 -.->|includes| UC5
+    UC4 -.->|includes| UC6
+    UC7 -.->|includes| UC8
+    UC7 -.->|includes| UC9
+    UC10 -.->|includes| UC11
+    UC14 -.->|includes| UC16
+    UC17 -.->|includes| UC20
+    UC21 -.->|includes| UC22
+
+    %% Extend relationships
+    UC4 -.->|extends| UC15
+    UC10 -.->|extends| UC21
+
+    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef usecase fill:#fff3e0,stroke:#e65100,stroke-width:1px,rx:10,ry:10
+    classDef system fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef server fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+
+    class User actor
+    class Server server
+    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9,UC10,UC11,UC12,UC13,UC14,UC15,UC16,UC17,UC18,UC19,UC20,UC21,UC22 usecase
+
