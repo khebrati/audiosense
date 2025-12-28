@@ -1,0 +1,356 @@
+classDiagram
+    direction TB
+
+    %% ========== PRESENTATION LAYER ==========
+    namespace Presentation {
+        class HomeViewModel {
+            -timeTeller: TimeTeller
+            -testRepository: TestRepository
+            +uiState: StateFlow~HomeUiState~
+            +handleIntent(intent: HomeIntent)
+        }
+
+        class TestViewModel {
+            -testRepository: TestRepository
+            -audiometry: PureToneAudiometry
+            -pcmGenerator: AudiometryPCMGenerator
+            -soundPlayer: SoundPlayer
+            +uiState: StateFlow~TestUiState~
+            +navigationEvents: SharedFlow~NavigationEvent~
+        }
+
+        class CalibrationViewModel {
+            -headphoneRepository: HeadphoneRepository
+            -calibrator: HeadphoneCalibrator
+            -audiometryPCMGenerator: AudiometryPCMGenerator
+            -soundPlayer: SoundPlayer
+            +uiState: StateFlow~CalibrationUiState~
+        }
+
+        class SelectDeviceViewModel {
+            -headphoneRepository: HeadphoneRepository
+        }
+
+        class TestResultViewModel {
+            -testRepository: TestRepository
+        }
+
+        class AudiosenseRoute {
+            <<sealed>>
+            +title: String
+        }
+
+        class HomeRoute
+        class TestSetupRoute
+        class TestRoute
+        class ResultRoute
+        class CalibrationRoute
+    }
+
+    %% ========== DOMAIN LAYER ==========
+    namespace Domain {
+        class HeadphoneRepository {
+            <<interface>>
+            +createHeadphone(model, calibrationCoefficients): String
+            +getAll(): List~Headphone~
+            +observeAll(): Flow~List~Headphone~~
+            +deleteById(id: String)
+            +deleteAll()
+        }
+
+        class TestRepository {
+            <<interface>>
+            +createTest(...): String
+            +getAll(): List~Test~
+            +get(id: String): Test?
+            +observeAll(): Flow~List~Test~~
+            +observe(id: String): Flow~Test~
+            +deleteById(id: String)
+            +deleteAll()
+        }
+
+        class PureToneAudiometry {
+            <<interface>>
+            +progress: StateFlow~Float~
+            +currentSide: StateFlow~Side~
+            +soundToPlay: SharedFlow~SoundPoint~
+            +start(calibrationCoefficients)
+            +onHeard()
+            +performActionWhenFinished(action)
+        }
+
+        class HeadphoneCalibrator {
+            <<interface>>
+            +calibrate(rawData): Map~Int, Int~
+        }
+
+        class AudiogramSerializer {
+            <<interface>>
+            +serialize(leftAC, rightAC): String
+        }
+
+        class Headphone {
+            +id: String
+            +model: String
+            +calibrationCoefficients: Map~Int, VolumeRecordPerFrequency~
+            +isAuthenticated: Boolean
+        }
+
+        class Test {
+            +id: String
+            +dateTime: Instant
+            +noiseDuringTest: Int
+            +leftAC: Map~Int, Int~
+            +rightAC: Map~Int, Int~
+            +headphone: Headphone
+            +personName: String?
+            +personAge: Int
+            +hasHearingAidExperience: Boolean
+        }
+
+        class VolumeRecordPerFrequency {
+            +left: Int
+            +right: Int
+        }
+
+        class SoundPoint {
+            +frequency: Int
+            +volume: Int
+            +side: Side
+        }
+
+        class Side {
+            <<enum>>
+            LEFT
+            RIGHT
+        }
+    }
+
+    %% ========== DATA LAYER ==========
+    namespace Data {
+        class HeadphoneRepositoryImpl {
+            -headphoneDao: HeadphoneDao
+            -headphoneFetcher: HeadphoneFetcher
+            -dispatcher: CoroutineDispatcher
+            +createHeadphone(model, calibrationCoefficients): String
+            +getAll(): List~Headphone~
+            +observeAll(): Flow~List~Headphone~~
+            -refreshFromServer()
+        }
+
+        class TestRepositoryImpl {
+            -testDao: TestDao
+            -testHeadphoneDao: TestHeadphoneDao
+            -audiogramPoster: AudiogramPoster
+            -dispatcher: CoroutineDispatcher
+            +createTest(...): String
+            +getAll(): List~Test~
+            +observeAll(): Flow~List~Test~~
+        }
+
+        class ModelMappings {
+            +toExternal()
+            +toLocal()
+            +toRemote()
+        }
+    }
+
+    %% ========== LOCAL DATA SOURCE ==========
+    namespace LocalDataSource {
+        class AppDatabase {
+            <<RoomDatabase>>
+            +headphoneDao(): HeadphoneDao
+            +testDao(): TestDao
+            +testHeadphoneDao(): TestHeadphoneDao
+        }
+
+        class HeadphoneDao {
+            <<interface>>
+            +getAll(): List~LocalHeadphone~
+            +observeAll(): Flow~List~LocalHeadphone~~
+            +add(headphone: LocalHeadphone)
+            +upsertAll(headphones: List~LocalHeadphone~)
+            +deleteById(id: String)
+            +deleteAll()
+        }
+
+        class TestDao {
+            <<interface>>
+            +add(test: LocalTest)
+            +deleteById(id: String)
+            +deleteAll()
+        }
+
+        class TestHeadphoneDao {
+            <<interface>>
+            +getAll(): Map~LocalHeadphone, List~LocalTest~~
+            +get(id: String): Map~LocalHeadphone, List~LocalTest~~
+            +observeAll(): Flow~Map~...~~
+            +observe(id: String): Flow~Map~...~~
+        }
+
+        class LocalHeadphone {
+            <<Entity>>
+            +id: String
+            +model: String
+            +calibrationCoefficients: Map~Int, Pair~Int, Int~~
+            +isAuthenticated: Boolean
+        }
+
+        class LocalTest {
+            <<Entity>>
+            +id: String
+            +dateTime: Instant
+            +noiseDuringTest: Int
+            +leftAC: Map~Int, Int~
+            +rightAC: Map~Int, Int~
+            +headphoneId: String
+            +personName: String?
+            +personAge: Int
+            +hasHearingAidExperience: Boolean
+        }
+    }
+
+    %% ========== REMOTE DATA SOURCE ==========
+    namespace RemoteDataSource {
+        class RemoteAuthHandler {
+            -tokenManager: TokenManager
+            -client: HttpClient
+            -json: Json
+            +login(): String
+            +getValidToken(): String?
+            +authenticatedGet~T~(endpoint, onSuccess, onInvalidCredentials, onError): T
+            +authenticatedPost~T~(endpoint, body, onSuccess, onInvalidCredentials, onError): T
+        }
+
+        class TokenManager {
+            -token: String?
+            -tokenExpiresAtMillis: Long?
+            +getToken(): String?
+            +setToken(newToken, expiresInHours)
+            +clearToken()
+        }
+
+        class HeadphoneFetcher {
+            <<interface>>
+            +fetchAllFromServer(): List~RemoteHeadphone~
+        }
+
+        class HeadphoneFetcherImpl {
+            -authHandler: RemoteAuthHandler
+            +fetchAllFromServer(): List~RemoteHeadphone~
+        }
+
+        class AudiogramPoster {
+            <<interface>>
+            +postAudiogram(localTest: LocalTest): Boolean
+        }
+
+        class AudiogramPosterImpl {
+            -authHandler: RemoteAuthHandler
+            +postAudiogram(localTest: LocalTest): Boolean
+        }
+
+        class RemoteHeadphone {
+            <<Serializable>>
+            +_id: String
+            +name: String
+            +calibrationCoefficients: Map~Int, Pair~Int, Int~~
+        }
+
+        class RemoteTest {
+            <<Serializable>>
+            +age: Int
+            +hearingAidExperience: Boolean
+            +date: String
+            +leftAC: Map~String, Int~
+            +rightAC: Map~String, Int~
+            +headphoneModel: String
+        }
+
+        class LoginResponse {
+            <<Serializable>>
+            +success: Boolean
+            +token: String?
+            +expiresIn: String?
+            +error: String?
+        }
+
+        class ApiErrorResponse {
+            <<Serializable>>
+            +error: Boolean
+            +message: String?
+            +status: Int?
+        }
+    }
+
+    %% ========== DI LAYER ==========
+    namespace DependencyInjection {
+        class Module {
+            +commonModule(): Module
+        }
+    }
+
+    %% ========== RELATIONSHIPS ==========
+
+    %% Presentation -> Domain
+    HomeViewModel --> TestRepository
+    TestViewModel --> TestRepository
+    TestViewModel --> PureToneAudiometry
+    CalibrationViewModel --> HeadphoneRepository
+    CalibrationViewModel --> HeadphoneCalibrator
+    SelectDeviceViewModel --> HeadphoneRepository
+    TestResultViewModel --> TestRepository
+
+    %% Navigation
+    AudiosenseRoute <|-- HomeRoute
+    AudiosenseRoute <|-- TestSetupRoute
+    AudiosenseRoute <|-- TestRoute
+    AudiosenseRoute <|-- ResultRoute
+    AudiosenseRoute <|-- CalibrationRoute
+
+    %% Domain Model Relationships
+    Test --> Headphone : contains
+    Test --> Side
+    SoundPoint --> Side
+    Headphone --> VolumeRecordPerFrequency
+
+    %% Repository Implementations
+    HeadphoneRepository <|.. HeadphoneRepositoryImpl : implements
+    TestRepository <|.. TestRepositoryImpl : implements
+
+    %% Data -> Local Data Source
+    HeadphoneRepositoryImpl --> HeadphoneDao
+    HeadphoneRepositoryImpl --> HeadphoneFetcher
+    TestRepositoryImpl --> TestDao
+    TestRepositoryImpl --> TestHeadphoneDao
+    TestRepositoryImpl --> AudiogramPoster
+
+    %% Database
+    AppDatabase --> HeadphoneDao : provides
+    AppDatabase --> TestDao : provides
+    AppDatabase --> TestHeadphoneDao : provides
+
+    %% DAO -> Entity
+    HeadphoneDao --> LocalHeadphone
+    TestDao --> LocalTest
+    TestHeadphoneDao --> LocalHeadphone
+    TestHeadphoneDao --> LocalTest
+
+    %% Foreign Key
+    LocalTest --> LocalHeadphone : FK headphoneId
+
+    %% Remote Data Source
+    HeadphoneFetcher <|.. HeadphoneFetcherImpl : implements
+    AudiogramPoster <|.. AudiogramPosterImpl : implements
+
+    HeadphoneFetcherImpl --> RemoteAuthHandler
+    AudiogramPosterImpl --> RemoteAuthHandler
+    RemoteAuthHandler --> TokenManager
+
+    %% Remote Entities
+    HeadphoneFetcherImpl --> RemoteHeadphone
+    AudiogramPosterImpl --> RemoteTest
+    RemoteAuthHandler --> LoginResponse
+    RemoteAuthHandler --> ApiErrorResponse
+
