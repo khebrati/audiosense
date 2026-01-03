@@ -111,6 +111,7 @@ private fun Test.toUiState() =
         date = toHumanReadableDate(dateTime),
         headphoneModel = headphone.model,
         lossDescription = describeLossLevel(leftAC, rightAC),
+        personName = personName,
     )
 
 private fun toHumanReadableDate(instant: Instant): String {
@@ -125,6 +126,7 @@ data class CompactRecord(
     val date: String,
     val headphoneModel: String,
     val lossDescription: String,
+    val personName: String?,
     val isSelectedForDelete: Boolean = false,
 )
 
