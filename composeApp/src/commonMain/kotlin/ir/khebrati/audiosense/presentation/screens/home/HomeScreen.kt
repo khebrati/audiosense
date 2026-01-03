@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
+private var isAlreadySentToTestSetupScreen = false
 @Composable
 fun HomeScreen(
     onNavigateStartTest: (TestSetupRoute) -> Unit,
@@ -66,6 +68,14 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(viewModel){
+        viewModel.navigationActions.collect {
+            if(!isAlreadySentToTestSetupScreen){
+                onNavigateStartTest(TestSetupRoute)
+                isAlreadySentToTestSetupScreen = true
+            }
+        }
+    }
     val intentHandler: (HomeIntent) -> Unit = { intent ->
         when (intent) {
             is OnClick -> onNavigateResult(ResultRoute(intent.record.id))
