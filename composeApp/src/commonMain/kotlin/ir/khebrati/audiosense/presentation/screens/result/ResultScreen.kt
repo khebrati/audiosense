@@ -213,14 +213,14 @@ private fun ReadyResultScreenContent(
                     lossDbHl = uiState.generalRightHearingLoss,
                     side = SideUiState.RIGHT,
                     modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
-                    describedLossLevel = uiState.describedLeftHearingLoss,
+                    describedLossLevel = uiState.describedRightHearingLoss,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 HearingLossCard(
                     lossDbHl = uiState.generalLeftHearingLoss,
                     side = SideUiState.LEFT,
                     modifier = Modifier.weight(10f).widthIn(max = maxCardSize),
-                    describedLossLevel = uiState.describedRightHearingLoss,
+                    describedLossLevel = uiState.describedLeftHearingLoss,
                 )
             }
             Spacer(modifier = Modifier.height(30.dp))
