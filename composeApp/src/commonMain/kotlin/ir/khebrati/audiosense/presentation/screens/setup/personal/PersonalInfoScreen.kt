@@ -14,6 +14,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
@@ -21,6 +22,8 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.screens.setup.components.IllustrationLoader
 import ir.khebrati.audiosense.presentation.screens.setup.components.TestSetupLayout
 import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute.*
+import org.koin.compose.viewmodel.koinNavViewModel
 
 @Composable
 fun PersonalInfoScreen(
@@ -40,9 +44,24 @@ fun PersonalInfoScreen(
     onNavigateVolume: (VolumeRoute) -> Unit,
     onNavigateBack: () -> Unit,
     onClickSkip: () -> Unit,
+    viewModel: PersonalInfoViewModel = koinNavViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val ageTextFieldState = rememberTextFieldState()
     val nameTextFieldState = rememberTextFieldState()
+
+    // Set initial values from the last test when loading completes
+    LaunchedEffect(uiState.isLoading) {
+        if (!uiState.isLoading) {
+            if (uiState.initialAge.isNotEmpty()) {
+                ageTextFieldState.setTextAndPlaceCursorAtEnd(uiState.initialAge)
+            }
+            if (uiState.initialName.isNotEmpty()) {
+                nameTextFieldState.setTextAndPlaceCursorAtEnd(uiState.initialName)
+            }
+        }
+    }
+
     var hasHearingAidExperience by remember { mutableStateOf(false) }
     val nextButtonEnabled =
         derivedStateOf {
