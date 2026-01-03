@@ -7,7 +7,7 @@ import kotlin.test.Test
 
 class HeadphoneFetcherTest {
     @Test
-    fun `Test fetching headphones list`(){
+    fun test_fetching_headphones_list(){
         val fetch = HeadphoneFetcherImpl(TokenManager())
         runBlocking {
             fetch.fetchAllFromServer()

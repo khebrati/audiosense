@@ -35,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -98,7 +97,8 @@ private fun HomeScreenContent(
             onRemove = {onIntent(Delete)}
         )
     }
-    if (isDeleteState) BackHandler { onIntent(CancelDelete) }
+    //TODO add back handler
+//    if (isDeleteState) BackHandler { onIntent(CancelDelete) }
     AudiosenseScaffold(
         topBar = {
             RemoveTopAppBar(
