@@ -5,10 +5,10 @@
 A modern, expressive audiometry application for Android & iOS, built with Kotlin Multiplatform and a focus on user-friendly design powered by Material 3 Expressive.
 ### Screenshots
 <div display="inline-block">
-<img src="docs/images/photo_2025-12-31_21-22-19.jpg" width=300/>
-<img src="docs/images/photo_4_2025-12-31_21-24-53.jpg" width=300/>
-<img src="docs/images/photo_2_2025-12-31_21-24-53.jpg" width=300/>
-<img src="docs/images/photo_5_2025-12-31_21-24-53.jpg" width=300/>
+<img src="docs/images/photo_2025-12-31_21-22-19.jpg" width=200/>
+<img src="docs/images/photo_4_2025-12-31_21-24-53.jpg" width=200/>
+<img src="docs/images/photo_2_2025-12-31_21-24-53.jpg" width=200/>
+<img src="docs/images/photo_5_2025-12-31_21-24-53.jpg" width=200/>
 </div>
 ### 📋 About The Project
 
