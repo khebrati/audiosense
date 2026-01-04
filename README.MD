@@ -3,13 +3,15 @@
     Note: This project is currently under active development.
 
 A modern, expressive audiometry application for Android & iOS, built with Kotlin Multiplatform and a focus on user-friendly design powered by Material 3 Expressive.
+### Screenshots
+<img src="photo_2025-12-31_21-22-19.jpg" width=300/>
 ### 📋 About The Project
 
 AudioSense is a native mobile application for Android & iOS designed to provide users with an accessible and intuitive way to measure their hearing levels. Built from the ground up with Kotlin Multiplatform and Jetpack Compose, the app offers a clean, calming, and user-friendly experience.
 
 The core mission is to translate complex hearing data into meaningful, real-world insights. From a guided test preparation process to understanding your results, every aspect is crafted to be clear and reassuring. The project leverages the Compose Multiplatform Wizard template for a robust and scalable foundation.
-### Screenshots
-![home page](docs/images/photo_2025-12-31_21-22-19.jpg)
+
+
 
 ### ✨ Key Features
 - Accurate Testing: A focused, minimalist interface for conducting pure-tone audiometry tests, with built-in safeguards for a better experience.
