@@ -27,4 +27,7 @@ interface HeadphoneDao {
 
     @Query("DELETE FROM LocalHeadphone")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM LocalHeadphone WHERE id == :id")
+    suspend fun getById(id: String): LocalHeadphone?
 }

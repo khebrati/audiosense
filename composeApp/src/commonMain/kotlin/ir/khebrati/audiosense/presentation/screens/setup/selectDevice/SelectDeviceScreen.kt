@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import audiosense.composeapp.generated.resources.AppleAirpodPro
 import audiosense.composeapp.generated.resources.GalaxyBudsFe
 import audiosense.composeapp.generated.resources.Res
-import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
+import ir.khebrati.audiosense.domain.model.DefaultHeadphonesName.*
 import ir.khebrati.audiosense.domain.model.isDefaultHeadphone
 import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
@@ -126,9 +126,9 @@ fun SelectDevicePreview() {
             SelectDeviceUiState(
                 headphones =
                     listOf(
-                        HeadphoneUiState(model = GalaxyBudsFE.model, id = "0"),
-                        HeadphoneUiState(model = AppleAirpods.model, id = "2"),
-                        HeadphoneUiState(model = SonyHeadphones.model, id = "1"),
+                        HeadphoneUiState(model = GalaxyBudsFE.value, id = "0"),
+                        HeadphoneUiState(model = AppleAirpods.value, id = "2"),
+                        HeadphoneUiState(model = SonyHeadphones.value, id = "1"),
                         HeadphoneUiState(model = "Random headphone", id = "3"),
                         HeadphoneUiState(
                             model = "Very very long headphone name that will probably overflow",
@@ -278,18 +278,18 @@ private fun HeadphonePicAndName(text: String, modifier: Modifier) {
         horizontalArrangement = Arrangement.spacedBy(7.dp),
     ) {
         when (text) {
-            GalaxyBudsFE.model -> {
+            GalaxyBudsFE.value -> {
                 Image(
                     painter = painterResource(Res.drawable.GalaxyBudsFe),
-                    contentDescription = "${GalaxyBudsFE.model} image",
+                    contentDescription = "${GalaxyBudsFE.value} image",
                     modifier = Modifier.size(70.dp),
                 )
             }
 
-            AppleAirpods.model -> {
+            AppleAirpods.value -> {
                 Image(
                     painter = painterResource(Res.drawable.AppleAirpodPro),
-                    contentDescription = AppleAirpods.model,
+                    contentDescription = AppleAirpods.value,
                     modifier = Modifier.size(70.dp),
                 )
             }

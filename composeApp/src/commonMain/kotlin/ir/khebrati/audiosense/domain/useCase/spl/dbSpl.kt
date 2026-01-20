@@ -5,28 +5,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.log10
 import kotlin.math.pow
 
-fun calculateLossBasedOnDbHl(audiogramList: Map<Int, Int>) =
-    audiogramList.mapValues { (freq, value) ->
-        val diff =
-            normalEarHearingThresholds[freq]
-                ?: throw IllegalArgumentException(
-                    "Given freq $freq does not have an equivalent db hl threshold"
-                )
-        val dbHl =  (value - diff)
-        val possibleDbHls = AcousticConstants.allPossibleDbHLs
-        findClosestInList(dbHl,possibleDbHls)
-    }
-
-fun Int.dbHl(freq: Int): Int {
-    val diff =
-        normalEarHearingThresholds[freq]
-            ?: throw IllegalArgumentException(
-                "Given freq $freq does not have an equivalent db hl threshold"
-            )
-    val dbHl =  (this + diff)
-    val possibleDbHls = AcousticConstants.allPossibleDbHLs
-    return findClosestInList(dbHl,possibleDbHls)
-}
 
 fun findClosestInList(target: Double,list: List<Int>) : Int{
     var closestIndex = 0;

@@ -6,8 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import co.touchlab.kermit.Logger
+import ir.khebrati.audiosense.domain.model.AcousticConstants
+import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.audiometry.PureToneAudiometry
+import ir.khebrati.audiosense.domain.useCase.audiometry.toSoundPoint
 import ir.khebrati.audiosense.domain.useCase.sound.maker.test.AudiometryPCMGenerator
 import ir.khebrati.audiosense.domain.useCase.sound.player.SoundPlayer
 import ir.khebrati.audiosense.domain.useCase.sound.player.toAudioChannel
@@ -32,6 +35,7 @@ class TestViewModel(
     val audiometry: PureToneAudiometry,
     val pcmGenerator: AudiometryPCMGenerator,
     val soundPlayer: SoundPlayer,
+    val headphoneRepository: HeadphoneRepository,
 ) : ViewModel() {
     val navigationEvents = MutableSharedFlow<NavigationEvent>()
     val logger = Logger.withTag("TestViewModel")
@@ -50,12 +54,15 @@ class TestViewModel(
     }
 
     private fun startAudiometryProcedure() {
-        audiometry.performActionWhenFinished { leftAC, rightAC -> save(leftAC, rightAC) }
+        audiometry.performActionWhenFinished { leftAC, rightAC ->
+            logger.d { "Received ac from operation : $leftAC $rightAC" }
+            viewModelScope.launch { save(calibrate(leftAC), calibrate(rightAC)) }
+        }
         viewModelScope.launch { audiometry.start() }
         viewModelScope.launch {
-            audiometry.soundToPlay.collect { soundPoint ->
+            audiometry.soundToPlay.collect { dbPoint ->
                 val duration = 1.seconds
-                val pcm = pcmGenerator.generate(duration, soundPoint)
+                val pcm = pcmGenerator.generate(duration, dbPoint.toSoundPoint())
                 soundPlayer.play(
                     samples = pcm,
                     duration = duration,
@@ -65,9 +72,22 @@ class TestViewModel(
         }
     }
 
-    private fun save(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
-        viewModelScope.launch {
-            val testId = testRepository.createTest(
+    private suspend fun calibrate(ac: Map<Int, Int>): Map<Int, Int> {
+        val usedHeadphone =
+            headphoneRepository.getById(headphoneId)
+                ?: throw IllegalStateException("Headphone with id $headphoneId does not exist")
+        logger.i { "Applying coeff: ${usedHeadphone.calibrationCoefficients}" }
+        val rawCalibrated = ac.mapValues { it.value + (usedHeadphone.calibrationCoefficients[it.key] ?: 0) }
+        val minPossibleDb = AcousticConstants.MIN_DB_SPL
+        val maxPossibleDb = AcousticConstants.MAX_DB_SPL
+        val calibratedInBounds = rawCalibrated.mapValues { it.value.coerceIn(minPossibleDb,maxPossibleDb) }
+        logger.v { "Calibrated ac: $calibratedInBounds" }
+        return calibratedInBounds
+    }
+
+    private suspend fun save(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>) {
+        val testId =
+            testRepository.createTest(
                 dateTime = Clock.System.now(),
                 // TODO measure and save noise
                 noiseDuringTest = 0,
@@ -78,8 +98,7 @@ class TestViewModel(
                 personAge = personAge,
                 hasHearingAidExperience = hasHearingAidExperience,
             )
-            navigationEvents.emit(NavigateToResult(ResultRoute(testId)))
-        }
+        navigationEvents.emit(NavigateToResult(ResultRoute(testId)))
     }
 
     private fun keepStatesUpdated() {
@@ -92,7 +111,6 @@ class TestViewModel(
         combine(audiometry.progress, audiometry.currentSide) { progress, currentSide ->
             TestUiState(progress, currentSide.toUiState())
         }
-
 
     fun onUiAction(uiAction: TestUiAction) {
         when (uiAction) {

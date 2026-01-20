@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
-import ir.khebrati.audiosense.domain.model.DefaultHeadphones.GalaxyBudsFE
+import ir.khebrati.audiosense.domain.model.DefaultHeadphonesName.GalaxyBudsFE
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
@@ -307,7 +307,7 @@ fun SessionRecordContentPreview() {
                     4000 to 5,
                     8000 to 5,
                 ),
-            headphoneName = GalaxyBudsFE.model,
+            headphoneName = GalaxyBudsFE.value,
             lossDescription = "Mild Hearing Loss",
             date = "July 22, 2025",
             personName = "John Doe",
@@ -348,7 +348,7 @@ fun HomeScreenPreview() {
                                     8000 to 5,
                                 ),
                             date = "July 22, 2025",
-                            headphoneModel = GalaxyBudsFE.model,
+                            headphoneModel = GalaxyBudsFE.value,
                             lossDescription = "Profound loss",
                             id = "23",
                             personName = "John Doe",

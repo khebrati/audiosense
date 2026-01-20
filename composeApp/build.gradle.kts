@@ -74,7 +74,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.kotlinx.serialization.json)
             //todo back handler
-            implementation(libs.back.handler)
+//            implementation(libs.back.handler)
             implementation(libs.coil)
             implementation(libs.coil.svg)
             implementation(libs.ktor.core)
