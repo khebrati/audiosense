@@ -110,7 +110,7 @@ erDiagram
 - `calibrationCoefficients`: ضرایب کالیبراسیون به ازای هر فرکانس
   - Format: `Map<Int, Pair<Int, Int>>` 
   - Key: فرکانس (125, 250, 500, 1000, 2000, 4000, 8000 Hz)
-  - Value: `(playedVolume, measuredVolume)`
+  - Value: `(playedVolume, measuredVolume)` به دسی‌بل (dB)
 
 **LocalTest**: تست‌های شنوایی انجام شده
 - `id`: شناسه یکتا
@@ -149,7 +149,7 @@ classDiagram
     AppDatabase --> TestHeadphoneDao
 ```
 
-**TestHeadphoneDao** از Join Query استفاده می‌کند تا داده‌های هدفون و تست‌های مربوطه را با هم برگرداند:
+**TestHeadphoneDao** از Join Query استفاده می‌کند تا داده‌های هدفون و تست‌های مربوطه را با هم برگرداند. این ساختار امکان نمایش تاریخچه تست‌ها را گروه‌بندی شده بر اساس هدفون استفاده شده فراهم می‌کند:
 ```kotlin
 Map<LocalHeadphone, List<LocalTest>>
 ```
