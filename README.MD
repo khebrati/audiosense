@@ -30,10 +30,19 @@ The core mission is to translate complex hearing data into meaningful, real-worl
 ### 🚀 Tech Stack
 - Framework: Kotlin Multiplatform (targeting Android & iOS)
 - UI: Jetpack Compose / Compose Multiplatform
+- Architecture: MVI (Model-View-Intent) with Clean Architecture
 - Navigation: androidx.navigation
 - Dependency Injection: Koin
 - Database: Room
 - Logging: Kermit
+
+### 📐 Architecture
+AudioSense follows the MVI (Model-View-Intent) pattern with Clean Architecture principles. The codebase is organized into three distinct layers:
+- **Presentation Layer**: ViewModels, UI States, and Intents/Actions
+- **Domain Layer**: Repository interfaces, Use Cases, and Domain Models
+- **Data Layer**: Repository implementations, DAOs, and Remote sources
+
+For a complete architectural overview with detailed diagrams, see [Architecture Documentation](docs/architecture.md).
 
 ### License
 
