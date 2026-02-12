@@ -14,24 +14,24 @@ graph LR
 
 ```mermaid
 erDiagram
-    LocalHeadphone ||--o{ LocalTest : "1:N"
+    LocalHeadphone ||--o{ LocalTest : "1:N CASCADE"
     
     LocalHeadphone {
-        string id
+        string id PK
         string model
         map calibrationCoefficients
     }
     
     LocalTest {
-        string id
+        string id PK
         map leftAC
         map rightAC
-        string headphoneId
+        string headphoneId FK
     }
 ```
 
 **LocalHeadphone**: کالیبراسیون `Map<Int, Pair<Int,Int>>`  
-**LocalTest**: نتایج شنوایی `Map<Int, Int>` با CASCADE DELETE
+**LocalTest**: نتایج شنوایی `Map<Int, Int>`
 
 ## معماری لایه‌ای
 
