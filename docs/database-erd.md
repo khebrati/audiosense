@@ -1,24 +1,9 @@
 # Database Entity Relationship Diagram
 
 ```mermaid
-erDiagram
-    LocalHeadphone ||--o{ LocalTest : "has"
+graph LR
+    LocalHeadphone["<b>LocalHeadphone</b><br/>---<br/>id: string (PK)<br/>model: string<br/>calibrationCoefficients: string"]
+    LocalTest["<b>LocalTest</b><br/>---<br/>id: string (PK)<br/>dateTime: string<br/>noiseDuringTest: integer<br/>leftAC: string<br/>rightAC: string<br/>headphoneId: string (FK)<br/>personName: string<br/>personAge: integer<br/>hasHearingAidExperience: integer"]
     
-    LocalHeadphone {
-        string id PK
-        string model
-        string calibrationCoefficients
-    }
-    
-    LocalTest {
-        string id PK
-        string dateTime
-        integer noiseDuringTest
-        string leftAC
-        string rightAC
-        string headphoneId FK
-        string personName
-        integer personAge
-        integer hasHearingAidExperience
-    }
+    LocalHeadphone -->|"1 to many"| LocalTest
 ```
