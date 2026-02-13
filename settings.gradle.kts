@@ -29,4 +29,6 @@ dependencyResolutionManagement {
     }
 }
 include(":composeApp")
+include(":webApp")
+
 
