@@ -52,12 +52,12 @@ private fun insertDefaultHeadphones(connection: SQLiteConnection) {
                 id = "a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc",
                 name = DefaultHeadphonesName.GalaxyBudsFE,
                 calibration = mapOf(
-                    250 to 10,
-                    1000 to 10,
-                    500 to 5,
-                    8000 to 10,
-                    4000 to 10,
-                    2000 to 10
+                    250 to 0,
+                    1000 to 0,
+                    500 to 0,
+                    8000 to 0,
+                    4000 to 0,
+                    2000 to 0
                 ),
             ),
 //            DefaultHeadphone(
@@ -75,11 +75,11 @@ private fun insertDefaultHeadphones(connection: SQLiteConnection) {
                 name = DefaultHeadphonesName.Uncalibrated,
                 calibration = mapOf(
                     250 to 0,
-                    1000 to 10,
+                    1000 to 0,
                     500 to 0,
-                    8000 to 5,
-                    4000 to 5,
-                    2000 to 10
+                    8000 to 0,
+                    4000 to 0,
+                    2000 to 0
                 ),
             ),
         )
