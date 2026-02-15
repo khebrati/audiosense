@@ -11,8 +11,8 @@ interface PureToneAudiometry {
      */
     val progress : StateFlow<Float>
     val currentSide: StateFlow<Side>
-    val soundToPlay: SharedFlow<SoundPoint>
-    suspend fun start(calibrationCoefficients: Map<Int,Int> = emptyMap())
+    val soundToPlay: SharedFlow<DbPoint>
+    suspend fun start()
 
     /**
      * Should be called when patient hears a [SoundPoint] emitted by [start]

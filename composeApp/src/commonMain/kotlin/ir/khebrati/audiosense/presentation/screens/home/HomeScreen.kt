@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,20 +36,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import audiosense.composeapp.generated.resources.Res
 import audiosense.composeapp.generated.resources.record_not_found
-import ir.khebrati.audiosense.domain.model.DefaultHeadphones.GalaxyBudsFE
+import ir.khebrati.audiosense.domain.model.DefaultHeadphonesName.GalaxyBudsFE
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.capitalizedName
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
 import ir.khebrati.audiosense.presentation.components.DeleteDialog
 import ir.khebrati.audiosense.presentation.components.HeadphoneIcon
 import ir.khebrati.audiosense.presentation.components.LoadingScreen
-import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
 import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.*
 import ir.khebrati.audiosense.presentation.screens.home.components.CompactAudiogram
@@ -60,6 +59,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinNavViewModel
 
+private var isAlreadySentToTestSetupScreen = false
 @Composable
 fun HomeScreen(
     onNavigateStartTest: (TestSetupRoute) -> Unit,
@@ -68,6 +68,14 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinNavViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(viewModel){
+        viewModel.navigationActions.collect {
+            if(!isAlreadySentToTestSetupScreen){
+                onNavigateStartTest(TestSetupRoute)
+                isAlreadySentToTestSetupScreen = true
+            }
+        }
+    }
     val intentHandler: (HomeIntent) -> Unit = { intent ->
         when (intent) {
             is OnClick -> onNavigateResult(ResultRoute(intent.record.id))
@@ -91,22 +99,21 @@ private fun HomeScreenContent(
         if (isDeleteState) testHistory.deleteCount.toString()
         else "Good ${uiState.currentTimeOfDay.capitalizedName()}"
     var showDeleteDialog by remember { mutableStateOf(false) }
-    if(showDeleteDialog){
+    if (showDeleteDialog) {
         DeleteDialog(
             text = "Do you want to remove the selected test? This action is permanent.",
-            onDismiss = {showDeleteDialog = false},
-            onRemove = {onIntent(Delete)}
+            onDismiss = { showDeleteDialog = false },
+            onRemove = { onIntent(Delete) },
         )
     }
-    if (isDeleteState) BackHandler { onIntent(CancelDelete) }
+    // TODO add back handler
+    //    if (isDeleteState) BackHandler { onIntent(CancelDelete) }
     AudiosenseScaffold(
         topBar = {
             RemoveTopAppBar(
                 text = topBarText,
                 isDeleteState = isDeleteState,
-                onDelete = {
-                    showDeleteDialog = true
-                },
+                onDelete = { showDeleteDialog = true },
                 onDeleteCancel = { onIntent(CancelDelete) },
             )
         },
@@ -119,6 +126,7 @@ private fun HomeScreenContent(
         TestRecordsList(testHistory, onIntent = onIntent)
     }
 }
+
 @Composable
 fun TestRecordsList(testHistory: TestHistory, onIntent: (HomeIntent) -> Unit) {
     when (testHistory) {
@@ -162,6 +170,7 @@ private fun RecordsList(testHistory: TestHistory.Ready, onIntent: (HomeIntent) -
                     headphoneName = record.headphoneModel,
                     lossDescription = record.lossDescription,
                     date = record.date,
+                    personName = record.personName,
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
@@ -198,6 +207,7 @@ fun SessionRecordCard(
     headphoneName: String,
     lossDescription: String,
     date: String,
+    personName: String?,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -218,7 +228,9 @@ fun SessionRecordCard(
                         style = MaterialTheme.typography.titleMediumEmphasized,
                     )
                     Spacer(modifier = Modifier.height(15.dp))
-                    Text(text = date, style = MaterialTheme.typography.labelMediumEmphasized)
+                    if(personName != null){
+                        Text(text = personName, style = MaterialTheme.typography.labelMediumEmphasized)
+                    }
                 }
                 Box(modifier = Modifier.padding(5.dp)) {
                     CompactAudiogram(
@@ -232,11 +244,9 @@ fun SessionRecordCard(
             Row(
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     HeadphoneIcon(headphoneName, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
@@ -244,6 +254,7 @@ fun SessionRecordCard(
                         style = MaterialTheme.typography.labelSmallEmphasized,
                     )
                 }
+                Text(text = date, style = MaterialTheme.typography.labelSmallEmphasized)
             }
         }
     }
@@ -296,9 +307,10 @@ fun SessionRecordContentPreview() {
                     4000 to 5,
                     8000 to 5,
                 ),
-            headphoneName = GalaxyBudsFE.model,
+            headphoneName = GalaxyBudsFE.value,
             lossDescription = "Mild Hearing Loss",
             date = "July 22, 2025",
+            personName = "John Doe",
             modifier = Modifier.height(200.dp),
         )
     }
@@ -336,9 +348,10 @@ fun HomeScreenPreview() {
                                     8000 to 5,
                                 ),
                             date = "July 22, 2025",
-                            headphoneModel = GalaxyBudsFE.model,
+                            headphoneModel = GalaxyBudsFE.value,
                             lossDescription = "Profound loss",
                             id = "23",
+                            personName = "John Doe",
                         ),
                         CompactRecord(
                             leftAC =
@@ -365,6 +378,7 @@ fun HomeScreenPreview() {
                             headphoneModel = "Apple headphones",
                             lossDescription = "Normal hearing",
                             id = "232",
+                            personName = null,
                         ),
                     )
                 ),

@@ -18,7 +18,7 @@ class AudiometryPCMGeneratorImpl(private val harmonicGenerator: HarmonicGenerato
                     ),
                 frequency = soundPoint.frequency,
                 sampleRate = 44800,
-                durationSeconds = duration.inWholeSeconds.toFloat(),
+                durationMillis = duration.inWholeMilliseconds.toFloat(),
                 fadeRatio = 0.1f,
             )
             .map { it / (MAX_PCM_16BIT_VALUE + 1) }

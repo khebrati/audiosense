@@ -10,6 +10,7 @@ interface HeadphoneRepository {
         calibrationCoefficients: Map<Int, VolumeRecordPerFrequency>,
     ) : String
 
+    suspend fun getById(id: String) : Headphone?
     suspend fun getAll(): List<Headphone>
     fun observeAll(): Flow<List<Headphone>>
     suspend fun deleteById(id: String)

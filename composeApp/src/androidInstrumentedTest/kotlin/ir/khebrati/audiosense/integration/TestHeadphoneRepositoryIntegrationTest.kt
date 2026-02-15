@@ -48,7 +48,7 @@ class TestHeadphoneRepositoryIntegrationTest : KoinComponent {
         val headphoneId = testHeadphone
 
         // Action
-        testRepo.createTest(dateTime, noiseDuringTest, leftAC, rightAC, headphoneId)
+        testRepo.createTest(dateTime, noiseDuringTest, leftAC, rightAC, headphoneId,null,0,false)
         val tests = testRepo.getAll()
         val addedTest = tests.first()
 
@@ -82,7 +82,7 @@ class TestHeadphoneRepositoryIntegrationTest : KoinComponent {
             assertTrue(awaitItem().isEmpty(), "Initial list should be empty")
 
             // Action
-            testRepo.createTest(dateTime, noiseDuringTest, leftAC, rightAC, headphoneId)
+            testRepo.createTest(dateTime, noiseDuringTest, leftAC, rightAC, headphoneId,null,0,false)
 
             // Assert updated state
             val updatedList = awaitItem()
@@ -108,7 +108,10 @@ class TestHeadphoneRepositoryIntegrationTest : KoinComponent {
             noiseDuringTest = 0,
             leftAC = emptyMap(),
             rightAC = emptyMap(),
-            headphoneId =headphoneId
+            headphoneId =headphoneId,
+            personAge = 0,
+            personName = null,
+            hasHearingAidExperience = false
         )
         val testToDelete = testRepo.getAll().first()
 
@@ -137,7 +140,10 @@ class TestHeadphoneRepositoryIntegrationTest : KoinComponent {
             noiseDuringTest = 0,
             leftAC = emptyMap(),
             rightAC = emptyMap(),
-            headphoneId = headphoneId1
+            headphoneId = headphoneId1,
+                    personAge = 0,
+            personName = null,
+            hasHearingAidExperience = false
         )
 
         testRepo.createTest(
@@ -145,7 +151,10 @@ class TestHeadphoneRepositoryIntegrationTest : KoinComponent {
             noiseDuringTest = 0,
             leftAC = emptyMap(),
             rightAC = emptyMap(),
-            headphoneId = headphoneId2
+            headphoneId = headphoneId2,
+            personAge = 0,
+            personName = null,
+            hasHearingAidExperience = false
         )
 
         // Action

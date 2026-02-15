@@ -29,8 +29,9 @@ import ir.khebrati.audiosense.domain.useCase.time.TimeTellerImpl
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationViewModel
 import ir.khebrati.audiosense.presentation.screens.home.HomeViewModel
 import ir.khebrati.audiosense.presentation.screens.result.TestResultViewModel
-import ir.khebrati.audiosense.presentation.screens.test.TestViewModel
+import ir.khebrati.audiosense.presentation.screens.setup.personal.PersonalInfoViewModel
 import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDeviceViewModel
+import ir.khebrati.audiosense.presentation.screens.test.TestViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module
@@ -59,6 +60,7 @@ internal fun commonModule(): Module = module {
     // View Model
     viewModelOf(::CalibrationViewModel)
     viewModelOf(::HomeViewModel)
+    viewModelOf(::PersonalInfoViewModel)
     viewModelOf(::TestViewModel)
     viewModelOf(::SelectDeviceViewModel)
     viewModelOf(::TestResultViewModel)

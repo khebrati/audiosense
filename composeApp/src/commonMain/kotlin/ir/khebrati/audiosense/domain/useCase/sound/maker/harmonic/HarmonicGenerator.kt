@@ -18,7 +18,7 @@ interface HarmonicGenerator {
         amplitude: Float,
         frequency: Int,
         sampleRate: Int,
-        durationSeconds: Float,
+        durationMillis: Float,
         fadeRatio: Float
     ): FloatArray
 

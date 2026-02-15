@@ -23,7 +23,9 @@ import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiActi
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetSide
 import ir.khebrati.audiosense.presentation.screens.calibration.CalibrationUiAction.SetVolumeToPlayForCurrentFrequency
 import ir.khebrati.audiosense.utils.copy
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +33,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.milliseconds
 
 class CalibrationViewModel(
     private val headphoneRepository: HeadphoneRepository,
@@ -77,12 +79,8 @@ class CalibrationViewModel(
     }
 
     private fun combineUiFlows() =
-        combine(
-            _selectedFrequency,
-            _selectedSide,
-            currentVolumeToPlay,
-            currentMeasuredVolume
-        ) { frequency,
+        combine(_selectedFrequency, _selectedSide, currentVolumeToPlay, currentMeasuredVolume) {
+            frequency,
             side,
             volumeToPlay,
             measuredVolume ->
@@ -142,21 +140,24 @@ class CalibrationViewModel(
     }
 
     private fun playSound() {
-        val duration = 5.seconds
-        val soundSamples =
-            audiometryPCMGenerator.generate(
-                duration = duration,
-                SoundPoint(
-                    frequency = _selectedFrequency.value,
-                    amplitude = currentVolumeToPlay.value.dbSpl,
-                )
-            )
+        val duration = 200.milliseconds
         viewModelScope.launch {
-            soundPlayer.play(
-                duration = duration,
-                samples = soundSamples,
-                channel = _selectedSide.value.toAudioChannel()
-            )
+            while(true) {
+                val soundSamples =
+                    audiometryPCMGenerator.generate(
+                        duration = duration,
+                        SoundPoint(
+                            frequency = _selectedFrequency.value,
+                            amplitude = currentVolumeToPlay.value.dbSpl,
+                        ),
+                    )
+                soundPlayer.play(
+                    duration = duration,
+                    samples = soundSamples,
+                    channel = _selectedSide.value.toAudioChannel(),
+                )
+                delay(duration)
+            }
         }
     }
 }
@@ -187,8 +188,7 @@ data class CalibrationUiState(
     val side: Side = Side.LEFT,
 )
 
-@Immutable
-data class VolumeData(val volumeToPlayDbSpl: Int = 50, val measuredVolumeDbSpl: Int = 50)
+@Immutable data class VolumeData(val volumeToPlayDbSpl: Int = 50, val measuredVolumeDbSpl: Int = 50)
 
 fun Map<Int, VolumeData>.toModel() =
     this.mapValues {

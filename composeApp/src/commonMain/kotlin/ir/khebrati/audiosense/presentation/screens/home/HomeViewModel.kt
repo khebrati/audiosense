@@ -9,10 +9,13 @@ import ir.khebrati.audiosense.domain.repository.TestRepository
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.TimeTeller
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute
+import ir.khebrati.audiosense.presentation.navigation.AudiosenseRoute.*
 import ir.khebrati.audiosense.presentation.screens.home.HomeIntent.*
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -36,7 +39,10 @@ class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestReposito
 
     private val _uiState =
         MutableStateFlow(HomeUiState(currentTimeOfDay.value, TestHistory.Loading))
-    val uiState = _uiState
+    val uiState = _uiState.asStateFlow()
+
+    val _navigationActions = MutableStateFlow<AudiosenseRoute?>(null)
+    val navigationActions = _navigationActions.asStateFlow()
 
     init {
         viewModelScope.launch { combineUiFlows().collect { state -> _uiState.update { state } } }
@@ -44,6 +50,9 @@ class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestReposito
 
     private fun combineUiFlows() =
         combine(currentTimeOfDay, testRecords) { currentTime, testRecords ->
+            if(testRecords.isEmpty()){
+                _navigationActions.update { TestSetupRoute }
+            }
             HomeUiState(currentTime, TestHistory.Ready(testRecords.map { it.toUiState() }))
         }
 
@@ -111,6 +120,7 @@ private fun Test.toUiState() =
         date = toHumanReadableDate(dateTime),
         headphoneModel = headphone.model,
         lossDescription = describeLossLevel(leftAC, rightAC),
+        personName = personName,
     )
 
 private fun toHumanReadableDate(instant: Instant): String {
@@ -125,6 +135,7 @@ data class CompactRecord(
     val date: String,
     val headphoneModel: String,
     val lossDescription: String,
+    val personName: String?,
     val isSelectedForDelete: Boolean = false,
 )
 
