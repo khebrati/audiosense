@@ -10,7 +10,7 @@ import org.koin.core.Koin
 
 @Preview
 @Composable
-internal fun AudiosenseApp(koin: Koin) = AppTheme {
+fun AudiosenseApp(koin: Koin) = AppTheme {
     val navController = rememberNavController()
     AudiosenseNavHost(
         navController = navController,

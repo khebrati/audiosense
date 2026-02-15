@@ -1,0 +1,29 @@
+import kotlin.collections.Map;
+import kotlin.Int;
+
+CREATE TABLE IF NOT EXISTS LocalHeadphone(
+    id TEXT PRIMARY KEY NOT NULL,
+    model TEXT NOT NULL,
+    calibrationCoefficients TEXT AS Map<Int,Int> NOT NULL
+);
+
+-- Queries
+getAllHeadphones:
+SELECT * FROM LocalHeadphone;
+
+getHeadphoneById:
+SELECT * FROM LocalHeadphone WHERE id = :id;
+
+addHeadphone:
+INSERT INTO LocalHeadphone (id, model, calibrationCoefficients) VALUES (?, ?, ?);
+
+upsertHeadphone:
+INSERT INTO LocalHeadphone (id, model, calibrationCoefficients)
+VALUES (?, ?, ?);
+
+deleteHeadphoneById:
+DELETE FROM LocalHeadphone WHERE id = :id;
+
+deleteAllHeadphones:
+DELETE FROM LocalHeadphone;
+

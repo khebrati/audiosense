@@ -18,7 +18,7 @@ interface TestRepository {
 
     suspend fun getAll(): List<Test>
     suspend fun get(id: String) : Test?
-    suspend fun getLastTest(): Test?
+    suspend fun getLastTest(): Test
     fun observeAll(): Flow<List<Test>>
     fun observe(id: String) : Flow<Test>
     suspend fun deleteById(id: String)

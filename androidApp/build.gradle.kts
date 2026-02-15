@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
@@ -10,7 +11,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         targetSdk = 35
 
         applicationId = "ir.khebrati.audiosense.androidApp"
@@ -24,9 +25,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 }
-//kotlin {
-//    compilerOptions { jvmTarget.set(JvmTarget.JVM_21) }
-//}
+kotlin {
+    compilerOptions { jvmTarget.set(JvmTarget.JVM_21) }
+}
 dependencies {
     implementation(project(":composeApp"))
     implementation(libs.androidx.activityCompose)
@@ -37,6 +38,9 @@ dependencies {
     androidTestImplementation(libs.androidx.runner)
     debugImplementation(libs.androidx.uitest.testManifest)
     testImplementation(libs.junit)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.compose)
 //    with(libs.room.compiler) {
 //        add("kspAndroid", this)
 //    }

@@ -15,12 +15,13 @@ import org.koin.dsl.module
 
 fun initKoin(
     nativePlatformModule: Module? = null,
+    platformModule: Module? = null,
 ): Koin {
     return startKoin {
         modules(
             listOfNotNull(
                 nativePlatformModule,
-                platformModule(),
+                platformModule,
                 commonModule(),
                 kermitModule
             )

@@ -1,45 +1,38 @@
-@file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-
 package ir.khebrati.audiosense.data.source.local
 
 import AudioSense.composeApp.BuildConfig
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
-import androidx.room.TypeConverters
-import androidx.sqlite.SQLiteConnection
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import androidx.sqlite.execSQL
-import ir.khebrati.audiosense.data.source.local.dao.HeadphoneDao
-import ir.khebrati.audiosense.data.source.local.dao.TestDao
-import ir.khebrati.audiosense.data.source.local.dao.TestHeadphoneDao
-import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
-import ir.khebrati.audiosense.data.source.local.entity.LocalTest
+import app.cash.sqldelight.db.SqlDriver
+import ir.khebrati.audiosense.db.AudiosenseDb
+import ir.khebrati.audiosense.db.LocalHeadphone
+import ir.khebrati.audiosense.db.LocalTest
 import ir.khebrati.audiosense.domain.model.DefaultHeadphonesName
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 
-fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase {
-    return builder
-        .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.IO)
-        .addCallback(
-            object : RoomDatabase.Callback() {
-                override fun onCreate(connection: SQLiteConnection) {
-                    super.onCreate(connection)
-                    if (BuildConfig.IS_DEVELOPMENT) prepopulateDb(connection)
-                }
-            }
+fun createDatabase(driver: SqlDriver): AudiosenseDb {
+    val database = AudiosenseDb(
+        driver = driver,
+        LocalHeadphoneAdapter = LocalHeadphone.Adapter(
+            calibrationCoefficientsAdapter = MapIntIntAdapter
+        ),
+        LocalTestAdapter = LocalTest.Adapter(
+            dateTimeAdapter = InstantAdapter,
+            leftACAdapter = MapIntIntAdapter,
+            rightACAdapter = MapIntIntAdapter,
         )
-        .build()
+    )
+
+    if (BuildConfig.IS_DEVELOPMENT) {
+        prepopulateDb(database)
+    }
+
+    return database
 }
 
-private fun prepopulateDb(connection: SQLiteConnection) {
-    insertDefaultHeadphones(connection)
-    insertFakeTests(connection)
+private fun prepopulateDb(database: AudiosenseDb) {
+    insertDefaultHeadphones(database)
+    insertFakeTests(database)
 }
 
-private fun insertDefaultHeadphones(connection: SQLiteConnection) {
+private fun insertDefaultHeadphones(database: AudiosenseDb) {
     data class DefaultHeadphone(
         val id: String,
         val name: DefaultHeadphonesName,
@@ -83,58 +76,60 @@ private fun insertDefaultHeadphones(connection: SQLiteConnection) {
                 ),
             ),
         )
+
     defaultHeadphones.forEach {
-        val calibration = it.calibration
-        connection.execSQL(
-            "INSERT INTO \"main\".\"LocalHeadphone\" (\"id\", \"model\", \"calibrationCoefficients\") VALUES ('${it.id}', '${it.name.value}', '{\"250\":${calibration[250]},\"500\":${calibration[500]},\"1000\":${calibration[1000]},\"2000\":${calibration[2000]},\"4000\":${calibration[4000]},\"8000\":${calibration[8000]}}');"
+        database.localHeadphoneQueries.addHeadphone(
+            id = it.id,
+            model = it.name.value,
+            calibrationCoefficients = it.calibration
         )
     }
 }
 
-private fun insertFakeTests(connection: SQLiteConnection) {
+private fun insertFakeTests(database: AudiosenseDb) {
     val galaxyBudsId = "a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc"
     val appleAirpodsId = "04cad680-777e-41a1-8770-f6bb5ed50ea8"
     val sonyHeadphonesId = "9165f20d-1ce6-4eb6-b2a8-0955dd8f6407"
 
     // Fake test 1: Normal hearing with Galaxy Buds FE
-    connection.execSQL(
-        """INSERT INTO "main"."LocalTest" ("id", "dateTime", "noiseDuringTest", "leftAC", "rightAC", "headphoneId", "personName", "personAge", "hasHearingAidExperience") 
-           VALUES ('fake-test-001', '2025-12-20T10:30:00Z', 25, 
-           '{"250":10,"500":15,"1000":10,"2000":15,"4000":20,"8000":20}',
-           '{"250":15,"500":10,"1000":15,"2000":10,"4000":15,"8000":20}',
-           '$galaxyBudsId', 'John Doe', 35, 0);"""
+    database.localTestQueries.addTest(
+        id = "fake-test-001",
+        dateTime = kotlin.time.Instant.parse("2025-12-20T10:30:00Z"),
+        noiseDuringTest = 25,
+        leftAC = mapOf(250 to 10, 500 to 15, 1000 to 10, 2000 to 15, 4000 to 20, 8000 to 20),
+        rightAC = mapOf(250 to 15, 500 to 10, 1000 to 15, 2000 to 10, 4000 to 15, 8000 to 20),
+        headphoneId = galaxyBudsId,
+        personName = "John Doe",
+        personAge = 35,
+        hasHearingAidExperience = false
     )
 
     // Fake test 2: Mild hearing loss with Apple Airpods
-    connection.execSQL(
-        """INSERT INTO "main"."LocalTest" ("id", "dateTime", "noiseDuringTest", "leftAC", "rightAC", "headphoneId", "personName", "personAge", "hasHearingAidExperience") 
-           VALUES ('fake-test-002', '2025-12-15T14:00:00Z', 30, 
-           '{"250":30,"500":35,"1000":30,"2000":35,"4000":40,"8000":45}',
-           '{"250":25,"500":30,"1000":35,"2000":30,"4000":35,"8000":40}',
-           '$appleAirpodsId', 'Jane Smith', 45, 1);"""
+    database.localTestQueries.addTest(
+        id = "fake-test-002",
+        dateTime = kotlin.time.Instant.parse("2025-12-15T14:00:00Z"),
+        noiseDuringTest = 30,
+        leftAC = mapOf(250 to 30, 500 to 35, 1000 to 30, 2000 to 35, 4000 to 40, 8000 to 45),
+        rightAC = mapOf(250 to 25, 500 to 30, 1000 to 35, 2000 to 30, 4000 to 35, 8000 to 40),
+        headphoneId = appleAirpodsId,
+        personName = "Jane Smith",
+        personAge = 45,
+        hasHearingAidExperience = true
     )
 
     // Fake test 3: Moderate hearing loss with Sony Headphones
-    connection.execSQL(
-        """INSERT INTO "main"."LocalTest" ("id", "dateTime", "noiseDuringTest", "leftAC", "rightAC", "headphoneId", "personName", "personAge", "hasHearingAidExperience") 
-           VALUES ('fake-test-003', '2025-12-10T09:15:00Z', 20, 
-           '{"250":45,"500":50,"1000":55,"2000":50,"4000":55,"8000":60}',
-           '{"250":50,"500":55,"1000":50,"2000":55,"4000":60,"8000":65}',
-           '$sonyHeadphonesId', 'Bob Wilson', 62, 1);"""
+    database.localTestQueries.addTest(
+        id = "fake-test-003",
+        dateTime = kotlin.time.Instant.parse("2025-12-10T09:15:00Z"),
+        noiseDuringTest = 20,
+        leftAC = mapOf(250 to 45, 500 to 50, 1000 to 55, 2000 to 50, 4000 to 55, 8000 to 60),
+        rightAC = mapOf(250 to 50, 500 to 55, 1000 to 50, 2000 to 55, 4000 to 60, 8000 to 65),
+        headphoneId = sonyHeadphonesId,
+        personName = "Bob Wilson",
+        personAge = 62,
+        hasHearingAidExperience = true
     )
 }
 
-@TypeConverters(Convertors::class)
-@Database(entities = [LocalHeadphone::class, LocalTest::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun headphoneDao(): HeadphoneDao
+expect fun createSqlDriver(): SqlDriver
 
-    abstract fun testDao(): TestDao
-
-    abstract fun testHeadphoneDao(): TestHeadphoneDao
-}
-
-@Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
-    override fun initialize(): AppDatabase
-}

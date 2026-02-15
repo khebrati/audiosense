@@ -1,0 +1,71 @@
+import kotlin.Boolean;
+import kotlin.collections.Map;
+import kotlin.time.Instant;
+import kotlin.Int;
+
+CREATE TABLE IF NOT EXISTS LocalTest(
+    id TEXT PRIMARY KEY NOT NULL,
+    dateTime TEXT AS Instant NOT NULL,
+    noiseDuringTest INTEGER NOT NULL,
+    leftAC TEXT AS Map<Int,Int> NOT NULL,
+    rightAC TEXT AS Map<Int,Int> NOT NULL,
+    headphoneId TEXT NOT NULL,
+    personName TEXT,
+    personAge INTEGER NOT NULL,
+    hasHearingAidExperience INTEGER AS Boolean NOT NULL,
+    FOREIGN KEY (headphoneId) REFERENCES LocalHeadphone(id) ON DELETE CASCADE
+);
+
+-- Queries
+getAllTests:
+SELECT * FROM LocalTest;
+
+getTestById:
+SELECT * FROM LocalTest WHERE id = :id;
+
+addTest:
+INSERT INTO LocalTest (id, dateTime, noiseDuringTest, leftAC, rightAC, headphoneId, personName, personAge, hasHearingAidExperience)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteTestById:
+DELETE FROM LocalTest WHERE id = :id;
+
+deleteAllTests:
+DELETE FROM LocalTest;
+
+-- Join queries for test with headphone
+getTestWithHeadphone:
+SELECT
+    LocalTest.id,
+    LocalTest.dateTime,
+    LocalTest.noiseDuringTest,
+    LocalTest.leftAC,
+    LocalTest.rightAC,
+    LocalTest.headphoneId,
+    LocalTest.personName,
+    LocalTest.personAge,
+    LocalTest.hasHearingAidExperience,
+    LocalHeadphone.id AS headphone_id,
+    LocalHeadphone.model AS headphone_model,
+    LocalHeadphone.calibrationCoefficients AS headphone_calibrationCoefficients
+FROM LocalTest
+JOIN LocalHeadphone ON LocalTest.headphoneId = LocalHeadphone.id
+WHERE LocalTest.id = :testId;
+
+getAllTestsWithHeadphones:
+SELECT
+    LocalTest.id,
+    LocalTest.dateTime,
+    LocalTest.noiseDuringTest,
+    LocalTest.leftAC,
+    LocalTest.rightAC,
+    LocalTest.headphoneId,
+    LocalTest.personName,
+    LocalTest.personAge,
+    LocalTest.hasHearingAidExperience,
+    LocalHeadphone.id AS headphone_id,
+    LocalHeadphone.model AS headphone_model,
+    LocalHeadphone.calibrationCoefficients AS headphone_calibrationCoefficients
+FROM LocalTest
+JOIN LocalHeadphone ON LocalTest.headphoneId = LocalHeadphone.id;
+

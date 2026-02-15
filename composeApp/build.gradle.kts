@@ -64,6 +64,8 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.ktor.core)
             implementation(libs.ktor.cio)
+            // SqlDelight
+            implementation("app.cash.sqldelight:coroutines-extensions:${libs.versions.sqldelight.get()}")
         }
 
         commonTest.dependencies {
@@ -78,6 +80,8 @@ kotlin {
             implementation(compose.uiTooling)
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
+            // SqlDelight Android driver
+            implementation("app.cash.sqldelight:android-driver:${libs.versions.sqldelight.get()}")
         }
         androidInstrumentedTest.dependencies {
             implementation(libs.androidx.runner)

@@ -1,56 +1,64 @@
 package ir.khebrati.audiosense.data
 
-import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
-import ir.khebrati.audiosense.data.source.local.entity.LocalTest
 import ir.khebrati.audiosense.data.source.remote.entity.RemoteHeadphone
+import ir.khebrati.audiosense.db.GetAllTestsWithHeadphones
+import ir.khebrati.audiosense.db.GetTestWithHeadphone
+import ir.khebrati.audiosense.db.LocalHeadphone
 import ir.khebrati.audiosense.domain.model.Headphone
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.domain.model.Test
 
-fun LocalTest.toExternal(usedHeadphone: Headphone) =
+// SqlDelight generated types to domain models
+fun GetTestWithHeadphone.toExternalTestList() =
     Test(
         id = id,
         dateTime = dateTime,
-        noiseDuringTest = noiseDuringTest,
+        noiseDuringTest = noiseDuringTest.toInt(),
         leftAC = leftAC,
         rightAC = rightAC,
-        headphone = usedHeadphone,
+        headphone = Headphone(
+            id = headphone_id,
+            model = headphone_model,
+            calibrationCoefficients = headphone_calibrationCoefficients
+        ),
         personName = personName,
-        personAge = personAge,
+        personAge = personAge.toInt(),
         hasHearingAidExperience = hasHearingAidExperience,
     )
 
-fun Map<LocalHeadphone, List<LocalTest>>.toExternal(): List<Test> {
-    return this.flatMap { (headphone, tests) ->
-        tests.map { test -> test.toExternal(headphone.toExternal()) }
-    }
-}
-
-fun Test.toLocal() =
-    LocalTest(
+fun GetAllTestsWithHeadphones.toExternalTestList() =
+    Test(
         id = id,
-        headphoneId = headphone.id,
         dateTime = dateTime,
-        personName = personName,
-        personAge = personAge,
-        hasHearingAidExperience = hasHearingAidExperience,
-        noiseDuringTest = noiseDuringTest,
+        noiseDuringTest = noiseDuringTest.toInt(),
         leftAC = leftAC,
         rightAC = rightAC,
+        headphone = Headphone(
+            id = headphone_id,
+            model = headphone_model,
+            calibrationCoefficients = headphone_calibrationCoefficients
+        ),
+        personName = personName,
+        personAge = personAge.toInt(),
+        hasHearingAidExperience = hasHearingAidExperience,
     )
+
+fun List<GetAllTestsWithHeadphones>.toExternalTestList(): List<Test> {
+    return this.map { it.toExternalTestList() }
+}
 
 fun List<LocalHeadphone>.toExternal(): List<Headphone> {
-    return this.map { it.toExternal() }
+    return this.map { it.toExternalTestList() }
 }
 
-fun LocalHeadphone.toExternal() =
+fun LocalHeadphone.toExternalTestList() =
     Headphone(
         id = id,
         model = model,
         calibrationCoefficients = calibrationCoefficients,
     )
 
-private fun Map<Int, Pair<Int, Int>>.toExternal() =
+private fun Map<Int, Pair<Int, Int>>.toExternalTestList() =
     this.mapValues { VolumeRecordPerFrequency(it.value.first, it.value.second) }
 
 fun Headphone.toLocal() =

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import ir.khebrati.audiosense.di.androidPlatformModule
 import ir.khebrati.audiosense.di.initKoin
 import org.koin.compose.getKoin
 import org.koin.core.error.KoinApplicationAlreadyStartedException
@@ -20,7 +21,7 @@ class AppActivity : ComponentActivity() {
 
         val koin =
             try {
-                initKoin(nativePlatformModule = nativePlatformModule)
+                initKoin(nativePlatformModule = nativePlatformModule, platformModule = androidPlatformModule())
             } catch (e: KoinApplicationAlreadyStartedException) {
                 null
             }
