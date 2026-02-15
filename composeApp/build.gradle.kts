@@ -20,6 +20,7 @@ plugins {
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -115,4 +116,10 @@ buildConfig {
     buildConfigField("API_PASSWORD", localProperties.getProperty("API_PASSWORD", ""))
 }
 
-
+sqldelight {
+    databases {
+        create("AudiosenseDb") {
+            packageName.set("ir.khebrati.audiosense.db")
+        }
+    }
+}
