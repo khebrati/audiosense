@@ -13,10 +13,10 @@ fun describeLossLevel(ac: Map<Int, Int>): String {
 
 fun describeLossLevel(loss: Int) =
     when {
-        loss < 20 -> "Normal"
-        20 <= loss && loss < 40 -> "Mild Loss"
-        40 <= loss && loss < 70 -> "Moderate Loss"
-        70 <= loss && loss < 90 -> "Severe Loss"
+        loss <= 25 -> "Normal"
+        26 <= loss && loss <= 40 -> "Mild Loss"
+        41 <= loss && loss <= 60 -> "Moderate Loss"
+        61 <= loss && loss <= 80 -> "Severe Loss"
         else -> "Profound Loss"
     }
 
