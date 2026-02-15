@@ -47,7 +47,7 @@ fun LocalHeadphone.toExternal() =
     Headphone(
         id = id,
         model = model,
-        calibrationCoefficients = calibrationCoefficients.toExternal(),
+        calibrationCoefficients = calibrationCoefficients,
     )
 
 private fun Map<Int, Pair<Int, Int>>.toExternal() =
@@ -57,18 +57,18 @@ fun Headphone.toLocal() =
     LocalHeadphone(
         id = id,
         model = model,
-        calibrationCoefficients = calibrationCoefficients.toLocal(),
+        calibrationCoefficients = calibrationCoefficients,
     )
 
-fun Map<Int, VolumeRecordPerFrequency>.toLocal(): Map<Int, Pair<Int, Int>> {
-    return this.mapValues { Pair(it.value.playedVolumeDbSpl, it.value.measuredVolumeDbSpl) }
+fun Map<Int, VolumeRecordPerFrequency>.toLocal(): Map<Int, Int> {
+    return this.mapValues { it.value.measuredVolumeDbSpl -  it.value.playedVolumeDbSpl }
 }
 
 // Remote to Local mappings
 fun RemoteHeadphone.toLocal() = LocalHeadphone(
     id = _id,
     model = name,
-    calibrationCoefficients = calibrationCoefficients,
+    calibrationCoefficients = calibrationCoefficients.mapValues { it.value.second - it.value.first },
 )
 
 fun List<RemoteHeadphone>.toLocal(): List<LocalHeadphone> = map { it.toLocal() }

@@ -7,9 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +19,6 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -41,13 +38,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import audiosense.composeapp.generated.resources.AppleAirpodPro
 import audiosense.composeapp.generated.resources.GalaxyBudsFe
 import audiosense.composeapp.generated.resources.Res
-import ir.khebrati.audiosense.domain.model.DefaultHeadphones.*
+import ir.khebrati.audiosense.domain.model.DefaultHeadphonesName.*
 import ir.khebrati.audiosense.domain.model.isDefaultHeadphone
 import ir.khebrati.audiosense.presentation.components.AudiosenseAppBar
 import ir.khebrati.audiosense.presentation.components.AudiosenseScaffold
@@ -74,7 +70,7 @@ fun SelectDeviceScreen(
     viewModel: SelectDeviceViewModel = koinNavViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    BackHandler { onNavigateBack() }
+//    BackHandler { onNavigateBack() }
     SelectDeviceContent(
         uiState = uiState,
         pagerState = pagerState,
@@ -130,9 +126,9 @@ fun SelectDevicePreview() {
             SelectDeviceUiState(
                 headphones =
                     listOf(
-                        HeadphoneUiState(model = GalaxyBudsFE.model, id = "0"),
-                        HeadphoneUiState(model = AppleAirpods.model, id = "2"),
-                        HeadphoneUiState(model = SonyHeadphones.model, id = "1"),
+                        HeadphoneUiState(model = GalaxyBudsFE.value, id = "0"),
+                        HeadphoneUiState(model = AppleAirpods.value, id = "2"),
+                        HeadphoneUiState(model = SonyHeadphones.value, id = "1"),
                         HeadphoneUiState(model = "Random headphone", id = "3"),
                         HeadphoneUiState(
                             model = "Very very long headphone name that will probably overflow",
@@ -282,18 +278,18 @@ private fun HeadphonePicAndName(text: String, modifier: Modifier) {
         horizontalArrangement = Arrangement.spacedBy(7.dp),
     ) {
         when (text) {
-            GalaxyBudsFE.model -> {
+            GalaxyBudsFE.value -> {
                 Image(
                     painter = painterResource(Res.drawable.GalaxyBudsFe),
-                    contentDescription = "${GalaxyBudsFE.model} image",
+                    contentDescription = "${GalaxyBudsFE.value} image",
                     modifier = Modifier.size(70.dp),
                 )
             }
 
-            AppleAirpods.model -> {
+            AppleAirpods.value -> {
                 Image(
                     painter = painterResource(Res.drawable.AppleAirpodPro),
-                    contentDescription = AppleAirpods.model,
+                    contentDescription = AppleAirpods.value,
                     modifier = Modifier.size(70.dp),
                 )
             }

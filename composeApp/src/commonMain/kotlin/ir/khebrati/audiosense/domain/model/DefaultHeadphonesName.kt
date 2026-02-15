@@ -1,10 +1,10 @@
 package ir.khebrati.audiosense.domain.model
 
-enum class DefaultHeadphones(val model: String) {
+enum class DefaultHeadphonesName(val value: String) {
     GalaxyBudsFE("Galaxy Buds FE"),
     AppleAirpods("Apple Airpods"),
     SonyHeadphones("Sony Headphones"),
     Uncalibrated("Default"),
 }
 
-fun isDefaultHeadphone(model: String) = (model in DefaultHeadphones.entries.map { it.model })
+fun isDefaultHeadphone(model: String) = (model in DefaultHeadphonesName.entries.map { it.value })

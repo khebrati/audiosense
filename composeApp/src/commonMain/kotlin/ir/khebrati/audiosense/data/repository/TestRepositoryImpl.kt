@@ -55,6 +55,9 @@ class TestRepositoryImpl(
         return testHeadphoneDao.get(id).toExternal().firstOrNull()
     }
 
+    override suspend fun getLastTest(): Test? =
+        withContext(dispatcher) { testHeadphoneDao.getAll().toExternal().maxByOrNull { it.dateTime } }
+
     override suspend fun getAll() =
         withContext(dispatcher) { testHeadphoneDao.getAll().toExternal() }
 

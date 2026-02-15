@@ -8,6 +8,7 @@ import ir.khebrati.audiosense.data.source.local.entity.LocalHeadphone
 import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcher
 import ir.khebrati.audiosense.data.toExternal
 import ir.khebrati.audiosense.data.toLocal
+import ir.khebrati.audiosense.domain.model.Headphone
 import ir.khebrati.audiosense.domain.model.VolumeRecordPerFrequency
 import ir.khebrati.audiosense.domain.repository.HeadphoneRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -41,6 +42,10 @@ class HeadphoneRepositoryImpl(
             headphoneDao.add(localHeadphone)
             uuid
         }
+    }
+
+    override suspend fun getById(id: String): Headphone? = withContext(dispatcher){
+        headphoneDao.getById(id)?.toExternal()
     }
 
     override suspend fun getAll() = withContext(dispatcher) {
