@@ -13,21 +13,18 @@ val localProperties = Properties().apply {
 }
 
 plugins {
-    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.buildConfig)
-    alias(libs.plugins.room)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
-    androidTarget {
-        //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
-    }
+    androidTarget()
+    js { browser() }
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
@@ -36,17 +33,6 @@ kotlin {
         optIn.add("androidx.compose.ui.ExperimentalComposeUiApi")
     }
     jvmToolchain(21)
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
 
     applyDefaultHierarchyTemplate()
     sourceSets {
@@ -65,8 +51,6 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.androidx.graphics.shapes)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.room.runtime)
-            implementation(libs.sqlite.bundled)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
@@ -109,10 +93,6 @@ android {
         minSdk = 21
         targetSdk = 35
 
-        applicationId = "ir.khebrati.audiosense.androidApp"
-        versionCode = 1
-        versionName = "1.0.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
@@ -136,15 +116,3 @@ buildConfig {
 }
 
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
-dependencies {
-    with(libs.room.compiler) {
-        add("kspAndroid", this)
-        add("kspIosX64", this)
-        add("kspIosArm64", this)
-        add("kspIosSimulatorArm64", this)
-    }
-}

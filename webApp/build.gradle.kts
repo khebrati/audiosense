@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 kotlin {
@@ -10,10 +10,6 @@ kotlin {
         binaries.executable()
     }
 
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
 
     sourceSets {
         commonMain.dependencies {

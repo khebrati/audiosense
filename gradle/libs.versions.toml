@@ -1,7 +1,7 @@
 [versions]
 
 kotlin = "2.1.21"
-compose = "1.9.3"
+compose-multiplatform = "1.9.3"
 material3 = "1.9.0-alpha04"
 agp = "8.10.0"
 androidx-activityCompose = "1.10.1"
@@ -10,11 +10,10 @@ kermit = "2.0.6"
 kotlinx-coroutines = "1.10.2"
 androidx-lifecycle = "2.9.1"
 androidx-navigation = "2.9.0-beta03"
-androidx-graphics-shapes = "1.0.1"
+androidx-graphics-shapes = "1.1.0"
 kotlinx-datetime = "0.7.1"
-buildConfig = "5.6.5"
-room = "2.7.2"
-sqlite = "2.5.0-alpha01"
+buildConfig = "6.0.7"
+sqlite = "2.6.2"
 koin-bom = "4.0.3"
 ksp = "2.1.21-2.0.2"
 runner = "1.6.2"
@@ -38,9 +37,6 @@ androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:life
 androidx-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
@@ -59,12 +55,12 @@ material3 = { module = "org.jetbrains.compose.material3:material3", version.ref 
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 [plugins]
-
-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-kmp-library = { id = "com.android.library", version.ref = "agp" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
-room = { id = "androidx.room", version.ref = "room" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
