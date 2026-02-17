@@ -105,8 +105,8 @@ fun DrawScope.drawableAudiogram(
     val xUnit = size.width / ((AcousticConstants.allFrequencyOctaves.size + 1) * 2)
     val yUnit = size.height / (AcousticConstants.allPossibleDbHLs.size + 4)
 
-    val chartWidth = size.width - 2 * xUnit
-    val chartHeight = size.height - 4 * yUnit
+    val chartWidth = size.width - 2.toFloat() * xUnit
+    val chartHeight = size.height - 4.toFloat() * yUnit
     val chartSize = Size(chartWidth, chartHeight)
     val labelColor = if (systemIsDark) Color.White else Color.Black
     if (hasLabels) {
@@ -157,11 +157,11 @@ private fun DrawScope.audiogramChart(
     symbolRadius: Dp,
     chartSize: Size,
 ) {
-    translate(left = xUnit, top = 2 * yUnit) {
+    translate(left = xUnit, top = 2.toFloat() * yUnit) {
         if (hasBackgroundLines) {
             drawChartLines(systemIsDark, backgroundLineStrokeWidth, chartSize)
         }
-        val acPaddedAreaSize = Size(chartSize.width - 2 * xUnit, chartSize.height)
+        val acPaddedAreaSize = Size(chartSize.width - 2.toFloat() * xUnit, chartSize.height)
         acLines(
             leftAC,
             rightAC,
@@ -187,13 +187,13 @@ private fun DrawScope.dbHlLabels(
     allDbHLOffsets(chartHeight).forEachIndexed { index, y ->
         val labelResult =
             textMeasurer.measure(
-                AnnotatedString(dbHLLabels()[2 * index]),
+                AnnotatedString(dbHLLabels()[2.toInt() * index]),
                 style = TextStyle(color = color, fontSize = fontSize, fontWeight = fontWeight),
             )
         val textWidth = labelResult.size.width
         val textHeight = labelResult.size.height
         drawText(
-            topLeft = Offset(xUnit / 2 - (textWidth / 2), 2 * yUnit + y - textHeight / 2),
+            topLeft = Offset(xUnit / 2 - (textWidth / 2), 2.toFloat() * yUnit + y - textHeight / 2),
             textLayoutResult = labelResult,
         )
     }
@@ -208,7 +208,7 @@ private fun DrawScope.freqLabels(
     fontWeight: FontWeight,
     color: Color,
 ) {
-    val acPaddedAreaWidth = chartSize.width - 2 * xUnit
+    val acPaddedAreaWidth = chartSize.width - 2.toFloat() * xUnit
     allFreqOffsets(acPaddedAreaWidth).forEachIndexed { index, x ->
         val labelResult =
             textMeasurer.measure(
@@ -217,7 +217,7 @@ private fun DrawScope.freqLabels(
             )
         val textWidth = labelResult.size.width
         drawText(
-            topLeft = Offset(2 * xUnit + x - (textWidth / 2f), size.height - yUnit),
+            topLeft = Offset(2.toFloat() * xUnit + x - (textWidth / 2f), size.height - yUnit),
             textLayoutResult = labelResult,
         )
     }

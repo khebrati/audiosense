@@ -83,8 +83,14 @@ kotlin {
             // SqlDelight Android driver
             implementation("app.cash.sqldelight:android-driver:${libs.versions.sqldelight.get()}")
         }
+
+
         androidInstrumentedTest.dependencies {
             implementation(libs.androidx.runner)
+        }
+        sourceSets.jsMain.dependencies {
+            implementation("app.cash.sqldelight:web-worker-driver:2.2.1")
+            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
         }
 
     }
@@ -124,6 +130,7 @@ sqldelight {
     databases {
         create("AudiosenseDb") {
             packageName.set("ir.khebrati.audiosense.db")
+            generateAsync.set(true)
         }
     }
 }

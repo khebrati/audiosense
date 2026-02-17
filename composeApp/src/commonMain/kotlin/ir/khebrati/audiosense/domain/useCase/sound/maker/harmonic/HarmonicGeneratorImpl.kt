@@ -12,9 +12,10 @@ class HarmonicGeneratorImpl : HarmonicGenerator {
         durationMillis: Float,
         fadeRatio: Float,
     ): FloatArray {
+        val pi = 3.141592653589793
         val numOfSamples = (sampleRate * durationMillis / 1000).toInt()
         val emptySoundSamples = FloatArray(numOfSamples)
-        val angle = (2 * PI.toFloat() * frequency) / sampleRate
+        val angle = (2.toFloat() * PI.toFloat() * frequency) / sampleRate
         val maxFadeInSampleIndex = max(1, (numOfSamples * fadeRatio).toInt())
         val generatedSoundSamples =
             emptySoundSamples.mapIndexed { index, value ->
