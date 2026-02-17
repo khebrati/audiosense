@@ -89,10 +89,13 @@ kotlin {
             implementation(libs.androidx.runner)
         }
         sourceSets.jsMain.dependencies {
-            implementation("app.cash.sqldelight:web-worker-driver:2.2.1")
+            implementation(libs.web.worker.driver)
             implementation(devNpm("copy-webpack-plugin", "9.1.0"))
             implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.2.1"))
             implementation(npm("sql.js", "1.8.0"))
+            implementation(libs.coil.compose.wasm.js)
+            implementation(libs.coil.network.ktor3.wasm.js)
+            implementation(libs.ktor.client.js.wasm.js)
         }
 
     }

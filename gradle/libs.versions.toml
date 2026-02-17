@@ -1,7 +1,10 @@
 [versions]
 
+coilComposeWasmJs = "3.3.0"
+coilNetworkKtor3WasmJs = "3.3.0"
 kotlin = "2.3.10"
 compose-multiplatform = "1.9.3"
+ktorClientJsWasmJs = "3.4.0"
 material3 = "1.9.0-alpha04"
 agp = "8.10.0"
 androidx-activityCompose = "1.10.1"
@@ -22,12 +25,15 @@ turbine = "1.2.1"
 juint = "4.13.2"
 coil = "3.3.0"
 ktor = "3.3.3"
+webWorkerDriver = "2.2.1"
 [libraries]
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-uitest-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-uiTest" }
 #androidx-graphics-shapes = {module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
 androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-uiTest" }
+coil-network-ktor3-wasm-js = { module = "io.coil-kt.coil3:coil-network-ktor3-js", version.ref = "coilNetworkKtor3WasmJs" }
+coil-compose-wasm-js = { module = "io.coil-kt.coil3:coil-compose-js", version.ref = "coilComposeWasmJs" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-koin = { module = "co.touchlab:kermit-koin", version.ref = "kermit" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -43,6 +49,7 @@ koin-compose = { module = "io.insert-koin:koin-compose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+ktor-client-js-wasm-js = { module = "io.ktor:ktor-client-js-js", version.ref = "ktorClientJsWasmJs" }
 turbine = {module = "app.cash.turbine:turbine",version.ref = "turbine"}
 junit = { module = "junit:junit", version.ref = "juint" }
 #back-handler = {module = "org.jetbrains.compose.ui:ui-backhandler" }
@@ -53,6 +60,7 @@ ktor-cio = {module = "io.ktor:ktor-client-cio",version.ref="ktor"}
 # Theme
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "webWorkerDriver" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
