@@ -57,7 +57,7 @@ import ir.khebrati.audiosense.presentation.screens.home.components.SelectableChe
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinNavViewModel
+import org.koin.compose.koinInject
 
 private var isAlreadySentToTestSetupScreen = false
 @Composable
@@ -65,7 +65,7 @@ fun HomeScreen(
     onNavigateStartTest: (TestSetupRoute) -> Unit,
     onNavigateSetting: (SettingRoute) -> Unit,
     onNavigateResult: (ResultRoute) -> Unit,
-    viewModel: HomeViewModel = koinNavViewModel(),
+    viewModel: HomeViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel){

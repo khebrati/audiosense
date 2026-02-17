@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import ir.khebrati.audiosense.presentation.screens.setup.components.IllustrationLoader
 import ir.khebrati.audiosense.presentation.screens.setup.components.TestSetupLayout
 import ir.khebrati.audiosense.presentation.screens.setup.navigation.SetupInternalRoute.*
-import org.koin.compose.viewmodel.koinNavViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun PersonalInfoScreen(
@@ -44,7 +44,7 @@ fun PersonalInfoScreen(
     onNavigateVolume: (VolumeRoute) -> Unit,
     onNavigateBack: () -> Unit,
     onClickSkip: () -> Unit,
-    viewModel: PersonalInfoViewModel = koinNavViewModel(),
+    viewModel: PersonalInfoViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val ageTextFieldState = rememberTextFieldState()

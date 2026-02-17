@@ -8,6 +8,8 @@ import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.Koin
 
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.ComposeViewport
 @Preview
 @Composable
 fun AudiosenseApp(koin: Koin) = AppTheme {

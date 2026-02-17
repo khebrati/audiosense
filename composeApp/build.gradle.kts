@@ -50,7 +50,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.androidx.navigation.compose)
-            implementation(libs.androidx.graphics.shapes)
+//            implementation(libs.androidx.graphics.shapes)
             implementation(libs.kotlinx.datetime)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -91,6 +91,8 @@ kotlin {
         sourceSets.jsMain.dependencies {
             implementation("app.cash.sqldelight:web-worker-driver:2.2.1")
             implementation(devNpm("copy-webpack-plugin", "9.1.0"))
+            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.2.1"))
+            implementation(npm("sql.js", "1.8.0"))
         }
 
     }

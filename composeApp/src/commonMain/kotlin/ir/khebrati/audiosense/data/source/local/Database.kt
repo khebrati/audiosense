@@ -6,6 +6,9 @@ import ir.khebrati.audiosense.db.AudiosenseDb
 import ir.khebrati.audiosense.db.LocalHeadphone
 import ir.khebrati.audiosense.db.LocalTest
 import ir.khebrati.audiosense.domain.model.DefaultHeadphonesName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 fun createDatabase(driver: SqlDriver): AudiosenseDb {
     val database = AudiosenseDb(
@@ -21,18 +24,20 @@ fun createDatabase(driver: SqlDriver): AudiosenseDb {
     )
 
     if (BuildConfig.IS_DEVELOPMENT) {
-        prepopulateDb(database)
+        CoroutineScope(Dispatchers.Default).launch {
+            prepopulateDb(database)
+        }
     }
 
     return database
 }
 
-private fun prepopulateDb(database: AudiosenseDb) {
+private suspend fun prepopulateDb(database: AudiosenseDb) {
     insertDefaultHeadphones(database)
     insertFakeTests(database)
 }
 
-private fun insertDefaultHeadphones(database: AudiosenseDb) {
+private suspend fun insertDefaultHeadphones(database: AudiosenseDb) {
     data class DefaultHeadphone(
         val id: String,
         val name: DefaultHeadphonesName,
@@ -86,7 +91,7 @@ private fun insertDefaultHeadphones(database: AudiosenseDb) {
     }
 }
 
-private fun insertFakeTests(database: AudiosenseDb) {
+private suspend fun insertFakeTests(database: AudiosenseDb) {
     val galaxyBudsId = "a15c6946-0f18-4ae0-82c1-16a7ef8dc4dc"
     val appleAirpodsId = "04cad680-777e-41a1-8770-f6bb5ed50ea8"
     val sonyHeadphonesId = "9165f20d-1ce6-4eb6-b2a8-0955dd8f6407"

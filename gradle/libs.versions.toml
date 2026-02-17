@@ -1,6 +1,6 @@
 [versions]
 
-kotlin = "2.1.21"
+kotlin = "2.3.10"
 compose-multiplatform = "1.9.3"
 material3 = "1.9.0-alpha04"
 agp = "8.10.0"
@@ -15,7 +15,7 @@ kotlinx-datetime = "0.7.1"
 buildConfig = "6.0.7"
 sqldelight = "2.2.1"
 koin-bom = "4.0.3"
-ksp = "2.1.21-2.0.2"
+ksp = "2.3.5"
 runner = "1.6.2"
 kotlinx-serialization = "1.7.3"
 turbine = "1.2.1"
@@ -26,7 +26,7 @@ ktor = "3.3.3"
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-uitest-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-uiTest" }
-androidx-graphics-shapes = {module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
+#androidx-graphics-shapes = {module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
 androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-uiTest" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-koin = { module = "co.touchlab:kermit-koin", version.ref = "kermit" }

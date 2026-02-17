@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.CornerRounding
-import androidx.graphics.shapes.RoundedPolygon
+//import androidx.graphics.shapes.CornerRounding
+//import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.star
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import kotlin.math.min
@@ -36,16 +36,16 @@ fun RotatingSmoothStar(modifier: Modifier = Modifier, numVerticesPerRadius: Int,
         val minDimension = min(width,height)
         val radius = minDimension / 2
         val innerRadius = radius / 2
-        val smoothStar =
-            RoundedPolygon.star(
-                radius = radius,
-                innerRadius = innerRadius,
-                numVerticesPerRadius = numVerticesPerRadius,
-                rounding = CornerRounding(innerRadius / 2, smoothing = 1f),
-                centerX = width / 2,
-                centerY = height / 2,
-            )
-        val path = smoothStar.toPath()
+//        val smoothStar =
+//            RoundedPolygon.star(
+//                radius = radius,
+//                innerRadius = innerRadius,
+//                numVerticesPerRadius = numVerticesPerRadius,
+//                rounding = CornerRounding(innerRadius / 2, smoothing = 1f),
+//                centerX = width / 2,
+//                centerY = height / 2,
+//            )
+//        val path = smoothStar.toPath()
         val infiniteTransition = rememberInfiniteTransition("Animate Rotation")
         val rotationProgress = infiniteTransition.animateFloat(
             initialValue = 0f,
@@ -58,7 +58,7 @@ fun RotatingSmoothStar(modifier: Modifier = Modifier, numVerticesPerRadius: Int,
             rotate(
                 degrees = rotationProgress.value
             ){
-                drawPath(path, color = color, style = Stroke(width = 3.dp.toPx()))
+//                drawPath(path, color = color, style = Stroke(width = 3.dp.toPx()))
             }
         }
     }
