@@ -1,6 +1,6 @@
 [versions]
 
-kotlin = "2.1.21"
+kotlin = "2.3.10"
 compose = "1.9.3"
 material3 = "1.9.0-alpha04"
 agp = "8.10.0"
@@ -16,13 +16,15 @@ buildConfig = "5.6.5"
 room = "2.7.2"
 sqlite = "2.5.0-alpha01"
 koin-bom = "4.0.3"
-ksp = "2.1.21-2.0.2"
+ksp = "2.3.5"
 runner = "1.6.2"
 kotlinx-serialization = "1.7.3"
 turbine = "1.2.1"
 juint = "4.13.2"
 coil = "3.3.0"
-ktor = "3.3.3"
+ktor = "3.4.0"
+koog= "0.6.2"
+
 [libraries]
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -57,6 +59,7 @@ ktor-cio = {module = "io.ktor:ktor-client-cio",version.ref="ktor"}
 # Theme
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+koog = { module = "ai.koog:koog-agents", version.ref = "koog" }
 
 [plugins]
 

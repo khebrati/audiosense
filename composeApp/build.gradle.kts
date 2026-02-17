@@ -79,6 +79,7 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.ktor.core)
             implementation(libs.ktor.cio)
+            implementation(libs.koog)
         }
 
         commonTest.dependencies {
@@ -114,6 +115,13 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/io.netty.versions.properties"
+        }
     }
 }
 

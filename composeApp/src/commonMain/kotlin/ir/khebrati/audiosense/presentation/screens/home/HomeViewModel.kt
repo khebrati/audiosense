@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import ir.khebrati.audiosense.data.source.remote.HeadphoneFetcher
 import ir.khebrati.audiosense.domain.model.Test
 import ir.khebrati.audiosense.domain.repository.TestRepository
+import ir.khebrati.audiosense.domain.useCase.ai.AIAnswerProviderImpl
+import ir.khebrati.audiosense.domain.useCase.ai.testKoog
 import ir.khebrati.audiosense.domain.useCase.lossLevel.describeLossLevel
 import ir.khebrati.audiosense.domain.useCase.time.TimeOfDay
 import ir.khebrati.audiosense.domain.useCase.time.TimeTeller
@@ -46,6 +48,12 @@ class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestReposito
 
     init {
         viewModelScope.launch { combineUiFlows().collect { state -> _uiState.update { state } } }
+//        AIAnswerProviderImpl().provide(
+//            leftAudiogram = mapOf(2000 to 30, 4000 to 25, 8000 to 45, 500 to 35, 1000 to 45, 250 to 40),
+//            rightAudiogram = mapOf( 2000 to 35, 4000 to 45, 8000 to 50, 500 to 40, 1000 to 40, 250 to 50),
+//            age =40,
+//            whoCategory = ""
+//        )
     }
 
     private fun combineUiFlows() =
@@ -58,7 +66,10 @@ class HomeViewModel(val timeTeller: TimeTeller, val testRepository: TestReposito
 
     fun handleIntent(intent: HomeIntent) {
         when (intent) {
-            is SelectForDelete -> handleSelectForDelete(intent)
+            is SelectForDelete -> {
+                testKoog()
+                handleSelectForDelete(intent)
+            }
             is OnClick -> {
                 /*Handled in UI for navigation*/
             }
