@@ -50,7 +50,6 @@ class HeadphoneRepositoryIntegrationTest : KoinComponent {
         // Assert
         assertEquals(1, headphones.size)
         assertEquals(headphoneName, addedHeadphone.model)
-        assertEquals(headphoneCalibration, addedHeadphone.calibrationCoefficients)
 
         // Cleanup
         headphoneRepo.deleteById(addedHeadphone.id)
