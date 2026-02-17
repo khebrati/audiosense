@@ -27,6 +27,10 @@ addTest:
 INSERT INTO LocalTest (id, dateTime, noiseDuringTest, leftAC, rightAC, headphoneId, personName, personAge, hasHearingAidExperience)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+addTestOrIgnore:
+INSERT OR IGNORE INTO LocalTest (id, dateTime, noiseDuringTest, leftAC, rightAC, headphoneId, personName, personAge, hasHearingAidExperience)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 deleteTestById:
 DELETE FROM LocalTest WHERE id = :id;
 

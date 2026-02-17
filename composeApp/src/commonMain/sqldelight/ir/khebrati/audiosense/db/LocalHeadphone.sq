@@ -17,6 +17,9 @@ SELECT * FROM LocalHeadphone WHERE id = :id;
 addHeadphone:
 INSERT INTO LocalHeadphone (id, model, calibrationCoefficients) VALUES (?, ?, ?);
 
+addHeadphoneOrIgnore:
+INSERT OR IGNORE INTO LocalHeadphone (id, model, calibrationCoefficients) VALUES (?, ?, ?);
+
 upsertHeadphone:
 INSERT INTO LocalHeadphone (id, model, calibrationCoefficients)
 VALUES (?, ?, ?);

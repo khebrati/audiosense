@@ -78,7 +78,7 @@ private fun insertDefaultHeadphones(database: AudiosenseDb) {
         )
 
     defaultHeadphones.forEach {
-        database.localHeadphoneQueries.addHeadphone(
+        database.localHeadphoneQueries.addHeadphoneOrIgnore(
             id = it.id,
             model = it.name.value,
             calibrationCoefficients = it.calibration
@@ -92,7 +92,7 @@ private fun insertFakeTests(database: AudiosenseDb) {
     val sonyHeadphonesId = "9165f20d-1ce6-4eb6-b2a8-0955dd8f6407"
 
     // Fake test 1: Normal hearing with Galaxy Buds FE
-    database.localTestQueries.addTest(
+    database.localTestQueries.addTestOrIgnore(
         id = "fake-test-001",
         dateTime = kotlin.time.Instant.parse("2025-12-20T10:30:00Z"),
         noiseDuringTest = 25,
@@ -105,7 +105,7 @@ private fun insertFakeTests(database: AudiosenseDb) {
     )
 
     // Fake test 2: Mild hearing loss with Apple Airpods
-    database.localTestQueries.addTest(
+    database.localTestQueries.addTestOrIgnore(
         id = "fake-test-002",
         dateTime = kotlin.time.Instant.parse("2025-12-15T14:00:00Z"),
         noiseDuringTest = 30,
@@ -118,7 +118,7 @@ private fun insertFakeTests(database: AudiosenseDb) {
     )
 
     // Fake test 3: Moderate hearing loss with Sony Headphones
-    database.localTestQueries.addTest(
+    database.localTestQueries.addTestOrIgnore(
         id = "fake-test-003",
         dateTime = kotlin.time.Instant.parse("2025-12-10T09:15:00Z"),
         noiseDuringTest = 20,
