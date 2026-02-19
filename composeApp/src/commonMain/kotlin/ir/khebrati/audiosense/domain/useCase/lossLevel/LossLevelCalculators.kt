@@ -26,4 +26,6 @@ fun getLossLevel(leftAC: Map<Int, Int>, rightAC: Map<Int, Int>): Int {
     return (leftLevel + rightLevel) / 2
 }
 
-fun getLossLevel(ac: Map<Int, Int>) = ac.values.average().toInt()
+fun getLossLevel(ac: Map<Int, Int>) = ac.filter{fptaList.contains(it.key)}.values.average().toInt()
+
+val fptaList = listOf(500,1000,2000,4000)
