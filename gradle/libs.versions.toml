@@ -23,6 +23,7 @@ turbine = "1.2.1"
 juint = "4.13.2"
 coil = "3.3.0"
 ktor = "3.3.3"
+koog= "0.6.2"
 [libraries]
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }

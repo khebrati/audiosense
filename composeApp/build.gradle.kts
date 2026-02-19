@@ -79,6 +79,7 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.ktor.core)
             implementation(libs.ktor.cio)
+            api(libs.koog)
         }
 
         commonTest.dependencies {
