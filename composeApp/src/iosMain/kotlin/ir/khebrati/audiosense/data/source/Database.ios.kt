@@ -2,6 +2,7 @@ package ir.khebrati.audiosense.data.source
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import ir.khebrati.audiosense.data.source.local.AppDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
