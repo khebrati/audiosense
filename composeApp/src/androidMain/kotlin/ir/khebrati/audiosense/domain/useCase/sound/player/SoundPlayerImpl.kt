@@ -15,7 +15,6 @@ class SoundPlayerImpl : SoundPlayer {
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build()
-        //TODO match given sample rate with device sample rate
         val audioFormat =
             AudioFormat.Builder()
                 .setSampleRate(sampleRate)
@@ -28,19 +27,22 @@ class SoundPlayerImpl : SoundPlayer {
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_FLOAT,
             )
-        // Make sure buffer size is more than input samples size
-        val assuredBufferSize =
-            max(samples.size * 4, androidRecommendedBufferSize) // 4 bytes per float
+        val assuredBufferSize = max(samples.size * 4, androidRecommendedBufferSize)
         val track =
             AudioTrack(audioAttributes, audioFormat, assuredBufferSize, AudioTrack.MODE_STATIC, 0)
-        // Write the audio data to the AudioTrack
-        track.write(samples, 0, samples.size, AudioTrack.WRITE_BLOCKING)
-        when (channel) {
-            AudioChannel.RIGHT -> track.setStereoVolume(0f, AudioTrack.getMaxVolume())
-            AudioChannel.LEFT -> track.setStereoVolume(AudioTrack.getMaxVolume(), 0f)
-            else -> {}
+
+        try {
+            track.write(samples, 0, samples.size, AudioTrack.WRITE_BLOCKING)
+            when (channel) {
+                AudioChannel.RIGHT -> track.setStereoVolume(0f, AudioTrack.getMaxVolume())
+                AudioChannel.LEFT -> track.setStereoVolume(AudioTrack.getMaxVolume(), 0f)
+                else -> {}
+            }
+            track.play()
+            delay(duration)
+        } finally {
+            track.stop()
+            track.release()
         }
-        track.play()
-        delay(duration)
     }
 }
