@@ -60,14 +60,14 @@ import ir.khebrati.audiosense.presentation.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinNavViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ResultScreen(
     resultRoute: ResultRoute,
     onNavigateHome: (HomeRoute) -> Unit,
     onNavigateDescriptiveResult: (DescriptiveResultRoute) -> Unit,
-    viewModel: TestResultViewModel = koinNavViewModel(),
+    viewModel: TestResultViewModel = koinViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val graphicsLayer = rememberGraphicsLayer()

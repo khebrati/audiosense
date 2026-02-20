@@ -34,7 +34,7 @@ import ir.khebrati.audiosense.presentation.screens.test.NavigationEvent.*
 import ir.khebrati.audiosense.presentation.screens.test.components.AnimatedTestVisualizer
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinNavViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -42,7 +42,7 @@ fun TestScreen(
     testRoute: TestRoute,
     onNavigateResult: (ResultRoute) -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: TestViewModel = koinNavViewModel(),
+    viewModel: TestViewModel = koinViewModel(),
 ) {
     LaunchedEffect(Unit) {
         viewModel.navigationEvents.collectLatest {

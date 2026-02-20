@@ -57,7 +57,7 @@ import ir.khebrati.audiosense.presentation.screens.setup.selectDevice.SelectDevi
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinNavViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -67,7 +67,7 @@ fun SelectDeviceScreen(
     onNavigateBack: () -> Unit,
     onNavigateCalibration: (CalibrationRoute) -> Unit,
     pagerState: PagerState,
-    viewModel: SelectDeviceViewModel = koinNavViewModel(),
+    viewModel: SelectDeviceViewModel = koinViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
 //    BackHandler { onNavigateBack() }

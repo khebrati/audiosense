@@ -33,7 +33,7 @@ import ir.khebrati.audiosense.presentation.screens.calibration.components.PlayVo
 import ir.khebrati.audiosense.presentation.screens.calibration.components.SaveFAB
 import ir.khebrati.audiosense.presentation.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinNavViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
@@ -69,7 +69,7 @@ fun CalibrationScreenContentPreview() {
 fun CalibrationScreen(
     calibrationRoute: CalibrationRoute,
     onNavigateBack: () -> Unit,
-    viewModel: CalibrationViewModel = koinNavViewModel(),
+    viewModel: CalibrationViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var headphoneModel by remember { mutableStateOf("") }
