@@ -3,6 +3,7 @@
 package ir.khebrati.audiosense.data.source.local
 
 import AudioSense.composeApp.BuildConfig
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
@@ -126,6 +127,7 @@ private fun insertFakeTests(connection: SQLiteConnection) {
 
 @TypeConverters(Convertors::class)
 @Database(entities = [LocalHeadphone::class, LocalTest::class], version = 1)
+@ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun headphoneDao(): HeadphoneDao
 
@@ -134,7 +136,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun testHeadphoneDao(): TestHeadphoneDao
 }
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
+@Suppress("KotlinNoActualForExpect")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
 }
