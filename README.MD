@@ -2,26 +2,20 @@
 A modern, expressive audiometry application for Android & iOS, built with Kotlin Multiplatform and a focus on user-friendly design powered by Material 3 Expressive.
 ### Screenshots
 <div display="inline-block">
-  <!-- ai-analysis.jpg -->
-  <img src="docs/images/ai-analysis.jpg" width="200" alt="AI Analysis"/>
-  
-  <!-- get-ready.jpg -->
-  <img src="docs/images/get-ready.jpg" width="200" alt="Get Ready"/>
-  
   <!-- home-screen.jpg -->
   <img src="docs/images/home-screen.jpg" width="200" alt="Home Screen"/>
-  
-  <!-- main-result.jpg -->
-  <img src="docs/images/main-result.jpg" width="200" alt="Main Result"/>
-  
   <!-- personal-info.jpg -->
   <img src="docs/images/personal-info.jpg" width="200" alt="Personal Info"/>
-  
+  <!-- get-ready.jpg -->
+  <img src="docs/images/get-ready.jpg" width="200" alt="Get Ready"/>
   <!-- select-device.jpg -->
   <img src="docs/images/select-device.jpg" width="200" alt="Select Device"/>
-  
   <!-- test-page.jpg -->
   <img src="docs/images/test-page.jpg" width="200" alt="Test Page"/>
+  <!-- main-result.jpg -->
+  <img src="docs/images/main-result.jpg" width="200" alt="Main Result"/>
+  <!-- ai-analysis.jpg -->
+  <img src="docs/images/ai-analysis.jpg" width="200" alt="AI Analysis"/>
 </div>
 
 ### 📋 About The Project
