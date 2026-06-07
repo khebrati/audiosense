@@ -1,7 +1,4 @@
 ## AudioSense
-
-    Note: This project is currently under active development.
-
 A modern, expressive audiometry application for Android & iOS, built with Kotlin Multiplatform and a focus on user-friendly design powered by Material 3 Expressive.
 ### Screenshots
 <div display="inline-block">
